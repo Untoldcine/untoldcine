@@ -37,6 +37,7 @@ exports.getSpecificSeries = async (req, res) => {
                 series_type: results[0].series_type,
                 rating: results[0].rating,
                 genres: results[0].genres,
+                seasons: results[0].seasons,
                 episodes: results[0].episodes,
                 length: results[0].length,
                 description: results[0].description,

@@ -49,7 +49,7 @@ const Card:React.FC<CardProps> = ({content}) => {
         const res = await axios.get(`http://localhost:3001/api/series/specific/${seriesID}`)
         
         const {seriesInfo, videos} = res.data        
-        setSeriesDetails(seriesInfo)
+        setSeriesDetails(seriesInfo)                
         setVideoDetails(videos)        
     }
     catch (err) {
@@ -60,7 +60,6 @@ const Card:React.FC<CardProps> = ({content}) => {
   return (
     <>
     <div>
-        <p>{ID}</p>
         <p>{series_name}</p>
         <p>{series_type}</p>
         {rating ? <p>{showPositives}% of people liked this!</p> : null }
