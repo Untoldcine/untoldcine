@@ -1,5 +1,4 @@
 const mysql = require('mysql')
-require('dotenv').config();
 const connectDB = require('./connectDB')
 
 exports.createNewUser = async(req, res) => {

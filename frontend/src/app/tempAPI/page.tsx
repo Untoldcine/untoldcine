@@ -13,10 +13,20 @@ interface Show {
     genres: string
 }
 
+interface Podcast {
+    ID: number,
+    name: string,
+    media_type: string,
+    episode: string,
+    rating: string | null,
+    genre: string | null
+}
+
 const Page = () => {
 
     const [removeUserID, setRemoveUserID] = useState('')
     const [seriesData, setSeriesData] = useState<Show[]|[]>([])
+    const [podcastData, setPodcastData] = useState<Podcast[]|[]>([])
 
     const handleUserIDChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         setRemoveUserID(e.target.value)        
@@ -51,7 +61,7 @@ const Page = () => {
 
     //when user enters Untold, get sent JSON data that is cached on client side of superficial series information to reduce calls to DB
     //Likely use IndexedDB API for client side caching
-    const sendSeriesData = async () => {
+    const getSeriesData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/series/summary`)
             const {results} = res.data
@@ -62,6 +72,20 @@ const Page = () => {
         }
     }
 
+    const getPodcastData = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/podcast/summary`)
+            const {results} = res.data
+            console.log(results);
+            
+            setPodcastData(results)                        
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve podcast data: ${err}`);
+        }
+    }
+
+
 
     return (
         <>
@@ -69,11 +93,19 @@ const Page = () => {
             <button className ="inputs"onClick={() => triggerDeleteUser()}>Remove a user at this id</button>
             <button className ="inputs"onClick={() => createStaticUser()}>Create a new user</button>
             <input value = {removeUserID} onChange = {(e) => handleUserIDChange(e)} className = "inputs"></input>
-            <button className ="inputs"onClick={() => sendSeriesData()}>Get series data</button>
+            <button className ="inputs"onClick={() => getPodcastData()}>Get podcast data</button>
+            <button className ="inputs"onClick={() => getSeriesData()}>Get series data</button>
             </div>
             <div className='container'>
                 {seriesData.length > 0 && seriesData.map((show) => {
                     return <Card key = {show.ID} content = {show}/>
+                })}
+            </div>
+            <div className='container'>
+                {podcastData.length > 0 && podcastData.map((podcast) => {
+                    return <div key = {podcast.ID} className='block'>
+                        <p>PODCASTS{podcast.name}</p>
+                    </div>
                 })}
             </div>
         </>
