@@ -56,6 +56,9 @@ const Card:React.FC<CardProps> = ({content}) => {
         console.error(`Error attempting to get deeper series data at ID ${seriesID}: ${err}`);
     }
   }
+
+  //TO FIX: The related videos should be a child component of the Detailed Series Component. We can then update the currently selected season (if its TV) state 
+  //which will render the episodes that are only associated with that season.
   
   return (
     <>

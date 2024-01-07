@@ -6,6 +6,8 @@ const cors = require('cors');
 const helloRoute = require('./routes/helloRoute.js');
 const userRoute = require('./routes/userRoute.js')
 const seriesRoute = require('./routes/seriesRoute.js')
+const commentsRoute = require('./routes/commentsRoute.js')
+
 
 app.use(cors({"origin": 'http://localhost:3000'})); //temporary until we go live
 app.use(express.json())
@@ -14,6 +16,7 @@ app.use(express.json())
 app.use('/api/hello', helloRoute);
 app.use('/api/user', userRoute);
 app.use('/api/series', seriesRoute);
+app.use('/api/comments', commentsRoute);
 
 
 app.listen(PORT, () => {

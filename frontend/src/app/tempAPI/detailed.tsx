@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { useState, useEffect } from 'react'
 
 interface Series {
@@ -18,10 +19,22 @@ type DetailedProps = {
     content: Series
 }
 
+interface Comment {
+    ID: number,
+    content: string,
+    date: string,
+    parent_id: number | null,
+    series_id: number,
+    nickname: string,
+    user_id: number,
+    votes: string
+}
+
 const Detailed: React.FC<DetailedProps> = ({ content }) => {
     const { ID, series_name, series_type, genres, rating, length, status, seasons, description, episodes, created } = content
     const { main } = JSON.parse(description);
     const [options, setOptions] = useState<string[]>([]);
+    const [comments, setComments] = useState<Comment[]>([])
 
     let showPositives
     let genreArray
@@ -46,6 +59,15 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
         setOptions(newOptions);
     }, [seasons]);
 
+    const getComments = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${ID}`)
+            setComments(res.data)
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve comments data: ${err}`);
+        }
+    }
 
 
     return (
@@ -63,6 +85,16 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             <p>{showPositives}% of people like this!</p>
             <p>{genreArray}</p>
             <p>Placeholder for length</p>
+            <button onClick={() => getComments()}>See 'Discussion' or comments related to series</button>
+            <div className='block'>
+                {comments ? comments.map((comment) => {
+                    return (
+                        <div className='block'>
+                            <p>{comment.nickname}</p>
+                            <p>{comment.content}</p>
+                        </div>)
+                }) : null}
+            </div>
         </div>
     )
 }

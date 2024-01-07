@@ -2,7 +2,7 @@ const mysql = require('mysql')
 require('dotenv').config();
 const connectDB = require('./connectDB')
 
-exports.getSummary = async (req, res) => {
+exports.getSummary = async (_req, res) => {
     const connection = connectDB();
     const query = 'SELECT ID, series_type, series_name, genres, episodes, length, rating FROM series'
 
