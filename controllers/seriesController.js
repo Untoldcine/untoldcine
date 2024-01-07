@@ -23,7 +23,7 @@ exports.getSpecificSeries = async (req, res) => {
     const {seriesID} = req.params
     const connection = connectDB();
     //retrieve all data first and then split into series and related videos
-    const query = 'SELECT series.*, videos.ID as videoID, videos.name, videos.episode, videos.description FROM series JOIN videos ON series.ID = videos.series_id WHERE series.ID = ?';
+    const query = 'SELECT series.*, videos.ID as videoID, videos.name, videos.episode, videos.description as videos_description FROM series JOIN videos ON series.ID = videos.series_id WHERE series.ID = ?';
     connection.query(query, seriesID, (queryError, results) => {
         connection.end()
         if (queryError){
@@ -47,7 +47,7 @@ exports.getSpecificSeries = async (req, res) => {
                 ID: row.videoID,
                 name: row.name,
                 episode: row.episode,
-                description: row.description
+                description: row.videos_description
             }));
             return res.status(200).json({ seriesInfo, videos });
         }

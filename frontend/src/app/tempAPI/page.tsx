@@ -1,13 +1,22 @@
 'use client'
 import axios from 'axios'
 import './tempstyles.css'
-import { useState, useEffect} from 'react'
+import { useState} from 'react'
 import Card from "./card"
+
+interface Show {
+    ID: number,
+    series_type: string,
+    series_name: string,
+    length: number | null,
+    rating: string,
+    genres: string
+}
 
 const Page = () => {
 
     const [removeUserID, setRemoveUserID] = useState('')
-    const [seriesData, setSeriesData] = useState([])
+    const [seriesData, setSeriesData] = useState<Show[]|[]>([])
 
     const handleUserIDChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         setRemoveUserID(e.target.value)        
@@ -46,7 +55,7 @@ const Page = () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/series/summary`)
             const {results} = res.data
-            setSeriesData(results)            
+            setSeriesData(results)                        
         }
         catch (err) {
             console.error(`Error attempting to retrieve series data: ${err}`);
@@ -64,7 +73,7 @@ const Page = () => {
             </div>
             <div className='container'>
                 {seriesData.length > 0 && seriesData.map((show) => {
-                    return <Card content = {show}/>
+                    return <Card key = {show.ID} content = {show}/>
                 })}
             </div>
         </>

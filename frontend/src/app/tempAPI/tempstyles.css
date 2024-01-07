@@ -8,3 +8,13 @@
 .inputs {
     width: 150px;
 }
+
+.block {
+    border: 1px solid white;
+    padding: 1rem;
+    
+}
+
+.video-block {
+    border: 1px dotted white;
+}
