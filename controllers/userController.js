@@ -1,4 +1,3 @@
-const mysql = require('mysql')
 const connectDB = require('./connectDB')
 
 exports.createNewUser = async(req, res) => {
@@ -13,19 +12,37 @@ exports.createNewUser = async(req, res) => {
     connection.query(query, [nickname, email, password, sub_level], (queryError, _results) => {
         if (queryError){
             console.error('Error ' + queryError);   
-            res.status(500).json({'message' : 'Error creating user during database operation'})
+            return res.status(500).json({'message' : 'Error creating user during database operation'})
         }
 
         //Send new user data back to client to use
         const newUserDetails = 'SELECT * FROM users WHERE id = LAST_INSERT_ID()'
         connection.query(newUserDetails, (selectError, userResults) => {
+            connection.end()
             if (selectError) {
                 console.error('Error ' + selectError)
-                res.status(500).json({'message' : 'Error returning new user data to client'})
+                return res.status(500).json({'message' : 'Error returning new user data to client'})
             }
             res.status(200).json(userResults[0] || {})
         })
+    })
+}
+
+exports.logIn = async (req, res) => {
+    const {email, password} = req.body
+    const connection = connectDB();
+    const query = 'SELECT email, password FROM users WHERE email = ? AND password = ?'
+    connection.query(query, [email, password], (queryError, results) => {
         connection.end()
+        if (queryError){
+            console.error('Error ' + queryError);   
+            return res.status(500).json({'message' : 'Error querying for user credentials during database operation'})
+        }
+        if (results.length === 0) {
+            console.error('Error ' + queryError);   
+            return res.status(500).json({'message' : 'Error finding matching user credentials during database operation'})
+        }
+        res.sendStatus(200)
     })
 }
 

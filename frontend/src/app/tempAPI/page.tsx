@@ -4,6 +4,7 @@ import './tempstyles.css'
 import { useState} from 'react'
 import Card from "./card"
 import Podcasts from "./podcasts"
+import Login from './login'
 
 interface Show {
     ID: number,
@@ -89,6 +90,7 @@ const Page = () => {
     return (
         <>
             <div className='container'>This page is for API testing
+            <Login/>
             <button className ="inputs"onClick={() => triggerDeleteUser()}>Remove a user at this id</button>
             <button className ="inputs"onClick={() => createStaticUser()}>Create a new user</button>
             <input value = {removeUserID} onChange = {(e) => handleUserIDChange(e)} className = "inputs"></input>

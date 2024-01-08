@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 
@@ -38,24 +38,30 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
 
     const [podcastDetails, setPodcastDetails] = useState<DeeperPodcast | null>(null)
     const [podcastComments, setPodcastComments] = useState<Comment[]|[]>([])
+    const [getRelatedContent, setGetRelatedContent] = useState<Boolean>(false)
 
-    const getDeeperPodcastData = async (podcastID: number) => {
+    const getDeeperPodcastData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/podcast/specific/${podcastID}`)
+            const res = await axios.get(`http://localhost:3001/api/podcast/specific/${ID}`)
             const { results } = res.data
             setPodcastDetails(results[0])
+            setGetRelatedContent(true)
         }
         catch (err) {
-            console.error(`Error attempting to get deeper series data at ID ${podcastID}: ${err}`);
+            console.error(`Error attempting to get deeper series data at ID ${ID}: ${err}`);
         }
     }
+
+    // useEffect(() => {
+    //     if (podcastComments) {
+    //         axios.get(`http://localhost:3001/api/podcast/specific/${ID}`)
+    //     }
+    // }, [podcastComments])
 
     const getPodcastComments = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/comments/getPodcastDiscussion/${ID}`)
-            setPodcastComments(res.data)
-            console.log(res.data);
-            
+            setPodcastComments(res.data)            
         }
         catch (err) {
             console.error(`Error attempting to retrieve comments data: ${err}`);
@@ -65,7 +71,7 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
     return (
         <div className='block'>
             <p>PODCASTS = {name}</p>
-            <button onClick={() => getDeeperPodcastData(ID)}>See More</button>
+            <button onClick={() => getDeeperPodcastData()}>See More</button>
             {podcastDetails &&
                 <div className='block'>
                     <h1>{podcastDetails.name}</h1>
@@ -81,6 +87,7 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
                         </div>
                     }): null}
                 </div>}
+            
         </div>
     )
 }

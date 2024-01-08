@@ -1,4 +1,3 @@
-const mysql = require('mysql')
 const connectDB = require('./connectDB')
 
 exports.getSummary = async(_req, res) => {
@@ -8,10 +7,16 @@ exports.getSummary = async(_req, res) => {
         connection.end()
         if (queryError){
             console.error('Error ' + queryError);   
-            res.status(500).json({'message' : 'Error retrieving summary of Series Data during database operation'})
+            return res.status(500).json({'message' : 'Error retrieving summary of Series Data during database operation'})
         }
         res.status(200).json({results})
     })
+}
+
+exports.getRelatedContent = async(req, res) => {
+    const {podcastID} = req.params;
+    const connection = connectDB();
+    // const query = 'SELECT podcasts.ID, podcasts.name, series.id FROM podcasts JOIN series ON podcasts.series_id WHERE '
 }
 
 exports.getSpecificPodcast = async (req, res) => {
@@ -22,7 +27,7 @@ exports.getSpecificPodcast = async (req, res) => {
         connection.end()
         if (queryError){
             console.error('Error ' + queryError);   
-            res.status(500).json({'message' : `Error retrieving deeper Podcast Data at ID ${podcastID} during database operation`})
+            return res.status(500).json({'message' : `Error retrieving deeper Podcast Data at ID ${podcastID} during database operation`})
         }
         res.status(200).json({results})
     })

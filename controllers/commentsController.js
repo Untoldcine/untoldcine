@@ -1,4 +1,3 @@
-const mysql = require('mysql')
 const connectDB = require('./connectDB')
 
 exports.getSeriesComments = async (req, res) => {
@@ -12,7 +11,7 @@ exports.getSeriesComments = async (req, res) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
-            res.status(500).json({'message' : `Error retrieving summary of comments at ID ${seriesID} during database operation`})
+            return res.status(500).json({'message' : `Error retrieving summary of comments at ID ${seriesID} during database operation`})
         }
         res.status(200).json(results)
     })
@@ -29,7 +28,7 @@ exports.getPodcastComments = async (req, res) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
-            res.status(500).json({'message' : `Error retrieving summary of podcast comments at ID ${podcastID} during database operation`})
+            return res.status(500).json({'message' : `Error retrieving summary of podcast comments at ID ${podcastID} during database operation`})
         }
         res.status(200).json(results)
     })

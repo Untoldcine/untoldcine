@@ -1,4 +1,3 @@
-const mysql = require('mysql')
 const connectDB = require('./connectDB')
 
 exports.getSummary = async (_req, res) => {
