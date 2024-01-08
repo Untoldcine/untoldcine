@@ -17,3 +17,20 @@ exports.getSeriesComments = async (req, res) => {
         res.status(200).json(results)
     })
 }
+
+exports.getPodcastComments = async (req, res) => {
+    const {podcastID} = req.params;
+    if (!podcastID) {
+        res.status(400).json({'message': 'Missing podcast ID to retrieve comments'})
+    }
+    const connection = connectDB();
+    const query = 'SELECT podcast_comments.ID, podcast_comments.content, podcast_comments.date, podcast_comments.parent_id, podcast_comments.user_id, users.nickname FROM podcast_comments JOIN users on podcast_comments.user_id = users.ID WHERE podcast_comments.podcast_id = ?'
+    connection.query(query, podcastID, (queryError, results) => {
+        connection.end();
+        if (queryError){
+            console.error('Error ' + queryError);   
+            res.status(500).json({'message' : `Error retrieving summary of podcast comments at ID ${podcastID} during database operation`})
+        }
+        res.status(200).json(results)
+    })
+}

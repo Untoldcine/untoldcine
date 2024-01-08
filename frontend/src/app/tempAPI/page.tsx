@@ -3,6 +3,7 @@ import axios from 'axios'
 import './tempstyles.css'
 import { useState} from 'react'
 import Card from "./card"
+import Podcasts from "./podcasts"
 
 interface Show {
     ID: number,
@@ -17,9 +18,6 @@ interface Podcast {
     ID: number,
     name: string,
     media_type: string,
-    episode: string,
-    rating: string | null,
-    genre: string | null
 }
 
 const Page = () => {
@@ -50,8 +48,13 @@ const Page = () => {
     }
 
     const triggerDeleteUser = async () => {
+        if (!removeUserID) {
+            return
+        }
         try {
             const res = await axios.post(`http://localhost:3001/api/user/delete/${removeUserID}`)
+            console.log(res.data);
+            
         }
         catch (err) {
             console.error(`Error attempting to delete user at id ${removeUserID}: ${err}`);
@@ -75,17 +78,13 @@ const Page = () => {
     const getPodcastData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/podcast/summary`)
-            const {results} = res.data
-            console.log(results);
-            
+            const {results} = res.data            
             setPodcastData(results)                        
         }
         catch (err) {
             console.error(`Error attempting to retrieve podcast data: ${err}`);
         }
     }
-
-
 
     return (
         <>
@@ -101,11 +100,9 @@ const Page = () => {
                     return <Card key = {show.ID} content = {show}/>
                 })}
             </div>
-            <div className='container'>
+            <div className='container'>     
                 {podcastData.length > 0 && podcastData.map((podcast) => {
-                    return <div key = {podcast.ID} className='block'>
-                        <p>PODCASTS{podcast.name}</p>
-                    </div>
+                    return <Podcasts key = {podcast.ID} content = {podcast}/>
                 })}
             </div>
         </>

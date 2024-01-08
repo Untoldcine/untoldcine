@@ -67,7 +67,7 @@ const Card:React.FC<CardProps> = ({content}) => {
         <p>{series_type}</p>
         {rating ? <p>{showPositives}% of people liked this!</p> : null }
         {genres ? <p>{genreArray}</p> : null}
-        <button onClick = {() => getDeeperSeries(ID)}>Play Now</button>
+        <button onClick = {() => getDeeperSeries(ID)}>See More</button>
     </div>
     {seriesDetails ? <Detailed content = {seriesDetails}/> : null}
     {videoDetails.length > 0 ? videoDetails.map((video) => {
