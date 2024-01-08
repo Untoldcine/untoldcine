@@ -38,7 +38,6 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
     const [submittedFeedback, setSubmittedFeedback] = useState<Boolean>(false)
     const [altDetails, setAltDetails] = useState<Boolean>(false)
 
-    // console.log(created);
     const dateString = new Date(created)
     const year = dateString.getFullYear()
 
@@ -82,6 +81,7 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
         try {
             const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${ID}`)
             setComments(res.data)
+            
         }
         catch (err) {
             console.error(`Error attempting to retrieve comments data: ${err}`);
@@ -100,6 +100,14 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             .catch((err) => {
                 console.error(err);
             })
+    }
+
+    const parseCommentRating = (obj: string) => {
+        if (!obj) {
+            return 0
+        }
+        const {up, down} = JSON.parse(obj)
+        return up - down
     }
 
     return (
@@ -140,6 +148,15 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
                         <div className='block'>
                             <p>{comment.nickname}</p>
                             <p>{comment.content}</p>
+                            <p>Overall comment score: {parseCommentRating(comment.votes)}</p>
+                            <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
+                            {/* <form className='block'>
+                                <p>Rate this comment</p>
+                                <button name='like'>Like</button>
+                                <br/>
+                                <button name='dislike'>Dislike</button>
+                                </form> */}
+                            <button>Reply</button>
                         </div>)
                 }) : null}
             </div>

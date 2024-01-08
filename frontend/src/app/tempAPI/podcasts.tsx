@@ -68,6 +68,14 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
         }
     }
 
+    const parseCommentRating = (obj: string) => {
+        if (!obj) {
+            return 0
+        }
+        const {up, down} = JSON.parse(obj)
+        return up - down
+    }
+
     return (
         <div className='block'>
             <p>PODCASTS = {name}</p>
@@ -78,12 +86,15 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
                     <p>{podcastDetails.rating}</p>
                     <p>{podcastDetails.genre}</p>
                     <p>{podcastDetails.episode}</p>
-                    <button>Play Episode</button>
+                    <button disabled>Play Episode</button>
+                    <br></br>
                     <button onClick = {() => getPodcastComments()}>See Comments</button>
                     {podcastComments.length > 0 ? podcastComments.map((comment) => {
                         return <div className = "block">
                             <p>{comment.nickname}</p>
                             <p>{comment.content}</p>
+                            <p>Overall comment score: {parseCommentRating(comment.votes)}</p>
+                            <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
                         </div>
                     }): null}
                 </div>}
