@@ -91,11 +91,11 @@ const Page = () => {
         <>
             <div className='container'>This page is for API testing
             <Login/>
-            <button className ="inputs"onClick={() => triggerDeleteUser()}>Remove a user at this id</button>
-            <button className ="inputs"onClick={() => createStaticUser()}>Create a new user</button>
+            <button className ="inputs" onClick={() => createStaticUser()}>Create a new user</button>
+            <button className ="inputs" onClick={() => triggerDeleteUser()}>Remove a user at this id</button>
             <input value = {removeUserID} onChange = {(e) => handleUserIDChange(e)} className = "inputs"></input>
-            <button className ="inputs"onClick={() => getPodcastData()}>Get podcast data</button>
-            <button className ="inputs"onClick={() => getSeriesData()}>Get series data</button>
+            <button className ="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
+            <button className ="inputs" onClick={() => getSeriesData()}>Get series data</button>
             </div>
             <div className='container'>
                 {seriesData.length > 0 && seriesData.map((show) => {

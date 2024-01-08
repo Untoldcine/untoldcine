@@ -32,6 +32,7 @@ const Card:React.FC<CardProps> = ({content}) => {
 
   let showPositives
   let genreArray
+  let formattedLength
 
   //parse and then calculate viewer ratings
   if (rating) {
@@ -42,6 +43,33 @@ const Card:React.FC<CardProps> = ({content}) => {
   if (genres) {
     const genre = JSON.parse(genres)
     genreArray = genre.join(' ')
+  }
+
+  //format length which comes as total minutes. If <60min, display just the length and handle down in the markup itself
+  if (length && length > 60) {
+      const hour = Math.floor(length / 60)
+      const minutes = length % 60
+      formattedLength = `${hour} h ${minutes} min`
+  }
+
+  //currently uses 'userID' to flag which user is saving which piece of content. However this can introduce security risks
+  //Need a more sophisticated way to save it
+  const addToWatchList = async () => {
+    axios.post('http://localhost:3001/api/watchlist/add', {
+      user_id: 2,
+      content_type: series_type,
+      content_id: ID
+    })
+    .then((res) => {
+      if (res.data === 'OK') {
+        console.log('added to watchlist successfully');
+        
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      
+    })
   }
 
   const getDeeperSeries = async (seriesID: number) => {
@@ -67,7 +95,10 @@ const Card:React.FC<CardProps> = ({content}) => {
         <p>{series_type}</p>
         {rating ? <p>{showPositives}% of people liked this!</p> : null }
         {genres ? <p>{genreArray}</p> : null}
+        {length && length > 60 ? <p>{formattedLength}</p> : <p>{length} min</p>}
         <button onClick = {() => getDeeperSeries(ID)}>See More</button>
+        <br></br>
+        <button onClick = {() => addToWatchList()}>Add to Watchlist</button>
     </div>
     {seriesDetails ? <Detailed content = {seriesDetails}/> : null}
     {videoDetails.length > 0 ? videoDetails.map((video) => {
