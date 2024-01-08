@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface Series {
     ID: number,
@@ -32,12 +32,19 @@ interface Comment {
 
 const Detailed: React.FC<DetailedProps> = ({ content }) => {
     const { ID, series_name, series_type, genres, rating, length, status, seasons, description, episodes, created } = content
-    const { main } = JSON.parse(description);
+    const { main, advisory, starring, producers, directors } = JSON.parse(description);
     const [options, setOptions] = useState<string[]>([]);
     const [comments, setComments] = useState<Comment[]>([])
+    const [submittedFeedback, setSubmittedFeedback] = useState<Boolean>(false)
+    const [altDetails, setAltDetails] = useState<Boolean>(false)
+
+    // console.log(created);
+    const dateString = new Date(created)
+    const year = dateString.getFullYear()
 
     let showPositives
     let genreArray
+    let formattedLength
 
     //parse and then calculate viewer ratings
     if (rating) {
@@ -48,6 +55,18 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
     if (genres) {
         const genre = JSON.parse(genres)
         genreArray = genre.join(' ')
+    }
+
+    if (length) {
+        if (length > 60) {
+            const hour = Math.floor(length / 60)
+            const minutes = length % 60
+            formattedLength = `${hour} h ${minutes} min`
+        }
+        else {
+            formattedLength = `${length} min`
+        }
+
     }
 
     //loop through and create as many options as there are seasons
@@ -69,6 +88,19 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
         }
     }
 
+    //currently hard coded to use :userID = 2, but will change that to handle the logged in user's identifier
+    //submitter.name catches whether choice was upvote or downvote and posts to DB
+    const handleUserFeedback = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const submitter = (e.nativeEvent as any).submitter as HTMLInputElement;
+        axios.post(`http://localhost:3001/api/series/rating/2/${ID}/${submitter.name}`)
+            .then((res) => {
+                setSubmittedFeedback(true)
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+    }
 
     return (
         <div className='block'>
@@ -84,8 +116,24 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             <p>{main}</p>
             <p>{showPositives}% of people like this!</p>
             <p>{genreArray}</p>
-            <p>Placeholder for length</p>
+            {series_type === 'movie' ? <p>{formattedLength}</p> : null}
+            {series_type === 'tv' ? <p>{year}</p> : null}
+            {series_type === 'tv' ? <p>{episodes} Episodes</p> : null}
+            {submittedFeedback ?
+                <div className='block'>
+                    <p>Thank you for your feedback!</p>
+                </div> :
+                <form className='block' onSubmit={(e) => handleUserFeedback(e)}>
+                    <button name='like'>Like</button>
+                    <br></br>
+                    <button name='dislike'>Dislike</button>
+                </form>}
+            <button disabled>Play Now</button>
+            <p>Placeholder: Which current episode they're on</p>
+            <br></br>
             <button onClick={() => getComments()}>See 'Discussion' or comments related to series</button>
+            <br></br>
+            <button onClick={() => setAltDetails(!altDetails)}>See 'Details' or comments related to series</button>
             <div className='block'>
                 {comments ? comments.map((comment) => {
                     return (
@@ -95,6 +143,12 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
                         </div>)
                 }) : null}
             </div>
+            {altDetails ? <div className='block'>
+                <p>Advisory Warning: {advisory}</p>
+                <p>Directors: {directors}</p>
+                <p>Producers: {producers}</p>
+                <p>Starring: {starring}</p>
+            </div> : null}
         </div>
     )
 }
