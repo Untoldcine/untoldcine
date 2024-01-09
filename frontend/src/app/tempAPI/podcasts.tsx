@@ -76,10 +76,30 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
         return up - down
     }
 
+    const addToWatchList = async () => {
+        axios.post('http://localhost:3001/api/watchlist/add', {
+          user_id: 2,
+          content_type: 'podcast',
+          content_id: ID
+        })
+          .then((res) => {
+            if (res.data === 'OK') {
+              console.log('added to watchlist successfully');
+    
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+    
+          })
+      }
+
     return (
         <div className='block'>
             <p>PODCASTS = {name}</p>
             <button onClick={() => getDeeperPodcastData()}>See More</button>
+            <br></br>
+            <button onClick={() => addToWatchList()}>Add to Watchlist</button>
             {podcastDetails &&
                 <div className='block'>
                     <h1>{podcastDetails.name}</h1>

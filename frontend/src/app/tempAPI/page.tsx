@@ -21,11 +21,19 @@ interface Podcast {
     media_type: string,
 }
 
+interface BTS {
+    ID: number,
+    series_name: string
+}
+
 const Page = () => {
 
     const [removeUserID, setRemoveUserID] = useState('')
     const [seriesData, setSeriesData] = useState<Show[]|[]>([])
     const [podcastData, setPodcastData] = useState<Podcast[]|[]>([])
+    const [preProdType, setPreProdType] = useState<any>()
+    const [prodType, setProdType] = useState<any>()
+    const [postProdType, setPostProdType] = useState<any>()
 
     const handleUserIDChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         setRemoveUserID(e.target.value)        
@@ -87,6 +95,20 @@ const Page = () => {
         }
     }
 
+    const getBTSData = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/series/summaryBTS`)
+            const {pre, prod, post} = res.data                 
+            setPreProdType(pre)      
+            setProdType(prod)      
+            setPostProdType(post)                            
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve podcast data: ${err}`);
+        }
+    }
+
+
     return (
         <>
             <div className='container'>This page is for API testing
@@ -96,6 +118,7 @@ const Page = () => {
             <input value = {removeUserID} onChange = {(e) => handleUserIDChange(e)} className = "inputs"></input>
             <button className ="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
             <button className ="inputs" onClick={() => getSeriesData()}>Get series data</button>
+            <button className ="inputs" onClick={() => getBTSData()}>Get BTS data</button>
             </div>
             <div className='container'>
                 {seriesData.length > 0 && seriesData.map((show) => {
@@ -106,6 +129,29 @@ const Page = () => {
                 {podcastData.length > 0 && podcastData.map((podcast) => {
                     return <Podcasts key = {podcast.ID} content = {podcast}/>
                 })}
+            </div>
+            <div className='container'>
+                <h4>Pre-production</h4>
+                    {preProdType ? preProdType.map((content:BTS) => {
+                        return <div key = {content.ID} className = "video-block">
+                            <p>{content.series_name}</p>
+                            <button>See More</button>
+                        </div>
+                    }):null}
+                <h4>Production</h4>
+                {prodType ? prodType.map((content:BTS) => {
+                        return <div key = {content.ID} className = "video-block">
+                            <p>{content.series_name}</p>
+                            <button>See More</button>
+                        </div>
+                    }):null}
+                <h4>Post-production</h4>
+                {postProdType ? postProdType.map((content:BTS) => {
+                        return <div key = {content.ID} className = "video-block">
+                            <p>{content.series_name}</p>
+                            <button>See More</button>
+                        </div>
+                    }):null}
             </div>
         </>
     )

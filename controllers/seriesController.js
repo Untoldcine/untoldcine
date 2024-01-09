@@ -14,6 +14,33 @@ exports.getSummary = async (_req, res) => {
     })
 }
 
+
+exports.getSummaryBTS = async (req, res) => {
+    const connection = connectDB();
+    const query = 'SELECT series_name, ID, status FROM series'
+    connection.query(query, (queryError, results) => {
+        connection.end()
+        if (queryError){
+            console.error('Error ' + queryError);   
+            res.status(500).json({'message' : 'Error retrieving summary of BTS data during database operation'})
+        }
+        const pre = []
+        const prod = []
+        const post = []
+        results.forEach((series) => {
+            if (series.status === 'pre') {
+                pre.push(series)
+            }
+            if (series.status === 'prod') {
+                prod.push(series)
+            }if (series.status === 'post') {
+                post.push(series)
+            }
+        })
+        res.status(200).json({"pre": pre, "prod":prod, "post":post})
+    })
+}
+
 //This can be refactored for sure. Once we cache the initial data from 'getSummary', we don't need to query as many things once we retrieve the specific series data
 //If the difference in space is negligible, then we can just select * from series in the initial getSummary and as a result, only need to query videos for this function
 
