@@ -1,5 +1,6 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
+import CommentComponent from './comment'
 
 interface Series {
     ID: number,
@@ -27,14 +28,22 @@ interface Comment {
     series_id: number,
     nickname: string,
     user_id: number,
-    votes: string
+    votes: string,
+    replies: Comment[]
+}
+
+//DB sends an object with all comments associated with the series and all top-level comments with no parent
+interface DBCommentObj {
+    topLevel: Comment[] | null,
+    allComments: Comment[] | null
 }
 
 const Detailed: React.FC<DetailedProps> = ({ content }) => {
     const { ID, series_name, series_type, genres, rating, length, status, seasons, description, episodes, created } = content
     const { main, advisory, starring, producers, directors } = JSON.parse(description);
+
     const [options, setOptions] = useState<string[]>([]);
-    const [comments, setComments] = useState<Comment[]>([])
+    const [comments, setComments] = useState<DBCommentObj | null>(null)
     const [submittedFeedback, setSubmittedFeedback] = useState<Boolean>(false)
     const [altDetails, setAltDetails] = useState<Boolean>(false)
 
@@ -55,7 +64,7 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
         const genre = JSON.parse(genres)
         genreArray = genre.join(' ')
     }
-
+    //parse and display length of content
     if (length) {
         if (length > 60) {
             const hour = Math.floor(length / 60)
@@ -79,8 +88,10 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
 
     const getComments = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${ID}`)
+            const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${ID}`)            
             setComments(res.data)
+            console.log(res.data);
+            
             
         }
         catch (err) {
@@ -100,14 +111,6 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             .catch((err) => {
                 console.error(err);
             })
-    }
-
-    const parseCommentRating = (obj: string) => {
-        if (!obj) {
-            return 0
-        }
-        const {up, down} = JSON.parse(obj)
-        return up - down
     }
 
     return (
@@ -143,22 +146,9 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             <br></br>
             <button onClick={() => setAltDetails(!altDetails)}>See 'Details' or comments related to series</button>
             <div className='block'>
-                {comments ? comments.map((comment) => {
-                    return (
-                        <div className='block'>
-                            <p>{comment.nickname}</p>
-                            <p>{comment.content}</p>
-                            <p>Overall comment score: {parseCommentRating(comment.votes)}</p>
-                            <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
-                            {/* <form className='block'>
-                                <p>Rate this comment</p>
-                                <button name='like'>Like</button>
-                                <br/>
-                                <button name='dislike'>Dislike</button>
-                                </form> */}
-                            <button>Reply</button>
-                        </div>)
-                }) : null}
+                {comments && comments.topLevel?.map((comment) => {
+                    return <CommentComponent post = {comment}/>
+                })}
             </div>
             {altDetails ? <div className='block'>
                 <p>Advisory Warning: {advisory}</p>

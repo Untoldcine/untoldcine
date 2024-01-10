@@ -107,7 +107,24 @@ const Page = () => {
             console.error(`Error attempting to retrieve podcast data: ${err}`);
         }
     }
-
+   
+    const addToWatchList = async (ID:number) => {
+        axios.post('http://localhost:3001/api/watchlist/add', {
+          user_id: 2,
+          content_type: 'BTS',
+          content_id: ID
+        })
+          .then((res) => {
+            if (res.data === 'OK') {
+              console.log('added to watchlist successfully');
+    
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+      }
+    
 
     return (
         <>
@@ -135,21 +152,27 @@ const Page = () => {
                     {preProdType ? preProdType.map((content:BTS) => {
                         return <div key = {content.ID} className = "video-block">
                             <p>{content.series_name}</p>
-                            <button>See More</button>
+                            <button>See More, will take to the respective series</button>
+                            <br/>
+                            <button onClick = {()=> addToWatchList(content.ID)}>Add to Watchlist</button>
                         </div>
                     }):null}
                 <h4>Production</h4>
                 {prodType ? prodType.map((content:BTS) => {
                         return <div key = {content.ID} className = "video-block">
                             <p>{content.series_name}</p>
-                            <button>See More</button>
+                            <button>See More, will take to the respective series</button>
+                            <br/>
+                            <button onClick = {()=> addToWatchList(content.ID)}>Add to Watchlist</button>
                         </div>
                     }):null}
                 <h4>Post-production</h4>
                 {postProdType ? postProdType.map((content:BTS) => {
                         return <div key = {content.ID} className = "video-block">
                             <p>{content.series_name}</p>
-                            <button>See More</button>
+                            <button>See More, will take to the respective series</button>
+                            <br/>
+                            <button onClick = {()=> addToWatchList(content.ID)}>Add to Watchlist</button>
                         </div>
                     }):null}
             </div>

@@ -13,7 +13,28 @@ exports.getSeriesComments = async (req, res) => {
             console.error('Error ' + queryError);   
             return res.status(500).json({'message' : `Error retrieving summary of comments at ID ${seriesID} during database operation`})
         }
-        res.status(200).json(results)
+
+        //manipulate data to create parent-child structure for client side
+        const commentMap = {}
+        const topLevelComments = []
+
+        //create a map for each comment for faster data access
+        results.forEach((comment) => {
+            commentMap[comment.ID] = comment;
+            comment.replies = [];
+        })
+
+        //if parent_id exists, append to parent comment replies array
+        results.forEach((comment) => {
+            if (comment.parent_id !== null) {
+                parentComment = commentMap[comment.parent_id]
+                parentComment.replies.push(comment)
+            }
+            else {
+                topLevelComments.push(comment)
+            }
+        })
+        res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
     })
 }
 
