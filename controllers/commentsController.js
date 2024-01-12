@@ -51,20 +51,44 @@ exports.getPodcastComments = async (req, res) => {
             console.error('Error ' + queryError);   
             return res.status(500).json({'message' : `Error retrieving summary of podcast comments at ID ${podcastID} during database operation`})
         }
-        res.status(200).json(results)
+        const commentMap = {}
+        const topLevelComments = []
+
+        results.forEach((comment) => {
+            commentMap[comment.ID] = comment;
+            comment.replies = [];
+        })
+
+        results.forEach((comment) => {
+            if (comment.parent_id !== null) {
+                parentComment = commentMap[comment.parent_id]
+                parentComment.replies.push(comment)
+            }
+            else {
+                topLevelComments.push(comment)
+            }
+        })
+        res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
     })
 }
 
 exports.newComment = async (req, res) => {
     const {userID} = req.params
-    const {content, table, series_id} = req.body;
-    if (!userID || !content || !series_id) {
+    const {content, table_name, ID} = req.body;
+    if (!userID || !content || !ID || !table_name) {
         return res.status(400).json({'message': 'Missing data to process new POST of comment'})
+    }
+    let ID_Type;
+    if (table_name === 'comments') {
+        ID_Type = 'series_id'
+    }
+    if (table_name === 'podcast_comments') {
+        ID_Type = 'podcast_id'
     }
 
     const connection = connectDB();
-    const query = `INSERT INTO ${table} (user_id, content, series_id) VALUES (?, ?, ?)`
-    connection.query(query, [userID, content, series_id], (queryError, results) => {
+    const query = `INSERT INTO ${table_name} (user_id, content, ${ID_Type}) VALUES (?, ?, ?)`
+    connection.query(query, [userID, content, ID], (queryError, results) => {
         connection.end()
         if (queryError){
             console.error('Error ' + queryError);   

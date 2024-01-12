@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import CommentComponent from './comment'
 
 
 interface Podcast {
@@ -26,10 +27,17 @@ interface Comment {
     content: string,
     date: string,
     parent_id: number | null,
-    podcast_id: number,
+    series_id: number | null,
     nickname: string,
     user_id: number,
-    votes: string
+    votes: string,
+    replies: Comment[] | [],
+    podcast_id: number | null
+}
+
+interface DBCommentObj {
+    topLevel: Comment[] | null,
+    allComments: Comment[] | null
 }
 
 const Podcasts: React.FC<PodcastProps> = ({ content }) => {
@@ -37,15 +45,17 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
     const { ID, name } = content
 
     const [podcastDetails, setPodcastDetails] = useState<DeeperPodcast | null>(null)
-    const [podcastComments, setPodcastComments] = useState<Comment[]|[]>([])
-    const [getRelatedContent, setGetRelatedContent] = useState<Boolean>(false)
+    const [podcastComments, setPodcastComments] = useState<DBCommentObj | null>(null)
+    // const [getRelatedContent, setGetRelatedContent] = useState<Boolean>(false)
+    const [newCommentValue, setNewCommentValue] = useState<string>('')
+
 
     const getDeeperPodcastData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/podcast/specific/${ID}`)
             const { results } = res.data
             setPodcastDetails(results[0])
-            setGetRelatedContent(true)
+            // setGetRelatedContent(true)
         }
         catch (err) {
             console.error(`Error attempting to get deeper series data at ID ${ID}: ${err}`);
@@ -93,13 +103,36 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
     
           })
       }
+    
+      const postNewComment = async (e:React.FormEvent) => {
+        e.preventDefault()
+        const commentObj = {
+            content: newCommentValue,
+            ID,
+            table_name: 'podcast_comments'
+        }
+        try {
+            const res = await axios.post('http://localhost:3001/api/comments/newComment/16', commentObj)    //16 is placeholder for the :userID 
+            if (res.status === 200) {
+                setNewCommentValue('')
+            }
+            
+        }
+        catch (err) {
+            console.error(`Error attempting to POST new comment data: ${err}`);
+        }
+    }
 
     return (
         <div className='block'>
             <p>PODCASTS = {name}</p>
             <button onClick={() => getDeeperPodcastData()}>See More</button>
             <br></br>
-            <button onClick={() => addToWatchList()}>Add to Watchlist</button>
+            {/* <button onClick={() => addToWatchList()}>Add to Watchlist</button> */}
+            <form className='block' onSubmit = {(e) => postNewComment(e)}>
+                <input value = {newCommentValue} onChange = {(e) => setNewCommentValue(e.target.value)}></input>
+                <button>Submit Comment</button>
+            </form>
             {podcastDetails &&
                 <div className='block'>
                     <h1>{podcastDetails.name}</h1>
@@ -109,14 +142,9 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
                     <button disabled>Play Episode</button>
                     <br></br>
                     <button onClick = {() => getPodcastComments()}>See Comments</button>
-                    {podcastComments.length > 0 ? podcastComments.map((comment) => {
-                        return <div className = "block">
-                            <p>{comment.nickname}</p>
-                            <p>{comment.content}</p>
-                            <p>Overall comment score: {parseCommentRating(comment.votes)}</p>
-                            <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
-                        </div>
-                    }): null}
+                    {podcastComments && podcastComments.topLevel?.map((comment) => {
+                       return <CommentComponent key = {comment.ID} post = {comment}/>
+                    })}
                 </div>}
             
         </div>

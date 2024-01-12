@@ -113,16 +113,13 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             })
     }
 
-    const handleNewComment = async (e: any) => {
-        setNewCommentValue(e.target.value)
-    }
 
-    const postNewReply = async (e:React.FormEvent) => {
+    const postNewComment = async (e:React.FormEvent) => {
         e.preventDefault()
         const commentObj = {
             content: newCommentValue,
-            series_id: ID,
-            table: 'comments'
+            ID,
+            table_name: 'comments'
         }
         try {
             const res = await axios.post('http://localhost:3001/api/comments/newComment/16', commentObj)    //16 is placeholder for the :userID 
@@ -168,8 +165,8 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             <button onClick={() => getComments()}>See 'Discussion' or comments related to series</button>
             <br></br>
             <button onClick={() => setAltDetails(!altDetails)}>See 'Details' or comments related to series</button>
-            <form className='block' onSubmit = {(e) => postNewReply(e)}>
-                <input value = {newCommentValue} onChange = {(e) => handleNewComment(e)}></input>
+            <form className='block' onSubmit = {(e) => postNewComment(e)}>
+                <input value = {newCommentValue} onChange = {(e) => setNewCommentValue(e.target.value)}></input>
                 <button>Submit Comment</button>
             </form>
             <div className='block'>
