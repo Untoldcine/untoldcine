@@ -6,7 +6,7 @@ exports.getSeriesComments = async (req, res) => {
         res.status(400).json({'message': 'Missing series ID to retrieve comments'})
     }
     const connection = connectDB();
-    const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.votes, comments.user_id, users.nickname FROM comments JOIN users on comments.user_id = users.ID WHERE comments.series_id = ?'
+    const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.votes, comments.user_id, comments.series_id, users.nickname FROM comments JOIN users on comments.user_id = users.ID WHERE comments.series_id = ?'
     connection.query(query, seriesID, (queryError, results) => {
         connection.end();
         if (queryError){
@@ -54,3 +54,23 @@ exports.getPodcastComments = async (req, res) => {
         res.status(200).json(results)
     })
 }
+
+exports.replyComment = async (req, res) => {
+    const {userID} = req.params
+    const {content, parent_id, table, series_id} = req.body;
+    if (!userID || !content || !parent_id || !series_id) {
+        return res.status(400).json({'message': 'Missing data to fulfil POST of reply'})
+    }
+    const connection = connectDB();
+    const query = `INSERT INTO ${table} (user_id, content, series_id, parent_id) VALUES (?, ?, ?, ?)`
+    connection.query(query, [userID, content, series_id, parent_id], (queryError, results) => {
+        connection.end()
+        if (queryError){
+            console.error('Error ' + queryError);   
+            return res.status(500).json({'message' : `Error at POST to new reply to a comment during database operation`})
+        }
+        res.sendStatus(200)
+    })
+}
+
+//ok now post to DB, send back that comment as above format, and append it to the parent comment's replies array

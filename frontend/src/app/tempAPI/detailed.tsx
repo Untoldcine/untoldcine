@@ -25,14 +25,16 @@ interface Comment {
     content: string,
     date: string,
     parent_id: number | null,
-    series_id: number,
+    series_id: number | null,
     nickname: string,
     user_id: number,
     votes: string,
-    replies: Comment[]
+    replies: Comment[] | [],
+    podcast_id: number | null
 }
 
-//DB sends an object with all comments associated with the series and all top-level comments with no parent
+
+//DB sends an object with all comments associated with the series and all top-level comments with no parent comment
 interface DBCommentObj {
     topLevel: Comment[] | null,
     allComments: Comment[] | null
@@ -86,13 +88,14 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
         setOptions(newOptions);
     }, [seasons]);
 
+    useEffect(() => {
+
+    }, [])
+
     const getComments = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${ID}`)            
             setComments(res.data)
-            console.log(res.data);
-            
-            
         }
         catch (err) {
             console.error(`Error attempting to retrieve comments data: ${err}`);
@@ -147,7 +150,7 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             <button onClick={() => setAltDetails(!altDetails)}>See 'Details' or comments related to series</button>
             <div className='block'>
                 {comments && comments.topLevel?.map((comment) => {
-                    return <CommentComponent post = {comment}/>
+                    return <CommentComponent key = {comment.ID} post = {comment}/>
                 })}
             </div>
             {altDetails ? <div className='block'>
