@@ -48,6 +48,7 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
     const [comments, setComments] = useState<DBCommentObj | null>(null)
     const [submittedFeedback, setSubmittedFeedback] = useState<Boolean>(false)
     const [altDetails, setAltDetails] = useState<Boolean>(false)
+    const [newCommentValue, setNewCommentValue] = useState<string>('')
 
     const dateString = new Date(created)
     const year = dateString.getFullYear()
@@ -88,10 +89,6 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
         setOptions(newOptions);
     }, [seasons]);
 
-    useEffect(() => {
-
-    }, [])
-
     const getComments = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${ID}`)            
@@ -114,6 +111,29 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             .catch((err) => {
                 console.error(err);
             })
+    }
+
+    const handleNewComment = async (e: any) => {
+        setNewCommentValue(e.target.value)
+    }
+
+    const postNewReply = async (e:React.FormEvent) => {
+        e.preventDefault()
+        const commentObj = {
+            content: newCommentValue,
+            series_id: ID,
+            table: 'comments'
+        }
+        try {
+            const res = await axios.post('http://localhost:3001/api/comments/newComment/16', commentObj)    //16 is placeholder for the :userID 
+            if (res.status === 200) {
+                setNewCommentValue('')
+            }
+            
+        }
+        catch (err) {
+            console.error(`Error attempting to POST new comment data: ${err}`);
+        }
     }
 
     return (
@@ -148,6 +168,10 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             <button onClick={() => getComments()}>See 'Discussion' or comments related to series</button>
             <br></br>
             <button onClick={() => setAltDetails(!altDetails)}>See 'Details' or comments related to series</button>
+            <form className='block' onSubmit = {(e) => postNewReply(e)}>
+                <input value = {newCommentValue} onChange = {(e) => handleNewComment(e)}></input>
+                <button>Submit Comment</button>
+            </form>
             <div className='block'>
                 {comments && comments.topLevel?.map((comment) => {
                     return <CommentComponent key = {comment.ID} post = {comment}/>
