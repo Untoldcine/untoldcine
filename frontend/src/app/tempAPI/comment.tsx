@@ -12,7 +12,8 @@ interface Comment {
     votes: string,
     replies: Comment[] | [],
     podcast_id: number | null,
-    btsflag: boolean | null
+    btsflag: boolean | null,
+    edited: boolean
 }
 
 type CommentProp = {
@@ -21,8 +22,11 @@ type CommentProp = {
 
 //Checks if comments contain replies and recursively renders them
 const Comment: React.FC<CommentProp> = ({ post }) => {        
-    const { ID, nickname, content, replies, votes, series_id, podcast_id, btsflag } = post
+    const { ID, nickname, content, replies, votes, series_id, podcast_id, btsflag, edited } = post      
+      
     const [replyValue, setReplyValue] = useState<string>('')
+    const [toggleEditComment, setToggleEditComment]  = useState<boolean>(false)
+    const [editedCommentValue, setEditedCommentValue]  = useState<string>(content)
     const userID = 16 //hard coded to the comment_tester User
     let table:string;
 
@@ -92,11 +96,37 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
         }
     }
 
+    const handleEditComment = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        const commentObj = {
+            ID,
+            table,
+            content: editedCommentValue
+        }
+        try {
+            const res = await axios.post('http://localhost:3001/api/comments/editComment/', commentObj)
+            if (res.status === 200) {
+                setToggleEditComment(false)
+            }             
+        }
+        catch (err) {
+            console.error(`Error attempting to edit and post new comment content: ${err}`);
+        }
+    }
+
     return (
         <>
             <div className='block'>
                 <p>{nickname}</p>
-                <p>{content}</p>
+                <p>{content}</p> 
+                <button onClick = {() => setToggleEditComment(!toggleEditComment)}>Edit Comment</button>
+                {toggleEditComment ? 
+                <form className='block' onSubmit = {(e) => handleEditComment(e)}>
+                    <input value = {editedCommentValue} onChange = {(e) => setEditedCommentValue(e.target.value)}/>
+                    <button>Save Edit</button>
+                </form>
+                : null}
+                {edited ? <p>Edited</p>: null}
                 <p>Overall comment score: {parseCommentRating(votes)}</p>
                 <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
                 <button onClick = {() => handleDeleteComment()}>DELETE THIS COMMENT</button>

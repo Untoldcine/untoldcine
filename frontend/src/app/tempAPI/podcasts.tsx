@@ -33,6 +33,8 @@ interface Comment {
     votes: string,
     replies: Comment[] | [],
     podcast_id: number | null
+    btsflag: boolean | null,
+    edited: boolean
 }
 
 interface DBCommentObj {

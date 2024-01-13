@@ -6,7 +6,7 @@ exports.getSeriesComments = async (req, res) => {
         res.status(400).json({'message': 'Missing series ID to retrieve comments'})
     }
     const connection = connectDB();
-    const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.votes, comments.user_id, comments.series_id, users.nickname FROM comments JOIN users on comments.user_id = users.ID WHERE comments.series_id = ? AND comments.deleted = FALSE'
+    const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.votes, comments.user_id, comments.series_id, comments.edited, users.nickname FROM comments JOIN users on comments.user_id = users.ID WHERE comments.series_id = ? AND comments.deleted = FALSE'
     connection.query(query, seriesID, (queryError, results) => {
         connection.end();
         if (queryError){
@@ -44,7 +44,7 @@ exports.getPodcastComments = async (req, res) => {
         res.status(400).json({'message': 'Missing podcast ID to retrieve comments'})
     }
     const connection = connectDB();
-    const query = 'SELECT podcast_comments.ID, podcast_comments.content, podcast_comments.date, podcast_comments.votes, podcast_comments.parent_id, podcast_comments.user_id, users.nickname FROM podcast_comments JOIN users on podcast_comments.user_id = users.ID WHERE podcast_comments.podcast_id = ?'
+    const query = 'SELECT podcast_comments.ID, podcast_comments.podcast_id, podcast_comments.content, podcast_comments.date, podcast_comments.votes, podcast_comments.parent_id, podcast_comments.user_id, podcast_comments.edited, users.nickname FROM podcast_comments JOIN users on podcast_comments.user_id = users.ID WHERE podcast_comments.podcast_id = ?'
     connection.query(query, podcastID, (queryError, results) => {
         connection.end();
         if (queryError){
@@ -78,7 +78,7 @@ exports.getBTSComments = async (req, res) => {
         res.status(400).json({'message': 'Missing series ID to retrieve comments for series BTS'})
     }
     const connection = connectDB();
-    const query = 'SELECT bts_comments.ID, bts_comments.content, bts_comments.date, bts_comments.votes, bts_comments.parent_id, bts_comments.user_id, bts_comments.series_id, bts_comments.btsflag, users.nickname FROM bts_comments JOIN users on bts_comments.user_id = users.ID WHERE bts_comments.series_id = ?'
+    const query = 'SELECT bts_comments.ID, bts_comments.content, bts_comments.date, bts_comments.votes, bts_comments.parent_id, bts_comments.user_id, bts_comments.series_id, bts_comments.btsflag, bts_comments.edited, users.nickname FROM bts_comments JOIN users on bts_comments.user_id = users.ID WHERE bts_comments.series_id = ?'
     connection.query(query, seriesID, (queryError, results) => {
         connection.end();
         if (queryError){
@@ -132,6 +132,24 @@ exports.newComment = async (req, res) => {
         })
     
 }
+
+exports.editComment = async (req, res) => {
+    const { ID, content, table } = req.body;
+    if (!ID|| !content || !table) {
+        return res.status(400).json({'message': 'Missing data to process POST of comment edit'})
+    }
+    const connection = connectDB();
+    const query = 'UPDATE ?? SET content = ?, edited = ? WHERE ID = ?';
+    connection.query(query, [table, content, 1,  ID], (queryError, _results) => {
+        connection.end();
+        if (queryError) {
+            console.error('Error ' + queryError);
+            return res.status(500).json({ 'message': `Error editing comment in table: ${table} at ID: ${ID} during database operation` });
+        }
+        res.sendStatus(200);
+    });
+};
+
 
 exports.replyComment = async (req, res) => {
     const {userID} = req.params
