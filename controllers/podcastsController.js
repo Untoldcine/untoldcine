@@ -13,12 +13,6 @@ exports.getSummary = async(_req, res) => {
     })
 }
 
-exports.getRelatedContent = async(req, res) => {
-    const {podcastID} = req.params;
-    const connection = connectDB();
-    // const query = 'SELECT podcasts.ID, podcasts.name, series.id FROM podcasts JOIN series ON podcasts.series_id WHERE '
-}
-
 exports.getSpecificPodcast = async (req, res) => {
     const {podcastID} = req.params;
     const connection = connectDB();

@@ -30,7 +30,8 @@ interface Comment {
     user_id: number,
     votes: string,
     replies: Comment[] | [],
-    podcast_id: number | null
+    podcast_id: number | null,
+    btsflag: boolean | null
 }
 
 

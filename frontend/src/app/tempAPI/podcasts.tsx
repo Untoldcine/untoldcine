@@ -46,7 +46,6 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
 
     const [podcastDetails, setPodcastDetails] = useState<DeeperPodcast | null>(null)
     const [podcastComments, setPodcastComments] = useState<DBCommentObj | null>(null)
-    // const [getRelatedContent, setGetRelatedContent] = useState<Boolean>(false)
     const [newCommentValue, setNewCommentValue] = useState<string>('')
 
 
@@ -55,19 +54,11 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
             const res = await axios.get(`http://localhost:3001/api/podcast/specific/${ID}`)
             const { results } = res.data
             setPodcastDetails(results[0])
-            // setGetRelatedContent(true)
         }
         catch (err) {
             console.error(`Error attempting to get deeper series data at ID ${ID}: ${err}`);
         }
     }
-
-    // useEffect(() => {
-    //     if (podcastComments) {
-    //         axios.get(`http://localhost:3001/api/podcast/specific/${ID}`)
-    //     }
-    // }, [podcastComments])
-
     const getPodcastComments = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/comments/getPodcastDiscussion/${ID}`)

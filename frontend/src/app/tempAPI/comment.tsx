@@ -11,7 +11,8 @@ interface Comment {
     user_id: number,
     votes: string,
     replies: Comment[] | [],
-    podcast_id: number | null
+    podcast_id: number | null,
+    btsflag: boolean | null
 }
 
 type CommentProp = {
@@ -19,13 +20,20 @@ type CommentProp = {
 }
 
 //Checks if comments contain replies and recursively renders them
-const Comment: React.FC<CommentProp> = ({ post }) => {    
-    const { ID, nickname, content, replies, votes, series_id, podcast_id } = post
+const Comment: React.FC<CommentProp> = ({ post }) => {        
+    const { ID, nickname, content, replies, votes, series_id, podcast_id, btsflag } = post
     const [replyValue, setReplyValue] = useState<string>('')
     const userID = 16 //hard coded to the comment_tester User
     let table:string;
-    if (series_id) {
+
+    if (series_id && !btsflag) {
         table = 'comments'
+    } 
+    if (series_id && btsflag) {
+        table = 'bts_comments'
+    }
+    if (podcast_id) {
+        table = 'podcast_comments'
     }
 
     const handleReplyValue = (e:any) => {

@@ -72,6 +72,40 @@ exports.getPodcastComments = async (req, res) => {
     })
 }
 
+exports.getBTSComments = async (req, res) => {
+    const {seriesID} = req.params;
+    if (!seriesID) {
+        res.status(400).json({'message': 'Missing series ID to retrieve comments for series BTS'})
+    }
+    const connection = connectDB();
+    const query = 'SELECT bts_comments.ID, bts_comments.content, bts_comments.date, bts_comments.votes, bts_comments.parent_id, bts_comments.user_id, bts_comments.series_id, bts_comments.btsflag, users.nickname FROM bts_comments JOIN users on bts_comments.user_id = users.ID WHERE bts_comments.series_id = ?'
+    connection.query(query, seriesID, (queryError, results) => {
+        connection.end();
+        if (queryError){
+            console.error('Error ' + queryError);   
+            return res.status(500).json({'message' : `Error retrieving summary of podcast comments at ID ${seriesID} during database operation`})
+        }
+        const commentMap = {}
+        const topLevelComments = []
+
+        results.forEach((comment) => {
+            commentMap[comment.ID] = comment;
+            comment.replies = [];
+        })
+
+        results.forEach((comment) => {
+            if (comment.parent_id !== null) {
+                parentComment = commentMap[comment.parent_id]
+                parentComment.replies.push(comment)
+            }
+            else {
+                topLevelComments.push(comment)
+            }
+        })
+        res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
+    })
+}
+
 exports.newComment = async (req, res) => {
     const {userID} = req.params
     const {content, table_name, ID} = req.body;
@@ -79,7 +113,7 @@ exports.newComment = async (req, res) => {
         return res.status(400).json({'message': 'Missing data to process new POST of comment'})
     }
     let ID_Type;
-    if (table_name === 'comments') {
+    if (table_name === 'comments' || table_name === 'bts_comments') {
         ID_Type = 'series_id'
     }
     if (table_name === 'podcast_comments') {
@@ -120,6 +154,8 @@ exports.replyComment = async (req, res) => {
 //FOR NOW: not processing comment deletions yet because I hope to use an ORM like PRISMA to utilize its cascade function
 //Moving a comment to soft deletion is easy but triggering all of its predecessor comments (like deep replies) to be flagged as false will take recursion
 //might be computationally heavy so for now, won't do comment deletes manually
+
+//alternative is hard deletion of content but best practice may be to use soft deletes? dunno
 exports.removeComment = async (req, res) => {
     const {userID} = req.params;
     const {content_ID, content_type } = req.body
