@@ -31,7 +31,7 @@ exports.createNewUser = async(req, res) => {
 exports.logIn = async (req, res) => {
     const {email, password} = req.body
     const connection = connectDB();
-    const query = 'SELECT email, password FROM users WHERE email = ? AND password = ?'
+    const query = 'SELECT * FROM users WHERE email = ? AND password = ?'
     connection.query(query, [email, password], (queryError, results) => {
         connection.end()
         if (queryError){
@@ -42,7 +42,7 @@ exports.logIn = async (req, res) => {
             console.error('Error ' + queryError);   
             return res.status(500).json({'message' : 'Error finding matching user credentials during database operation'})
         }
-        res.sendStatus(200)
+        res.send(results)
     })
 }
 
