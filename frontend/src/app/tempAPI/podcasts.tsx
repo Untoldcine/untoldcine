@@ -30,7 +30,7 @@ interface Comment {
     series_id: number | null,
     nickname: string,
     user_id: number,
-    votes: string,
+    rating: string,
     replies: Comment[] | [],
     podcast_id: number | null
     btsflag: boolean | null,
@@ -49,6 +49,8 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
     const [podcastDetails, setPodcastDetails] = useState<DeeperPodcast | null>(null)
     const [podcastComments, setPodcastComments] = useState<DBCommentObj | null>(null)
     const [newCommentValue, setNewCommentValue] = useState<string>('')
+    const [submittedFeedback, setSubmittedFeedback] = useState<Boolean>(false)
+
 
 
     const getDeeperPodcastData = async () => {
@@ -97,7 +99,7 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
           })
       }
     
-      const postNewComment = async (e:React.FormEvent) => {
+    const postNewComment = async (e:React.FormEvent) => {
         e.preventDefault()
         const commentObj = {
             content: newCommentValue,
@@ -116,6 +118,24 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
         }
     }
 
+    const handleUserFeedback = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const ratingObj = {
+            userID: 16,
+            content_ID: ID,
+            table: 'podcasts'
+        }
+        //attach this object, keep the submitter as a params, and change route to user so we can apply this to all tables
+        const submitter = (e.nativeEvent as any).submitter as HTMLInputElement;
+        axios.post(`http://localhost:3001/api/user/rating/${submitter.name}`, ratingObj)
+            .then((res) => {
+                setSubmittedFeedback(true)
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+    }
+
     return (
         <div className='block'>
             <p>PODCASTS = {name}</p>
@@ -126,6 +146,15 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
                 <input value = {newCommentValue} onChange = {(e) => setNewCommentValue(e.target.value)}></input>
                 <button>Submit Comment</button>
             </form>
+            {submittedFeedback ?
+                <div className='block'>
+                    <p>Thank you for your feedback!</p>
+                </div> :
+                <form className='block' onSubmit={(e) => handleUserFeedback(e)}>
+                    <button name='like'>Like</button>
+                    <br></br>
+                    <button name='dislike'>Dislike</button>
+                </form>}
             {podcastDetails &&
                 <div className='block'>
                     <h1>{podcastDetails.name}</h1>

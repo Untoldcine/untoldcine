@@ -46,6 +46,28 @@ exports.logIn = async (req, res) => {
     })
 }
 
+//should update somewhere that this user submitted this rating for algorithm
+//And as a result, track that the user has already submitted their rating for this content
+exports.submitRating = async (req, res) => {
+    const {userID, content_ID, table} = req.body;
+    const {choice} = req.params;
+    const connection = connectDB();
+    let query;
+    if (choice === 'like') {
+        query = 'UPDATE ?? SET rating = JSON_SET(rating, \'$.Upvotes\', JSON_VALUE(rating, \'$.Upvotes\') + 1) WHERE id = ?';
+    } else if (choice === 'dislike') {
+        query = 'UPDATE ?? SET rating = JSON_SET(rating, \'$.Downvotes\', JSON_VALUE(rating, \'$.Downvotes\') + 1) WHERE id = ?';
+    }
+    connection.query(query, [table, content_ID], (queryError, _results) => {
+        connection.end()
+        if (queryError){
+            console.error('Error ' + queryError);   
+            res.status(500).json({'message' : 'Error updating rating during database operation'})
+        }
+        res.sendStatus(200)
+    })
+}
+
 exports.removeUser = async (req, res) => {
     const { userID } = req.params;
     const connection = connectDB();

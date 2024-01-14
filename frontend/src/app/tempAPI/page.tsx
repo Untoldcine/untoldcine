@@ -35,7 +35,7 @@ interface Comment {
     series_id: number | null,
     nickname: string,
     user_id: number,
-    votes: string,
+    rating: string,
     replies: Comment[] | [],
     podcast_id: number | null,
     btsflag: boolean | null
@@ -188,6 +188,7 @@ const Page = () => {
             console.error(`Error attempting to retrieve comments data: ${err}`);
         }
     }
+
 
 
     return (

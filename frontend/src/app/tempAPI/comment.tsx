@@ -9,7 +9,7 @@ interface Comment {
     series_id: number | null,
     nickname: string,
     user_id: number,
-    votes: string,
+    rating: string,
     replies: Comment[] | [],
     podcast_id: number | null,
     btsflag: boolean | null,
@@ -22,7 +22,7 @@ type CommentProp = {
 
 //Checks if comments contain replies and recursively renders them
 const Comment: React.FC<CommentProp> = ({ post }) => {        
-    const { ID, nickname, content, replies, votes, series_id, podcast_id, btsflag, edited } = post      
+    const { ID, nickname, content, replies, rating, series_id, podcast_id, btsflag, edited } = post      
       
     const [replyValue, setReplyValue] = useState<string>('')
     const [toggleEditComment, setToggleEditComment]  = useState<boolean>(false)
@@ -67,15 +67,21 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
         if (!obj) {
             return 0
         }
-        const {up, down} = JSON.parse(obj)
-        return up - down
+        const {Upvotes, Downvotes} = JSON.parse(obj)
+        return Upvotes - Downvotes
     }
 
     const handleUserFeedback = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const ratingObj = {
+            userID: 16,
+            content_ID: ID,
+            table
+        }
         const submitter = (e.nativeEvent as any).submitter as HTMLInputElement;
-        axios.post(`http://localhost:3001/api/comments/rating/${userID}/${ID}/${submitter.name}`)
-            .then((res) => {
+        axios.post(`http://localhost:3001/api/user/rating/${submitter.name}`, ratingObj)
+            .then((_res) => {
+
             })
             .catch((err) => {
                 console.error(err);
@@ -127,14 +133,14 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
                 </form>
                 : null}
                 {edited ? <p>Edited</p>: null}
-                <p>Overall comment score: {parseCommentRating(votes)}</p>
+                <p>Overall comment score: {parseCommentRating(rating)}</p>
                 <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
                 <button onClick = {() => handleDeleteComment()}>DELETE THIS COMMENT</button>
                 <br/>
                 <form className='block' onSubmit={(e) => handleUserFeedback(e)}>
-                    <button name='up'>Like Comment</button>
+                    <button name='like'>Like Comment</button>
                     <br></br>
-                    <button name='down'>Dislike Comment</button>
+                    <button name='dislike'>Dislike Comment</button>
                 </form>
                 <input value = {replyValue} onChange = {(e) => handleReplyValue(e)}/>
                 <button onClick = {() => handleReplySubmit()}>Reply</button>

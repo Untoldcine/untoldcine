@@ -104,7 +104,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
         {length && length > 60 ? <p>{formattedLength}</p> : null}
         <button onClick={() => getDeeperSeries(ID)}>See More</button>
         <br></br>
-        <button onClick={() => addToWatchList()}>Add to Watchlist</button>
+        <button disabled onClick={() => addToWatchList()}>Add to Watchlist</button>
       </div>
       {seriesDetails ? <Detailed content={seriesDetails} /> : null}
       <div className="related-block">

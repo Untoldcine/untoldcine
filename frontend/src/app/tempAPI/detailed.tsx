@@ -28,7 +28,7 @@ interface Comment {
     series_id: number | null,
     nickname: string,
     user_id: number,
-    votes: string,
+    rating: string,
     replies: Comment[] | [],
     podcast_id: number | null,
     btsflag: boolean | null
@@ -102,12 +102,17 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
         }
     }
 
-    //currently hard coded to use :userID = 2, but will change that to handle the logged in user's identifier
     //submitter.name catches whether choice was upvote or downvote and posts to DB
     const handleUserFeedback = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const ratingObj = {
+            userID: 16,
+            content_ID: ID,
+            table: 'series'
+        }
+        //attach this object, keep the submitter as a params, and change route to user so we can apply this to all tables
         const submitter = (e.nativeEvent as any).submitter as HTMLInputElement;
-        axios.post(`http://localhost:3001/api/series/rating/2/${ID}/${submitter.name}`)
+        axios.post(`http://localhost:3001/api/user/rating/${submitter.name}`, ratingObj)
             .then((res) => {
                 setSubmittedFeedback(true)
             })
