@@ -46,50 +46,17 @@ exports.logIn = async (req, res) => {
     })
 }
 
-//should update somewhere that this user submitted this rating for algorithm
-//And as a result, track that the user has already submitted their rating for this content
 exports.submitRating = async (req, res) => {
-    const {userID, content_ID, table} = req.body;
-    const {choice} = req.params;
     const connection = connectDB();
-    let query;
-    //first update overall rating with the user's choice
-    if (choice === 'like') {
-        query = 'UPDATE ?? SET rating = JSON_SET(rating, \'$.Upvotes\', JSON_VALUE(rating, \'$.Upvotes\') + 1) WHERE id = ?';
-    } else if (choice === 'dislike') {
-        query = 'UPDATE ?? SET rating = JSON_SET(rating, \'$.Downvotes\', JSON_VALUE(rating, \'$.Downvotes\') + 1) WHERE id = ?';
-    }
-    connection.query(query, [table, content_ID], (queryError, _results) => {
-        if (queryError){
-            console.error('Error ' + queryError);   
-            res.status(500).json({'message' : 'Error updating rating during database operation'})
-        }
-        else {
-            const addToFeedback = `INSERT INTO feedback (user_ID, table_name, item_ID, rating) VALUES (?, ?, ?, ?)`
-            connection.query(addToFeedback, [userID, table, content_ID, choice], (addError, _results) => {
-                connection.end()
-                if (addError){
-                console.error('Error ' + addError);   
-                res.status(500).json({'message' : 'Error updating feedback table during database operation'})
-             }
-             res.sendStatus(200)
-            })
-        }
-    })
-}
-
-exports.submitRating2 = async (req, res) => {
-    const connection = connectDB();
-    //written in async/await format for readability. First update rating, then check if user has already submitted feedback for that piece of content.
-    //if they haven't, make a new entry. If they have, change the existing entry to prevent duplicates
+    //written in async/await format for readability. Check if user has already submitted a rating. If not, then update the rating and then insert into feedback table
+    //If they have, change the existing entry to prevent duplicates
     try {
         const {userID, content_ID, table} = req.body;
         const {choice} = req.params;
-    
-        await updateRating(connection, choice, table, content_ID);
         const feedbackExists = await checkFeedbackExists(connection, userID, table, content_ID)
     
         if (!feedbackExists) {
+            await updateRating(connection, choice, table, content_ID);
             await insertNewFeedback(connection, userID, table, content_ID, choice);
             res.sendStatus(200);
         }
@@ -130,7 +97,6 @@ exports.submitRating2 = async (req, res) => {
         });
         return results.length > 0;
     }
-    
     async function insertNewFeedback(connection, userID, table, content_ID, choice) {
         const addToFeedback = `INSERT INTO feedback (user_ID, table_name, item_ID, rating) VALUES (?, ?, ?, ?)`
         return connection.query(addToFeedback, [userID, table, content_ID, choice])

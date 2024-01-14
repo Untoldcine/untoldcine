@@ -35,6 +35,8 @@ interface Comment {
     podcast_id: number | null
     btsflag: boolean | null,
     edited: boolean
+    user_feedback: string | null
+
 }
 
 interface DBCommentObj {

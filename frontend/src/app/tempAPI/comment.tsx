@@ -13,7 +13,8 @@ interface Comment {
     replies: Comment[] | [],
     podcast_id: number | null,
     btsflag: boolean | null,
-    edited: boolean
+    edited: boolean,
+    user_feedback: string | null
 }
 
 type CommentProp = {
@@ -22,12 +23,13 @@ type CommentProp = {
 
 //Checks if comments contain replies and recursively renders them
 const Comment: React.FC<CommentProp> = ({ post }) => {        
-    const { ID, nickname, content, replies, rating, series_id, podcast_id, btsflag, edited } = post      
+    
+    const { ID, nickname, content, replies, rating, series_id, podcast_id, btsflag, edited, user_feedback } = post              
       
     const [replyValue, setReplyValue] = useState<string>('')
     const [toggleEditComment, setToggleEditComment]  = useState<boolean>(false)
     const [editedCommentValue, setEditedCommentValue]  = useState<string>(content)
-    const userID = 16 //hard coded to the comment_tester User
+    const userID = 5 //hard coded to the comment_tester User
     let table:string;
 
     if (series_id && !btsflag) {
@@ -74,10 +76,10 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
     const handleUserFeedback = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const ratingObj = {
-            userID: 16,
+            userID,
             content_ID: ID,
             table
-        }
+        }        
         const submitter = (e.nativeEvent as any).submitter as HTMLInputElement;
         axios.post(`http://localhost:3001/api/user/rating/${submitter.name}`, ratingObj)
             .then((_res) => {
@@ -122,7 +124,7 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
 
     return (
         <>
-            <div className='block'>
+            <div className={user_feedback !== null ? 'self-block':'block'}>
                 <p>{nickname}</p>
                 <p>{content}</p> 
                 <button onClick = {() => setToggleEditComment(!toggleEditComment)}>Edit Comment</button>
@@ -138,13 +140,13 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
                 <button onClick = {() => handleDeleteComment()}>DELETE THIS COMMENT</button>
                 <br/>
                 <form className='block' onSubmit={(e) => handleUserFeedback(e)}>
-                    <button name='like'>Like Comment</button>
+                    {user_feedback === 'like' ? <button name='like' className='like-button-done'>Liked Comment</button> : <button name='like'>Like Comment</button>}
                     <br></br>
-                    <button name='dislike'>Dislike Comment</button>
+                    {user_feedback === 'dislike' ? <button name='dislike' className='dislike-button-done'>Disliked Comment</button> : <button name='dislike'>Dislike Comment</button>}
                 </form>
                 <input value = {replyValue} onChange = {(e) => handleReplyValue(e)}/>
                 <button onClick = {() => handleReplySubmit()}>Reply</button>
-                {replies.length > 0 ? 
+                {replies?.length > 0 ? 
                     <div className='block'>
                     {replies.map(comment => (
                         <Comment key = {comment.ID} post = {comment}/>

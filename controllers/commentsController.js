@@ -2,12 +2,13 @@ const connectDB = require('./connectDB')
 
 exports.getSeriesComments = async (req, res) => {
     const {seriesID} = req.params;
+    const currentUserID = 5; //replace with variable user ID later on
     if (!seriesID) {
         res.status(400).json({'message': 'Missing series ID to retrieve comments'})
     }
     const connection = connectDB();
-    const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.rating, comments.user_id, comments.series_id, comments.edited, users.nickname FROM comments JOIN users on comments.user_id = users.ID WHERE comments.series_id = ? AND comments.deleted = FALSE'
-    connection.query(query, seriesID, (queryError, results) => {
+    const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.rating, comments.user_id, comments.series_id, comments.edited, users.nickname, feedback.rating AS user_feedback FROM comments JOIN users on comments.user_id = users.ID LEFT JOIN feedback on comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE comments.series_id = ? AND comments.deleted = FALSE'
+    connection.query(query, [currentUserID, seriesID], (queryError, results) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
@@ -20,8 +21,11 @@ exports.getSeriesComments = async (req, res) => {
 
         //create a map for each comment for faster data access
         results.forEach((comment) => {
-            commentMap[comment.ID] = comment;
-            comment.replies = [];
+            commentMap[comment.ID] = {
+                ...comment,
+                userHasResponded: comment.user_feedback !== null
+            }
+            commentMap[comment.ID].replies = [];
         })
 
         //if parent_id exists, append to parent comment replies array
@@ -40,12 +44,13 @@ exports.getSeriesComments = async (req, res) => {
 
 exports.getPodcastComments = async (req, res) => {
     const {podcastID} = req.params;
+    const currentUserID = 5; //replace with variable user ID later on
     if (!podcastID) {
         res.status(400).json({'message': 'Missing podcast ID to retrieve comments'})
     }
     const connection = connectDB();
-    const query = 'SELECT podcast_comments.ID, podcast_comments.podcast_id, podcast_comments.content, podcast_comments.date, podcast_comments.rating, podcast_comments.parent_id, podcast_comments.user_id, podcast_comments.edited, users.nickname FROM podcast_comments JOIN users on podcast_comments.user_id = users.ID WHERE podcast_comments.podcast_id = ?'
-    connection.query(query, podcastID, (queryError, results) => {
+    const query = 'SELECT distinct podcast_comments.ID, podcast_comments.podcast_id, podcast_comments.content, podcast_comments.date, podcast_comments.rating, podcast_comments.parent_id, podcast_comments.user_id, podcast_comments.edited, users.nickname, feedback.rating AS user_feedback FROM podcast_comments JOIN users on podcast_comments.user_id = users.ID LEFT JOIN feedback on podcast_comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE podcast_comments.podcast_id = ? AND podcast_comments.deleted = FALSE'
+    connection.query(query, [currentUserID, podcastID], (queryError, results) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
@@ -55,8 +60,11 @@ exports.getPodcastComments = async (req, res) => {
         const topLevelComments = []
 
         results.forEach((comment) => {
-            commentMap[comment.ID] = comment;
-            comment.replies = [];
+            commentMap[comment.ID] = {
+                ...comment,
+                userHasResponded: comment.user_feedback !== null
+            }
+            commentMap[comment.ID].replies = [];
         })
 
         results.forEach((comment) => {
@@ -74,12 +82,13 @@ exports.getPodcastComments = async (req, res) => {
 
 exports.getBTSComments = async (req, res) => {
     const {seriesID} = req.params;
+    const currentUserID = 5; //replace with variable user ID later on
     if (!seriesID) {
         res.status(400).json({'message': 'Missing series ID to retrieve comments for series BTS'})
     }
     const connection = connectDB();
-    const query = 'SELECT bts_comments.ID, bts_comments.content, bts_comments.date, bts_comments.rating, bts_comments.parent_id, bts_comments.user_id, bts_comments.series_id, bts_comments.btsflag, bts_comments.edited, users.nickname FROM bts_comments JOIN users on bts_comments.user_id = users.ID WHERE bts_comments.series_id = ?'
-    connection.query(query, seriesID, (queryError, results) => {
+    const query = 'SELECT bts_comments.ID, bts_comments.content, bts_comments.date, bts_comments.rating, bts_comments.parent_id, bts_comments.user_id, bts_comments.series_id, bts_comments.btsflag, bts_comments.edited, users.nickname, feedback.rating AS user_feedback FROM bts_comments JOIN users on bts_comments.user_id = users.ID LEFT JOIN feedback on bts_comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE bts_comments.series_id = ?'
+    connection.query(query, [currentUserID, seriesID], (queryError, results) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
@@ -89,8 +98,11 @@ exports.getBTSComments = async (req, res) => {
         const topLevelComments = []
 
         results.forEach((comment) => {
-            commentMap[comment.ID] = comment;
-            comment.replies = [];
+            commentMap[comment.ID] = {
+                ...comment,
+                userHasResponded: comment.user_feedback !== null
+            }
+            commentMap[comment.ID].replies = [];
         })
 
         results.forEach((comment) => {
