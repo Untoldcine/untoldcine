@@ -1,0 +1,24 @@
+.icon {
+  color: white;
+  padding: 10px;
+}
+
+.input {
+  width: 315px;
+  height: 53px;
+  border: none;
+  background: transparent;
+  outline: none;
+  caret-color: white;
+  color: white;
+}
+
+.box {
+  width: 355px;
+  height: 53px;
+  display: block;
+  margin: 25px auto;
+  border-radius: 10px;
+  border: 1px solid var(--White, #fff);
+  background: transparent;
+}
