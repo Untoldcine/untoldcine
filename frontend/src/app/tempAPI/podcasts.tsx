@@ -47,6 +47,7 @@ interface DBCommentObj {
 const Podcasts: React.FC<PodcastProps> = ({ content }) => {
 
     const { ID, name } = content
+    const userID = sessionStorage.getItem('userID')    
 
     const [podcastDetails, setPodcastDetails] = useState<DeeperPodcast | null>(null)
     const [podcastComments, setPodcastComments] = useState<DBCommentObj | null>(null)
@@ -67,7 +68,7 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
     }
     const getPodcastComments = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/comments/getPodcastDiscussion/${ID}`)
+            const res = await axios.get(`http://localhost:3001/api/comments/getPodcastDiscussion/${userID}/${ID}`)
             setPodcastComments(res.data)            
         }
         catch (err) {
@@ -109,7 +110,7 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
             table_name: 'podcast_comments'
         }
         try {
-            const res = await axios.post('http://localhost:3001/api/comments/newComment/16', commentObj)    //16 is placeholder for the :userID 
+            const res = await axios.post(`http://localhost:3001/api/comments/newComment/${userID}`, commentObj) 
             if (res.status === 200) {
                 setNewCommentValue('')
             }
@@ -123,7 +124,7 @@ const Podcasts: React.FC<PodcastProps> = ({ content }) => {
     const handleUserFeedback = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const ratingObj = {
-            userID: 16,
+            userID,
             content_ID: ID,
             table: 'podcasts'
         }

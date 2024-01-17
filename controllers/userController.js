@@ -52,6 +52,7 @@ exports.submitRating = async (req, res) => {
     //If they have, change the existing entry to prevent duplicates
     try {
         const {userID, content_ID, table} = req.body;
+        console.log(table);
         const {choice} = req.params;
         const feedbackExists = await checkFeedbackExists(connection, userID, table, content_ID)
     

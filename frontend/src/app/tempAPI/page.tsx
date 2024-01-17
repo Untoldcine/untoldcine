@@ -1,7 +1,7 @@
 'use client'
 import axios from 'axios'
 import './tempstyles.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Card from "./card"
 import Podcasts from "./podcasts"
 import CommentComponent from './comment'
@@ -60,6 +60,8 @@ const Page = () => {
     const [newCommentValue, setNewCommentValue] = useState<string>('')
     const [btsComments, setBTSComments] = useState<DBCommentObj | null>(null)
 
+    const userID = 17;
+
     const handleUserIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRemoveUserID(e.target.value)
     }
@@ -67,8 +69,8 @@ const Page = () => {
     const createStaticUser = async () => {
         try {
             const res = await axios.post('http://localhost:3001/api/user/new', {
-                nickname: 'Test',
-                email: 'test@hotmail.com',
+                nickname: 'Tester',
+                email: 'tester@hotmail.com',
                 password: '12345',
                 sub_level: 1
             })
@@ -136,7 +138,7 @@ const Page = () => {
 
     const getSpecificBTS = async (ID: number) => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/bts/specificBTS/${ID}`)
+            const res = await axios.get(`http://localhost:3001/api/bts/specificBTS/${userID}/${ID}`)
             console.log(res.data);
         }
         catch (err) {
@@ -152,7 +154,7 @@ const Page = () => {
             table_name: 'bts_comments'
         }
         try {
-            const res = await axios.post('http://localhost:3001/api/comments/newComment/16', commentObj)    //16 is placeholder for the :userID 
+            const res = await axios.post(`http://localhost:3001/api/comments/newComment/${userID}`, commentObj)  
             if (res.status === 200) {
                 setNewCommentValue('')
             }
@@ -182,7 +184,7 @@ const Page = () => {
 
     const getBTSComments = async (ID: number) => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/comments/getBTSDiscussion/${ID}`)                        
+            const res = await axios.get(`http://localhost:3001/api/comments/getBTSDiscussion/${userID}/${ID}`)                        
             setBTSComments(res.data)
         }
         catch (err) {

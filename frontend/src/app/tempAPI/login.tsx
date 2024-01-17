@@ -16,8 +16,14 @@ interface User {
     deleted_at: string | null,
 }
 
+interface LoginInputs {
+    email: string
+    password: string
+}
+
 const Login = () => {
 
+    const [inputFields, setInputFields] = useState<LoginInputs>({email: '', password: ''})
     const [loginStatus, setLoginStatus] = useState<Boolean>(false)
     const [userData, setUserData] = useState<User>()
     const [parsedSubLevel, setParsedSubLevel] = useState<string>('Unregistered')
@@ -45,15 +51,16 @@ const Login = () => {
     }, [userData])
 
     //Hard coded credentials but will switch out to stateful inputs in actual implementation
-    const toggleLogIn = async () => {
+    const toggleLogIn = async () => {        
         try {
             const res = await axios.post('http://localhost:3001/api/user/login', {
-                email: 'whatever@hotmail.com',
-                password: 'aaa'
+                email: inputFields.email,
+                password: inputFields.password
             })
             if (res.status === 200) {
                 setLoginStatus(true)
                 setUserData(res.data[0])
+                sessionStorage.setItem('userID', res.data[0].ID)
             }
         }
         catch (err) {
@@ -62,17 +69,32 @@ const Login = () => {
         }
     }
 
+    // useEffect(() => {
+    //     if (userData) {
+    //         sessionStorage.setItem('userID', String(userData.ID))
+    //     }
+    // }, [userData])
+
     return (
-        <div className='block'><p>Login Block</p>
-            <button onClick={() => toggleLogIn()}>Log in</button>
+        <div className='block'>
+        <h2>Login Block</h2>
+        <p>Email</p>
+        <input name = 'email' value = {inputFields.email} onChange = {(e) => setInputFields(prev => ({...prev, email: e.target.value}))}/>
+        <p>Password</p>
+        <input name = 'password' value = {inputFields.password} onChange = {(e) => setInputFields(prev => ({...prev, password: e.target.value}))}/>    
+        <br/>    
+        <button onClick={() => toggleLogIn()}>Log in</button>
             {userData ?
                 <>
                     <p>Logged in!</p>
                     {!userData.free_tier ? <p>{userData.nickname} is eligible for a free trial!</p> : null}
                     {!userData.free_tier ? <button disabled>Activate Free Trial</button> : null}
                     <p>Current sub-level: {parsedSubLevel}</p>
+                    <p>User ID has been set to {userData.ID}</p>
                 </>
                 : null}
+                <br/>
+        <button onClick = {() => sessionStorage.removeItem('userID')}>Log out</button>
         </div>
     )
 }

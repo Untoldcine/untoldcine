@@ -1,14 +1,13 @@
 const connectDB = require('./connectDB')
 
 exports.getSeriesComments = async (req, res) => {
-    const {seriesID} = req.params;
-    const currentUserID = 5; //replace with variable user ID later on
+    const {userID, seriesID} = req.params;
     if (!seriesID) {
         res.status(400).json({'message': 'Missing series ID to retrieve comments'})
     }
     const connection = connectDB();
     const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.rating, comments.user_id, comments.series_id, comments.edited, users.nickname, feedback.rating AS user_feedback FROM comments JOIN users on comments.user_id = users.ID LEFT JOIN feedback on comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE comments.series_id = ? AND comments.deleted = FALSE'
-    connection.query(query, [currentUserID, seriesID], (queryError, results) => {
+    connection.query(query, [userID, seriesID], (queryError, results) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
@@ -23,34 +22,34 @@ exports.getSeriesComments = async (req, res) => {
         results.forEach((comment) => {
             commentMap[comment.ID] = {
                 ...comment,
-                userHasResponded: comment.user_feedback !== null
+                userHasResponded: comment.user_feedback !== null,
+                replies: []
             }
-            commentMap[comment.ID].replies = [];
         })
 
         //if parent_id exists, append to parent comment replies array
         results.forEach((comment) => {
             if (comment.parent_id !== null) {
-                parentComment = commentMap[comment.parent_id]
-                parentComment.replies.push(comment)
+                let parentComment = commentMap[comment.parent_id];
+                if (parentComment) {
+                    parentComment.replies.push(commentMap[comment.ID]);
+                }
+            } else {
+                topLevelComments.push(commentMap[comment.ID]);
             }
-            else {
-                topLevelComments.push(comment)
-            }
-        })
+        });
         res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
     })
 }
 
 exports.getPodcastComments = async (req, res) => {
-    const {podcastID} = req.params;
-    const currentUserID = 5; //replace with variable user ID later on
+    const {userID, podcastID} = req.params;
     if (!podcastID) {
         res.status(400).json({'message': 'Missing podcast ID to retrieve comments'})
     }
     const connection = connectDB();
     const query = 'SELECT distinct podcast_comments.ID, podcast_comments.podcast_id, podcast_comments.content, podcast_comments.date, podcast_comments.rating, podcast_comments.parent_id, podcast_comments.user_id, podcast_comments.edited, users.nickname, feedback.rating AS user_feedback FROM podcast_comments JOIN users on podcast_comments.user_id = users.ID LEFT JOIN feedback on podcast_comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE podcast_comments.podcast_id = ? AND podcast_comments.deleted = FALSE'
-    connection.query(query, [currentUserID, podcastID], (queryError, results) => {
+    connection.query(query, [userID, podcastID], (queryError, results) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
@@ -62,33 +61,33 @@ exports.getPodcastComments = async (req, res) => {
         results.forEach((comment) => {
             commentMap[comment.ID] = {
                 ...comment,
-                userHasResponded: comment.user_feedback !== null
+                userHasResponded: comment.user_feedback !== null,
+                replies : []
             }
-            commentMap[comment.ID].replies = [];
         })
 
         results.forEach((comment) => {
             if (comment.parent_id !== null) {
-                parentComment = commentMap[comment.parent_id]
-                parentComment.replies.push(comment)
+                let parentComment = commentMap[comment.parent_id];
+                if (parentComment) {
+                    parentComment.replies.push(commentMap[comment.ID]);
+                }
+            } else {
+                topLevelComments.push(commentMap[comment.ID]);
             }
-            else {
-                topLevelComments.push(comment)
-            }
-        })
+        });
         res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
     })
 }
 
 exports.getBTSComments = async (req, res) => {
-    const {seriesID} = req.params;
-    const currentUserID = 5; //replace with variable user ID later on
+    const {userID, seriesID} = req.params;
     if (!seriesID) {
         res.status(400).json({'message': 'Missing series ID to retrieve comments for series BTS'})
     }
     const connection = connectDB();
-    const query = 'SELECT bts_comments.ID, bts_comments.content, bts_comments.date, bts_comments.rating, bts_comments.parent_id, bts_comments.user_id, bts_comments.series_id, bts_comments.btsflag, bts_comments.edited, users.nickname, feedback.rating AS user_feedback FROM bts_comments JOIN users on bts_comments.user_id = users.ID LEFT JOIN feedback on bts_comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE bts_comments.series_id = ?'
-    connection.query(query, [currentUserID, seriesID], (queryError, results) => {
+    const query = 'SELECT distinct bts_comments.ID, bts_comments.content, bts_comments.date, bts_comments.rating, bts_comments.parent_id, bts_comments.user_id, bts_comments.series_id, bts_comments.btsflag, bts_comments.edited, users.nickname, feedback.rating AS user_feedback FROM bts_comments JOIN users on bts_comments.user_id = users.ID LEFT JOIN feedback on bts_comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE bts_comments.series_id = ?'
+    connection.query(query, [userID, seriesID], (queryError, results) => {
         connection.end();
         if (queryError){
             console.error('Error ' + queryError);   
@@ -100,20 +99,21 @@ exports.getBTSComments = async (req, res) => {
         results.forEach((comment) => {
             commentMap[comment.ID] = {
                 ...comment,
-                userHasResponded: comment.user_feedback !== null
+                userHasResponded: comment.user_feedback !== null,
+                replies: []
             }
-            commentMap[comment.ID].replies = [];
         })
 
         results.forEach((comment) => {
             if (comment.parent_id !== null) {
-                parentComment = commentMap[comment.parent_id]
-                parentComment.replies.push(comment)
+                let parentComment = commentMap[comment.parent_id];
+                if (parentComment) {
+                    parentComment.replies.push(commentMap[comment.ID]);
+                }
+            } else {
+                topLevelComments.push(commentMap[comment.ID]);
             }
-            else {
-                topLevelComments.push(comment)
-            }
-        })
+        });
         res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
     })
 }
@@ -162,20 +162,57 @@ exports.editComment = async (req, res) => {
     });
 };
 
-
 exports.replyComment = async (req, res) => {
     const {userID} = req.params
-    const {content, parent_id, table, series_id} = req.body;
-    if (!userID || !content || !parent_id || !series_id) {
+    const {content, parent_id, series_id} = req.body;
+    if (!userID || !content || !parent_id || !series_id ) {
         return res.status(400).json({'message': 'Missing data to process POST of reply'})
     }
+
     const connection = connectDB();
-    const query = `INSERT INTO ${table} (user_id, content, series_id, parent_id) VALUES (?, ?, ?, ?)`
+    const query = `INSERT INTO comments (user_id, content, series_id, parent_id) VALUES (?, ?, ?, ?)`
     connection.query(query, [userID, content, series_id, parent_id], (queryError, results) => {
         connection.end()
         if (queryError){
             console.error('Error ' + queryError);   
             return res.status(500).json({'message' : `Error at POST to new reply to a comment during database operation`})
+        }
+        res.status(200).json(results)
+    })
+}
+
+exports.replyPodcastComment = async (req, res) => {
+    const {userID} = req.params
+    const {content, parent_id, podcast_id} = req.body;
+    if (!userID || !content || !parent_id || !podcast_id) {
+        return res.status(400).json({'message': 'Missing data to process POST of reply'})
+    }
+
+    const connection = connectDB();
+    const query = `INSERT INTO podcast_comments (user_id, content, podcast_id, parent_id) VALUES (?, ?, ?, ?)`
+    connection.query(query, [userID, content, podcast_id, parent_id], (queryError, results) => {
+        connection.end()
+        if (queryError){
+            console.error('Error ' + queryError);   
+            return res.status(500).json({'message' : `Error at POST to new reply to a podcast comment during database operation`})
+        }
+        res.status(200).json(results)
+    })
+}
+exports.replyBTSComment = async (req, res) => {
+    const {userID} = req.params
+    const {content, parent_id, series_id} = req.body;
+    if (!userID || !content || !parent_id || !series_id) {
+        return res.status(400).json({'message': 'Missing data to process POST of reply'})
+    }
+
+    const connection = connectDB();
+    const query = `INSERT INTO bts_comments (user_id, content, series_id, parent_id) VALUES (?, ?, ?, ?)`
+    connection.query(query, [userID, content, series_id, parent_id], (queryError, results) => {
+        connection.end()
+        if (queryError){
+            console.error('Error ' + queryError);   
+            return res.status(500).json({'message' : `Error at POST to new reply to a podcast comment during database operation`})
         }
         res.status(200).json(results)
     })

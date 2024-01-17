@@ -45,7 +45,8 @@ interface DBCommentObj {
 }
 
 const Detailed: React.FC<DetailedProps> = ({ content }) => {
-    const { ID, series_name, series_type, genres, rating, length, status, seasons, description, episodes, created } = content
+    const { ID, series_name, series_type, genres, rating, length, seasons, description, episodes, created } = content
+    const userID = sessionStorage.getItem('userID')
     const { main, advisory, starring, producers, directors } = JSON.parse(description);
 
     const [options, setOptions] = useState<string[]>([]);
@@ -95,8 +96,8 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
 
     const getComments = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${ID}`)            
-            setComments(res.data)
+            const res = await axios.get(`http://localhost:3001/api/comments/getDiscussion/${userID}/${ID}`)            
+            setComments(res.data)                        
         }
         catch (err) {
             console.error(`Error attempting to retrieve comments data: ${err}`);
@@ -107,14 +108,14 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
     const handleUserFeedback = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const ratingObj = {
-            userID: 16,
+            userID: sessionStorage.getItem('userID'),
             content_ID: ID,
             table: 'series'
         }
         //attach this object, keep the submitter as a params, and change route to user so we can apply this to all tables
         const submitter = (e.nativeEvent as any).submitter as HTMLInputElement;
         axios.post(`http://localhost:3001/api/user/rating/${submitter.name}`, ratingObj)
-            .then((res) => {
+            .then((_res) => {
                 setSubmittedFeedback(true)
             })
             .catch((err) => {
@@ -131,7 +132,7 @@ const Detailed: React.FC<DetailedProps> = ({ content }) => {
             table_name: 'comments'
         }
         try {
-            const res = await axios.post('http://localhost:3001/api/comments/newComment/16', commentObj)    //16 is placeholder for the :userID 
+            const res = await axios.post(`http://localhost:3001/api/comments/newComment/${userID}`, commentObj)    //16 is placeholder for the :userID 
             if (res.status === 200) {
                 setNewCommentValue('')
             }

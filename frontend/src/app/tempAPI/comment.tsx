@@ -22,14 +22,16 @@ type CommentProp = {
 }
 
 //Checks if comments contain replies and recursively renders them
-const Comment: React.FC<CommentProp> = ({ post }) => {        
+const Comment: React.FC<CommentProp> = ({ post }) => {            
     
-    const { ID, nickname, content, replies, rating, series_id, podcast_id, btsflag, edited, user_feedback } = post              
+    const { ID, nickname, content, replies, rating, series_id, podcast_id, btsflag, edited, user_feedback, user_id } = post     
+             
       
     const [replyValue, setReplyValue] = useState<string>('')
     const [toggleEditComment, setToggleEditComment]  = useState<boolean>(false)
     const [editedCommentValue, setEditedCommentValue]  = useState<string>(content)
-    const userID = 5 //hard coded to the comment_tester User
+    const userID = sessionStorage.getItem('userID')    
+    
     let table:string;
 
     if (series_id && !btsflag) {
@@ -41,27 +43,64 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
     if (podcast_id) {
         table = 'podcast_comments'
     }
+    // console.log(table);
+    
 
     const handleReplyValue = (e:any) => {
         setReplyValue(e.target.value)
     }
 
     const handleReplySubmit = async () => {
-        const replyObj = {
-            content: replyValue,
-            parent_id: ID,
-            series_id,
-            table
-        }
-        try {
-            const res = await axios.post(`http://localhost:3001/api/comments/newReply/${userID}`, replyObj)
-            if (res.status === 200) {
-                setReplyValue('')
+        if (table === 'comments') {
+            const replyObj = {
+                content: replyValue,
+                parent_id: ID,
+                series_id,
+            }
+            try {
+                const res = await axios.post(`http://localhost:3001/api/comments/newReply/${userID}`, replyObj)
+                if (res.status === 200) {
+                    setReplyValue('')
+                }
+            }
+            catch (err) {
+                console.error(`Error attempting to post new comments data: ${err}`);
             }
         }
-        catch (err) {
-            console.error(`Error attempting to post new comments data: ${err}`);
+        if (table === 'podcast_comments') {
+            const replyObj = {
+                content: replyValue,
+                parent_id: ID,
+                podcast_id
+            }
+            try {
+                const res = await axios.post(`http://localhost:3001/api/comments/newPodcastReply/${userID}`, replyObj)
+                if (res.status === 200) {
+                    setReplyValue('')
+                }
+            }
+            catch (err) {
+                console.error(`Error attempting to post new comments data: ${err}`);
+            }
         }
+        if (table === 'bts_comments') {
+            const replyObj = {
+                content: replyValue,
+                parent_id: ID,
+                series_id
+            }
+            try {
+                const res = await axios.post(`http://localhost:3001/api/comments/newBTSReply/${userID}`, replyObj)
+                if (res.status === 200) {
+                    setReplyValue('')
+                }
+            }
+            catch (err) {
+                console.error(`Error attempting to post new comments data: ${err}`);
+            }
+        }
+        
+        
                     
     }
 
@@ -122,9 +161,10 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
         }
     }
 
-    return (
-        <>
-            <div className={user_feedback !== null ? 'self-block':'block'}>
+    //different render for your own comments
+    if (user_id === Number(userID)) {
+        return <>
+        <div className='self-block'>
                 <p>{nickname}</p>
                 <p>{content}</p> 
                 <button onClick = {() => setToggleEditComment(!toggleEditComment)}>Edit Comment</button>
@@ -138,6 +178,32 @@ const Comment: React.FC<CommentProp> = ({ post }) => {
                 <p>Overall comment score: {parseCommentRating(rating)}</p>
                 <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
                 <button onClick = {() => handleDeleteComment()}>DELETE THIS COMMENT</button>
+                <br/>
+                {/* <form className='block' onSubmit={(e) => handleUserFeedback(e)}>
+                    {user_feedback === 'like' ? <button name='like' className='like-button-done'>Liked Comment</button> : <button name='like'>Like Comment</button>}
+                    <br></br>
+                    {user_feedback === 'dislike' ? <button name='dislike' className='dislike-button-done'>Disliked Comment</button> : <button name='dislike'>Dislike Comment</button>}
+                </form> */}
+                <input value = {replyValue} onChange = {(e) => handleReplyValue(e)}/>
+                <button onClick = {() => handleReplySubmit()}>Reply</button>
+                {replies?.length > 0 ? 
+                    <div className='block'>
+                    {replies.map(comment => (
+                        <Comment key = {comment.ID} post = {comment}/>
+                    ))}
+                </div> : null}
+            </div>
+        </>
+    }
+
+    return (
+        <>
+            <div className={user_feedback !== null ? 'rated-block':'block'}>
+                <p>{nickname}</p>
+                <p>{content}</p> 
+                {edited ? <p>Edited</p>: null}
+                <p>Overall comment score: {parseCommentRating(rating)}</p>
+                <p>Comment submitted: x time ago, needs further processing with comments.date value</p>
                 <br/>
                 <form className='block' onSubmit={(e) => handleUserFeedback(e)}>
                     {user_feedback === 'like' ? <button name='like' className='like-button-done'>Liked Comment</button> : <button name='like'>Like Comment</button>}

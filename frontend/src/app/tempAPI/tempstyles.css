@@ -14,9 +14,14 @@
     padding: 1rem;
 }
 
-.self-block {
+.rated-block {
     border: 1px solid red;
     padding: 1rem;
+}
+
+.self-block {
+    border: 1px solid green;
+    padding: 0.5rem;
 }
 
 .like-button-done {
