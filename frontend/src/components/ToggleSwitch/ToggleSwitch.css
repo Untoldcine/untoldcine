@@ -1,0 +1,44 @@
+.toggle-container {
+  cursor: pointer;
+  display: inline-flex;
+}
+.toggle-container p {
+  margin: 0px 16px;
+}
+
+.toggle-background {
+  fill: #ccc;
+}
+
+.toggle-switch {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #fff;
+  transition: transform 0.3s;
+}
+
+.toggle-switch.on {
+  transform: translateX(40px);
+}
+
+.toggle-on,
+.toggle-off {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.toggle-on {
+  display: none;
+}
+
+.toggle-switch.on + .toggle-on {
+  display: block;
+}
+
+.toggle-switch.off + .toggle-off {
+  display: block;
+}

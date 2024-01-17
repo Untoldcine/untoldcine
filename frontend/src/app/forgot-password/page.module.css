@@ -1,6 +1,6 @@
 .popup {
   width: 500px;
-  height: 619px;
+  height: 379px;
   flex-shrink: 0;
   border-radius: 16px;
   background: var(--white-trans, rgba(255, 255, 255, 0.1));
@@ -10,11 +10,18 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 2rem;
+  padding-bottom: 10rem;
 }
 .title {
   margin: 32px 86px;
   text-align: center;
+}
+.title h4 {
+  margin: 5px auto;
+}
+.title p {
+  margin: 5px auto;
+  margin-bottom: 46px;
 }
 
 .container {
@@ -34,6 +41,13 @@
   cursor: pointer;
   height: 18px;
   width: 18px;
+}
+.container p {
+  display: inline;
+}
+.container a {
+  float: right;
+  margin-right: 79px;
 }
 .checkmark {
   position: absolute;
