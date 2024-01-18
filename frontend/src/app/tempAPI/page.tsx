@@ -192,8 +192,6 @@ const Page = () => {
         }
     }
 
-
-
     return (
         <>
             <div className='container'>This page is for API testing

@@ -69,12 +69,6 @@ const Login = () => {
         }
     }
 
-    // useEffect(() => {
-    //     if (userData) {
-    //         sessionStorage.setItem('userID', String(userData.ID))
-    //     }
-    // }, [userData])
-
     return (
         <div className='block'>
         <h2>Login Block</h2>
