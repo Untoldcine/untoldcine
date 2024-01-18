@@ -1,0 +1,78 @@
+.main {
+  font-family: Circular Std;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10rem;
+  text-align: center;
+}
+.description {
+  margin-top: 243;
+}
+.description h1 {
+  margin-bottom: 25px;
+}
+.description p {
+  margin-top: 25px;
+}
+.popup {
+  text-align: center;
+  align-items: center;
+  align-content: center;
+}
+.popup h4 {
+  margin-top: 46px;
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 36px;
+  padding: 0px;
+  height: 26px;
+}
+
+.popup h3 {
+  margin-top: 25px;
+  margin-bottom: 46px;
+  font-weight: 700;
+  font-size: 36px;
+  padding: 0px;
+  height: 27px;
+}
+
+.popup li {
+  margin: 24.47px;
+  font-size: 19px;
+}
+.popup ul {
+  text-align: left;
+  height: 170px;
+  margin-bottom: 74px;
+}
+.button {
+  margin-top: 74px;
+  margin: auto;
+}
+
+.grid {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+}
+
+.checkbox {
+  display: none;
+}
+.saveLabel p {
+  font-family: Circular Std;
+  padding-top: -20px;
+  font-size: 15px;
+}
+.saveLabel {
+  width: 83px;
+  height: 31px;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+  margin: auto;
+  margin-bottom: 21px;
+}

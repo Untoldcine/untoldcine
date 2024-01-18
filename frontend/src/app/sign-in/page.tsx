@@ -1,5 +1,3 @@
-'use client';
-import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { TextField } from "@/components/TextField/TextField.js";
@@ -9,21 +7,22 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.popup}>
-        <h4 className={styles.title}>Sign up</h4>
+        <h4 className={styles.title}>Sign In</h4>
         <TextField text="User Name" icon="fa fa-user icon" />
-        <TextField text="Email" icon="fa fa-envelope icon" />
         <TextField text="Password" icon="fa fa-lock icon" />
-        <TextField text="Confirm Password" icon="fa fa-lock icon" />
         <div>
           <div className={styles.container}>
             <span className={styles.checkmark}></span>
             <input type="checkbox" className={styles.checkbox} />
             <p>Remember Me</p>
+            <p>
+              <Link href="forgot-password">Forgot password</Link>
+            </p>
           </div>
         </div>
-        <PrimaryButton>Create an Account</PrimaryButton>
+        <PrimaryButton>Sign In</PrimaryButton>
         <p className={styles.remember}>
-          Already have an account with us? <Link href="/sign-in">Sign in</Link>
+          Don't have any account? <Link href="/">Sign up</Link>
         </p>
       </div>
     </main>
