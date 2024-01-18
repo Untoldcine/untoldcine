@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/terryluan12/untold.git"
+    "url": "git+https://github.com/Starfodders/untoldcine.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/terryluan12/untold/issues"
+    "url": "https://github.com/Starfodders/untoldcine/issues"
   },
-  "homepage": "https://github.com/terryluan12/untold#readme",
+  "homepage": "https://github.com/Starfodders/untoldcine#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
