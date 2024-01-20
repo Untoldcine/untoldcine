@@ -1,0 +1,10 @@
+.footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.footer-logo-text {
+  font-size: 0.75rem;
+}

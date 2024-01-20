@@ -1,0 +1,18 @@
+.twitter-icon {
+  display: inline-block;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid white;
+  transition: background-color 0.3s;
+}
+
+.twitter-icon:hover {
+  cursor: pointer;
+}
+
+.twitter-icon img {
+  display: block;
+  width: 24px;
+  height: auto;
+}
