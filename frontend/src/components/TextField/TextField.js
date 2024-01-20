@@ -8,4 +8,4 @@ export const TextField = ({ text = "Text", icon }) => {
             <input type="text" placeholder={text} className="input" />
         </div>
     );
-}
+} 

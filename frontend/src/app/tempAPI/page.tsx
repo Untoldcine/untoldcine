@@ -60,7 +60,7 @@ const Page = () => {
     const [newCommentValue, setNewCommentValue] = useState<string>('')
     const [btsComments, setBTSComments] = useState<DBCommentObj | null>(null)
 
-    const userID = 17;
+    const userID = 17; 
 
     const handleUserIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRemoveUserID(e.target.value)
