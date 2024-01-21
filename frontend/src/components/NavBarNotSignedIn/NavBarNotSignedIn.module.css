@@ -1,0 +1,86 @@
+.customPrimaryButton {
+  display: flex;
+  width: 125px;
+  height: 38px;
+  padding: 8px 37px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--accent, #1e40d8);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  margin: 0rem;
+  margin-left: 1rem;
+  padding: 0rem;
+  margin-right: 0.5rem;
+}
+
+.customSecondaryButton {
+  display: flex;
+  width: 125px;
+  height: 38px;
+  padding: 8px 37px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 2px solid var(--White, #fff);
+  background-color: transparent;
+  margin: 0rem;
+  padding: 0rem;
+}
+.customSecondaryButton p {
+  font-size: 16px;
+}
+.customPrimaryButton p {
+  font-size: 16px;
+}
+
+.navList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  padding-left: 0;
+}
+
+.navList li {
+  color: white;
+  padding-right: 20px;
+  font-family: Circular;
+  margin-right: 2rem;
+}
+
+.navList li:hover {
+  cursor: pointer;
+}
+
+.navButtons {
+  display: flex;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 0 60px;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  margin-right: 3rem;
+  margin-left: 1rem;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
