@@ -37,3 +37,7 @@ next-env.d.ts
 
 #environment 
 .env
+
+#too large media files
+
+devMedia
