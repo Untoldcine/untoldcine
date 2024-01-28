@@ -1,0 +1,81 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.titleContainer {
+  /* Styles for the title container */
+}
+
+.titleImage {
+  max-width: 100%;
+}
+
+.metaContainer {
+  /* Styles for the container of ratings and meta info */
+}
+
+.ratings {
+  /* Styles for the ratings */
+}
+
+.rating {
+  /* Styles for the rating */
+}
+
+.userRating {
+  /* Styles for the user rating */
+}
+
+.info {
+  /* Styles for the year, genres, and duration */
+}
+
+.separator {
+  margin: 0 10px;
+}
+
+.actions {
+  /* Styles for the action buttons container */
+}
+
+.playButton {
+  /* Styles for the play button */
+}
+
+.addButton {
+  /* Styles for the add button */
+}
+
+.infoButton {
+  /* Styles for the info button */
+}
+
+@media (max-width: 768px) {
+}

@@ -24,13 +24,13 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <Image
+        {/* <Image
           className="logo"
           src="untold.svg"
           width={159}
           height={44}
           alt="Untold Logo"
-        />
+        /> */}
         {children}
       </body>
     </html>

@@ -1,43 +1,16 @@
-.customPrimaryButton {
+/* NavBarNotSignedIn.module.css */
+.navbar {
   display: flex;
-  width: 125px;
-  height: 38px;
-  padding: 8px 37px;
-  justify-content: center;
   align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  background: var(--accent, #1e40d8);
-  cursor: pointer;
-  border: none;
-  font-size: 1rem;
-  margin: 0rem;
-  margin-left: 1rem;
-  padding: 0rem;
-  margin-right: 0.5rem;
+  padding: 0 60px;
+  flex-wrap: wrap;
 }
 
-.customSecondaryButton {
+.logoContainer {
   display: flex;
-  width: 125px;
-  height: 38px;
-  padding: 8px 37px;
-  justify-content: center;
   align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  border: 2px solid var(--White, #fff);
-  background-color: transparent;
-  margin: 0rem;
-  padding: 0rem;
-}
-.customSecondaryButton p {
-  font-size: 16px;
-}
-.customPrimaryButton p {
-  font-size: 16px;
+  margin-right: 3rem;
+  margin-left: 1rem;
 }
 
 .navList {
@@ -63,19 +36,42 @@
 
 .navButtons {
   display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
 }
 
-.navbar {
+.customPrimaryButton {
   display: flex;
+  width: 125px;
+  height: 38px;
+  justify-content: center;
   align-items: center;
-  padding: 0 60px;
-}
-
-.logoContainer {
-  display: flex;
-  align-items: center;
-  margin-right: 3rem;
+  gap: 10px;
+  border-radius: 10px;
+  background: var(--accent, #1e40d8);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  margin: 0rem;
   margin-left: 1rem;
+}
+
+.customSecondaryButton {
+  display: flex;
+  width: 125px;
+  height: 38px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  border: 2px solid var(--White, #fff);
+  background-color: transparent;
+  margin: 0rem;
+}
+
+.customSecondaryButton p,
+.customPrimaryButton p {
+  font-size: 13px;
 }
 
 .footer {
@@ -83,4 +79,23 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 20px;
+  }
+
+  .logoContainer {
+    margin-right: 1rem;
+  }
+
+  .navList {
+    display: none;
+  }
+
+  .navButtons {
+    flex-direction: column;
+    align-items: center;
+  }
 }

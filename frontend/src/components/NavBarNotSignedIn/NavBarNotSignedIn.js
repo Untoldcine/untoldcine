@@ -24,5 +24,5 @@ export const NavBarNotSignedIn = () => {
         <PrimaryButton className={styles.customPrimaryButton}>Login</PrimaryButton>
     </div>
 </nav>
-  );
+  ); 
 };

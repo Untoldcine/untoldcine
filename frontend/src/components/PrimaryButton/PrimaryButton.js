@@ -1,9 +1,11 @@
 import React from "react";
-import "./PrimaryButton.css"
+import styles from "./PrimaryButton.module.css";
 
 export const PrimaryButton = ({ className = "", children }) => {
+    const combinedClassName = `${styles.primaryButton} ${className}`.trim();
+
     return (
-        <button className={className}>
+        <button className={combinedClassName}>
             <p>
                 {children}
             </p>

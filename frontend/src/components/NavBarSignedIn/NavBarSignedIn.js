@@ -4,7 +4,7 @@ import styles from './NavBarSignedIn.module.css';
 import UntoldLogo from "../../assets/UntoldLogoHeader.svg"
 import SearchBar from "../../components/SearchBar/SearchBar"
 
-export const NavBarSignedIn = () => {
+export const NavBarSignedIn = () => { 
   return (
     <nav className={styles.navbar}> 
     <div className={styles.logoContainer}>

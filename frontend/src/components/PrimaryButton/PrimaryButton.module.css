@@ -1,0 +1,12 @@
+.primaryButton {
+  display: flex;
+  width: 339px;
+  height: 53px;
+  padding: 8px 37px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  background: var(--accent, #1e40d8);
+  cursor: pointer;
+}

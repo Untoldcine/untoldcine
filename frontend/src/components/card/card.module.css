@@ -1,0 +1,19 @@
+.card {
+  display: inline-block;
+  min-width: 230px;
+  margin-right: 10px;
+}
+
+.cardImage {
+  width: 100%;
+  height: auto;
+}
+
+.cardImage {
+  transition: transform 0.3s ease-in-out;
+}
+
+.card:hover .cardImage {
+  transform: scale(1.05);
+  cursor: pointer;
+}
