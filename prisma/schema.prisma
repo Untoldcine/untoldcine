@@ -22,6 +22,8 @@ model User {
   free_tier           Boolean @default(false)
   free_tier_expiry    DateTime?
   bills               Bills[]
+  pw_reset_token      String?
+  reset_token_expiry  DateTime?
 
   @@map("users")
 }

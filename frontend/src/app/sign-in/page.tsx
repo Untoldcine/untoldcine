@@ -10,7 +10,7 @@ export default function Home() {
 
   const [inputFields, setInputFields] = useState({ email: '', password: '' })
 
-  //NEED TO ADD: timeout periods and possible useContext handling for user logged in token, maybe a week (i.e. they need to re-sign in every week?)
+  //NEED TO ADD: 'Remember Me' functionality which uses Persistent Cookies to keep users logged in for longer periods of time
   //If user is already logged in, retrieve their info once again
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

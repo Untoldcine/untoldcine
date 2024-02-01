@@ -21,7 +21,9 @@
   align-items: center;
   margin: 25px auto;
   border-radius: 10px;
+  color: white;
   border: 1px solid var(--White, #fff);
+  padding-left: 1rem;
   background: transparent;
 }
 
