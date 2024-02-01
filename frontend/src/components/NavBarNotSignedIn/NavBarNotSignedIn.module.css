@@ -38,6 +38,7 @@
   display: flex;
   justify-content: flex-end;
   flex-grow: 1;
+  cursor: pointer;
 }
 
 .customPrimaryButton {
@@ -67,6 +68,7 @@
   border: 2px solid var(--White, #fff);
   background-color: transparent;
   margin: 0rem;
+  cursor: pointer;
 }
 
 .customSecondaryButton p,

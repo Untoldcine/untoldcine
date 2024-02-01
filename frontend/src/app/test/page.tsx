@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer/Footer.js';
 import styles from './page.module.css';
 import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSignedIn.js';
 import HeroSection from '../../components/hero/herosection.js'
-
+import PlayNowButton from '../../components/PlayNow/PlayNow.js'
 
 const originalContent = [
   {

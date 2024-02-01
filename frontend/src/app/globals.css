@@ -6,8 +6,9 @@ body {
   background: linear-gradient(
     180deg,
     var(--black, #000000) 0%,
-    var(--dark-blue, #071141) 50%,
-    var(--darker-blue, #050c2c) 50.1%,
+    var(--dark-blue, #071141) 20%,
+    var(--darker-blue, #050c2c) 50%,
+    var(--dark-blue, #071141) 80%,
     var(--black, #000000) 100%
   );
 }

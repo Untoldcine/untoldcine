@@ -3,6 +3,7 @@
   width: 100%;
   height: 400px;
   overflow: hidden;
+  border-radius: 15px;
 }
 
 .heroImage {
@@ -30,7 +31,7 @@
 }
 
 .titleContainer {
-  /* Styles for the title container */
+  transform: translateY(-30%);
 }
 
 .titleImage {
@@ -38,23 +39,23 @@
 }
 
 .metaContainer {
-  /* Styles for the container of ratings and meta info */
 }
 
 .ratings {
-  /* Styles for the ratings */
+  margin-bottom: 1rem;
 }
 
 .rating {
-  /* Styles for the rating */
+  margin-bottom: 1rem;
+  margin-right: 1rem;
 }
 
 .userRating {
-  /* Styles for the user rating */
+  margin-bottom: 1rem;
 }
 
 .info {
-  /* Styles for the year, genres, and duration */
+  margin-bottom: 1.5rem;
 }
 
 .separator {
@@ -62,20 +63,110 @@
 }
 
 .actions {
-  /* Styles for the action buttons container */
+  display: flex;
+  align-items: center;
+  width: 25%;
 }
 
 .playButton {
-  /* Styles for the play button */
+  margin-right: 1rem;
 }
 
 .addButton {
-  /* Styles for the add button */
+}
+
+.iconCircle {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+  font-size: 1.25rem;
+  cursor: pointer;
 }
 
 .infoButton {
-  /* Styles for the info button */
+  border: 2px solid white;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  padding: 0.75rem;
+  margin-right: 0.5rem;
+  background-color: rgb(255, 255, 255, 0.1);
+}
+
+.plusSign {
+  border: 2px solid white;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  padding: 0.75rem;
+  margin-right: 0.5rem;
+  background-color: rgb(255, 255, 255, 0.1);
 }
 
 @media (max-width: 768px) {
+  .hero {
+    height: 250px;
+  }
+
+  .heroImage {
+  }
+
+  .overlay {
+    padding: 10px;
+  }
+
+  .titleContainer {
+    transform: translateY(-10%);
+  }
+
+  .titleImage {
+    width: auto;
+    height: auto;
+    max-height: 85px;
+  }
+
+  .ratings,
+  .info {
+    font-size: 0.8rem;
+  }
+
+  .iconCircle {
+    width: 20px;
+    height: 20px;
+    line-height: 30px;
+    font-size: 1rem;
+  }
+
+  .plusSign {
+    width: 20px;
+    height: 20px;
+  }
+  .hamburger {
+    display: block;
+  }
+  .navList,
+  .navButtons {
+    display: block;
+  }
+  .navList {
+  }
+  .navButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+@media (max-width: 492px) {
+  .actions {
+    width: auto;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .titleContainer {
+    text-align: center;
+  }
 }
