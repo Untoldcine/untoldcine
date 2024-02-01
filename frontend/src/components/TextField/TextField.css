@@ -16,9 +16,20 @@
 .box {
   width: 355px;
   height: 53px;
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 25px auto;
   border-radius: 10px;
   border: 1px solid var(--White, #fff);
   background: transparent;
+}
+
+#pw-hidden {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+#spacer {
+  width: 25px;
 }
