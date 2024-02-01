@@ -1,4 +1,12 @@
 const connectDB = require('./connectDB')
+const {PrismaClient} = require('@prisma/client')
+
+const prisma = new PrismaClient();
+
+exports.testPrisma = async (req, res) => {
+    const users = await prisma.user.findMany();
+    res.send(users)
+}
 
 exports.createNewUser = async(req, res) => {
 

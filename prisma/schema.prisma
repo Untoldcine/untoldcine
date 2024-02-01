@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id             Int @id @default(autoincrement())
+  user_nickname       String
+  user_email          String @unique
+  user_password       String
+  created_at          DateTime @default(now())
+  user_level          Int @default(1)
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  free_tier           Boolean @default(false)
+  free_tier_expiry    DateTime?
+  bills               Bills[]
+
+  @@map("users")
+}
+
+model Bills {
+  bill_id             Int @id @default(autoincrement())
+  user_id             Int
+  user_card           String?
+  date_created        DateTime @default(now())
+  bill_amount         Float?
+  bill_duedate        DateTime?
+  bill_paid           Boolean @default(false)
+  bill_paiddate       DateTime?
+  user                User @relation(fields:[user_id], references:[user_id])
+
+  @@map("bills")
+}
