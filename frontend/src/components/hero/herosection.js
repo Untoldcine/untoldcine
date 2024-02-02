@@ -36,7 +36,7 @@ const HeroSection = () => {
           </div>
         </div>
         <div className={styles.actions}>
-        <PlayNowButton className={styles.playButton}/>
+        <PlayNowButton title="Play Now" className={styles.playButton}/>
         <FontAwesomeIcon className={`${styles.iconCircle} ${styles.plusSign}`} icon={faPlus} />
         <FontAwesomeIcon className={`${styles.iconCircle} ${styles.infoButton}`} icon={faInfo} />
         </div>

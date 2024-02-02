@@ -35,6 +35,6 @@ export default function Home() {
             You remember your password? <Link href="/sign-in">Sign In</Link>
           </p>
         </form>}
-    </main>
+    </main> 
   );
 }

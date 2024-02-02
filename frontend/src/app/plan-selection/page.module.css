@@ -1,0 +1,157 @@
+@font-face {
+  font-family: "Circular";
+  src: url("/assets/Fonts/circular-std-medium-500.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.popup {
+  width: 300px;
+  height: auto;
+  flex-shrink: 0;
+  background: var(--white-trans, rgba(255, 255, 255, 0.1));
+
+  border-radius: 16px;
+  color: white;
+  margin: 1rem;
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 0rem;
+  margin-top: 0rem;
+}
+
+.Title {
+  margin-bottom: 0rem;
+}
+
+.subTitle {
+  font-size: 1.5rem;
+  margin-top: 0rem !important;
+  margin-bottom: 1rem;
+}
+
+.HerosubTitle {
+  font-size: 1rem;
+  width: 30%;
+  margin: auto;
+}
+
+.list {
+  padding: 0;
+  margin: 1rem 0;
+  text-align: left;
+}
+
+.list li {
+  margin-bottom: 0.5rem;
+}
+
+.primaryButton {
+  background: #0071eb;
+  color: white;
+  border-radius: 20px;
+  padding: 1rem 2rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.primaryButton:hover {
+  background: #0056b3;
+}
+
+.signInLink {
+  color: #0071eb;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+.inactive {
+  background-color: transparent;
+  border: none;
+  color: white;
+}
+
+.active {
+  background-color: transparent;
+  border: none;
+  color: white;
+}
+
+.titleContainer {
+  text-align: center;
+}
+
+.logoContainer {
+  margin-left: 1rem;
+  display: flex;
+}
+.toggleContainer {
+  text-align: center;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.saveContainer {
+  margin-bottom: 0.5rem;
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  padding: 1rem;
+  padding-top: 0rem;
+  padding-left: 2rem;
+}
+
+.customSecondaryButton {
+  width: 150px;
+  height: 40px;
+  margin-right: 2rem;
+  margin-left: 1rem;
+  font-size: 1rem;
+  background-color: rgb(255, 255, 255, 0.1);
+}
+
+.secondaryButtonParagraph {
+  font-size: 1rem !important;
+}
+.customPrimaryButton {
+  width: 150px;
+  border: none;
+  height: 40px;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+  }
+  .HerosubTitle {
+    width: 90%;
+  }
+  .Title {
+    font-size: 2.5rem;
+  }
+}

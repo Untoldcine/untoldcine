@@ -6,6 +6,7 @@
   border-radius: 10px;
   border: 1px solid #fff;
   background: transparent;
+  align-items: center;
 }
 
 .input {
@@ -23,8 +24,8 @@
   color: white;
   padding: 10px;
   font-size: 1.5rem;
-
-.box {
+}
+/* .box {
   width: 355px;
   height: 53px;
   display: flex;
@@ -36,7 +37,7 @@
   border: 1px solid var(--White, #fff);
   padding-left: 1rem;
   background: transparent;
-}
+} */
 
 #pw-hidden {
   margin-right: 15px;

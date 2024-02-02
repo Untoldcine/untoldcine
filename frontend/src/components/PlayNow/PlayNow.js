@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from './PlayNow.module.css';
 
-const PlayNowButton = ({ onClick }) => {
+const PlayNowButton = ({ title }) => {
   return (
     <button className={styles.playNowButton}>
-      Play Now
+      {title}
     </button>
   );
 };

@@ -3,13 +3,11 @@
   padding: 10px 20px;
   font-size: 1rem;
   color: #fff;
-  background-color: rgb(255, 255, 255, 0.1);
+  background-color: rgb(255, 255, 255, 0.06);
   border: 2px solid #fff;
   border-radius: 5px;
   cursor: pointer;
   outline: none;
-  margin-right: 1rem;
-
   transition: background-color 0.2s, color 0.2s;
 }
 @media (max-width: 768px) {

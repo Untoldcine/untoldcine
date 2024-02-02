@@ -19,11 +19,6 @@ export const NavBarNotSignedIn = () => {
       <div className={styles.logoContainer}>
         <Image src={UntoldLogo} alt="Logo" width={140} height={82} />
       </div>
-      <button className={styles.hamburger} onClick={() => setIsNavExpanded(!isNavExpanded)}>
-      <FontAwesomeIcon className={styles.hamburgerButton} icon={faBars} />
-      </button>
-      
-      {isNavExpanded && (
         <ul className={styles.navList}>
           <li>Home</li>
           <li>Behind-the-scenes</li>
@@ -32,9 +27,6 @@ export const NavBarNotSignedIn = () => {
           <li>Live Events</li>
           <li>News Feed</li>
         </ul>
-      )}
-      
-      {isNavExpanded && (
         <div className={styles.navButtons}>
           <Link href="/sign-up" passHref>
             <SecondaryButton as="a" className={styles.customSecondaryButton}>Sign Up</SecondaryButton>
@@ -43,7 +35,6 @@ export const NavBarNotSignedIn = () => {
             <PrimaryButton as="a" className={styles.customPrimaryButton}>Login</PrimaryButton>
           </Link>
         </div>
-      )}
     </nav>
   ); 
 };

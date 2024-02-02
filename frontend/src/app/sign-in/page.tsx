@@ -37,19 +37,23 @@ export default function Home() {
       console.error(err + ': Error attempting to log in');
     }
   }
-
+ 
   return (
     <main className={styles.main}>
       <form className={styles.popup} onSubmit={(e) => handleSignIn(e)}>
         <h4 className={styles.title}>Sign In</h4>
+        <div className={styles.textfieldContainer}> 
         <TextField text="Email" value={inputFields.email} update={setInputFields} icon="fa fa-user icon" field='email' />
         <TextField text="Password" value={inputFields.password} update={setInputFields} icon="fa fa-lock icon" field='password' />
+        </div>
         <div>
           <div className={styles.container}>
             <span className={styles.checkmark}></span>
+            <div className={styles.checkboxContainer}> 
             <input type="checkbox" className={styles.checkbox} />
             <p>Remember Me</p>
-            <p>
+            </div>
+            <p className={styles.forgot}>
               <Link className={styles.forgot} href="forgot-password">Forgot password?</Link>
             </p>
           </div>
