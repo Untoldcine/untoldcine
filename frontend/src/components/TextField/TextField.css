@@ -23,4 +23,26 @@
   color: white;
   padding: 10px;
   font-size: 1.5rem;
+
+.box {
+  width: 355px;
+  height: 53px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 25px auto;
+  border-radius: 10px;
+  color: white;
+  border: 1px solid var(--White, #fff);
+  padding-left: 1rem;
+  background: transparent;
+}
+
+#pw-hidden {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+#spacer {
+  width: 25px;
 }

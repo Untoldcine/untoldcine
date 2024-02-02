@@ -12,14 +12,14 @@ import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSigne
 import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn'
 
 
-interface Show {
-    ID: number,
-    series_type: string,
-    series_name: string,
-    length: number | null,
-    rating: string,
-    genres: string
-}
+interface VideoSummary {
+    series_id: number
+    series_name: string
+    series_status: string
+    genres: string[]
+    series_thumbnail: string | null
+    series_length: number
+  }
 
 interface Podcast {
     ID: number,
@@ -57,7 +57,7 @@ interface DBCommentObj {
 const Page = () => {
 
     const [removeUserID, setRemoveUserID] = useState('')
-    const [seriesData, setSeriesData] = useState<Show[] | []>([])
+    const [seriesData, setSeriesData] = useState<VideoSummary[] | []>([])
     const [podcastData, setPodcastData] = useState<Podcast[] | []>([])
     const [preProdType, setPreProdType] = useState<any>()
     const [prodType, setProdType] = useState<any>()
@@ -65,7 +65,7 @@ const Page = () => {
     const [newCommentValue, setNewCommentValue] = useState<string>('')
     const [btsComments, setBTSComments] = useState<DBCommentObj | null>(null)
 
-    const userID = 17;
+    const userID = 17; 
 
     const handleUserIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRemoveUserID(e.target.value)
@@ -108,8 +108,9 @@ const Page = () => {
     const getSeriesData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/series/summary`)
-            const { results } = res.data
-            setSeriesData(results)
+            console.log(res.data);
+            
+            setSeriesData(res.data)
         }
         catch (err) {
             console.error(`Error attempting to retrieve series data: ${err}`);
@@ -199,21 +200,18 @@ const Page = () => {
 
     return (
         <>
-
-            <NavBarNotSignedIn />
-            <NavBarSignedIn />
-            <div className='container'>This page is for API testing
-                <Login />
-                <button className="inputs" onClick={() => createStaticUser()}>Create a new user</button>
-                <button className="inputs" onClick={() => triggerDeleteUser()}>Remove a user at this id</button>
-                <input value={removeUserID} onChange={(e) => handleUserIDChange(e)} className="inputs"></input>
+            <div className='container' style = {{color: 'white'}}>This page is for API testing
+                {/* <Login /> */}
+                {/* <button className="inputs" onClick={() => createStaticUser()}>Create a new user</button> */}
+                {/* <button className="inputs" onClick={() => triggerDeleteUser()}>Remove a user at this id</button> */}
+                {/* <input value={removeUserID} onChange={(e) => handleUserIDChange(e)} className="inputs"></input> */}
                 <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getSeriesData()}>Get series data</button>
                 <button className="inputs" onClick={() => getBTSData()}>Get BTS data</button>
             </div>
             <div className='container'>
-                {seriesData.length > 0 && seriesData.map((show) => {
-                    return <Card key={show.ID} content={show} />
+                {seriesData.length > 0 && seriesData.map((video) => {
+                    return <Card key={video.series_id} content={video} />
                 })}
             </div>
             <div className='container'>
