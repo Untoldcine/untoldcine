@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const cors = require('cors');
+const cookieParser = require('cookie-parser')
 
 const userRoute = require('./routes/userRoute.js')
 const seriesRoute = require('./routes/seriesRoute.js')
@@ -13,6 +14,7 @@ const watchlistRoute = require('./routes/watchlistRoute.js')
 
 app.use(cors({"origin": 'http://localhost:3000'})); //temporary until we go live
 app.use(express.json())
+app.use(cookieParser()) //for login authorization, sending and receiving JWT as cookie in User Controller
 
 app.use('/api/user', userRoute);
 app.use('/api/series', seriesRoute);

@@ -1,49 +1,78 @@
 const connectDB = require('./connectDB')
+const {PrismaClient} = require('@prisma/client')
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
+const prisma = new PrismaClient();
 
 exports.createNewUser = async(req, res) => {
-
-    const {nickname, email, password, sub_level } = req.body
-
-    const connection = connectDB();
-    const query = `INSERT INTO users (nickname, email, password, sub_level) VALUES (?, ?, ?, ?)`;
-
-    //Inserting new user data into DB
-    //TO ADD: Need to encrypt password, will do later
-    connection.query(query, [nickname, email, password, sub_level], (queryError, _results) => {
-        if (queryError){
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : 'Error creating user during database operation'})
-        }
-
-        //Send new user data back to client to use
-        const newUserDetails = 'SELECT * FROM users WHERE id = LAST_INSERT_ID()'
-        connection.query(newUserDetails, (selectError, userResults) => {
-            connection.end()
-            if (selectError) {
-                console.error('Error ' + selectError)
-                return res.status(500).json({'message' : 'Error returning new user data to client'})
+    const {nickname, email, password } = req.body
+    if (!nickname || !email || !password) {
+        return res.status(400).json({"message" : "Missing email, username, or password"})
+    }
+    try {
+        const exists = await prisma.user.findUnique({
+            where: {
+                user_email: email
             }
-            res.status(200).json(userResults[0] || {})
         })
-    })
+        if (exists) {
+            return res.status(401).json({"message" : `User already exists at email: ${email}`})
+        }
+        const hash = await bcrypt.hash(password, 10);
+        const user = await prisma.user.create({
+            data: {
+                user_nickname: nickname,
+                user_email: email,
+                user_password: hash,
+                user_level: 0
+            }
+        })
+    }
+    catch(err) {
+        console.error('Problem querying DB to create new user');
+        return res.status(500).json({"message" : "Internal server error"});
+     }
+    
 }
 
 exports.logIn = async (req, res) => {
     const {email, password} = req.body
-    const connection = connectDB();
-    const query = 'SELECT * FROM users WHERE email = ? AND password = ?'
-    connection.query(query, [email, password], (queryError, results) => {
-        connection.end()
-        if (queryError){
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : 'Error querying for user credentials during database operation'})
-        }
-        if (results.length === 0) {
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : 'Error finding matching user credentials during database operation'})
-        }
-        res.send(results)
+    if (!email || !password) {
+        return res.status(400).json({"message" : "Missing email or password"})
+    }
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                user_email: email
+                }
     })
+        if (!user) {
+            return res.status(401).json({"message" : "No user found at those credentials"})
+    }   
+    //if email exists, then compare hashed value to input password
+        const isValid = await bcrypt.compare(password, user.user_password);
+        if (!isValid) {
+            return res.status(401).json({"message" : "Password does not match!"})
+        }
+        
+        let token = jwt.sign(user, "secretKey");
+
+        //cookie properties for more secure transmission
+        res.cookie('token', token, {
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict', 
+            maxAge: 24 * 60 * 60 * 1000 // expires in a day
+        });
+        return res.status(200).json({ message: "Login successful" });
+
+     }
+     catch(err) {
+        console.error('Problem querying DB to log in');
+        return res.status(500).json({"message" : "Internal server error"});
+     }
+    
 }
 
 exports.submitRating = async (req, res) => {
