@@ -1,24 +1,26 @@
-.icon {
-  color: white;
-  padding: 10px;
+.box {
+  max-width: 355px;
+  height: 53px;
+  display: flex;
+  margin: 1.5rem auto;
+  border-radius: 10px;
+  border: 1px solid #fff;
+  background: transparent;
 }
 
 .input {
-  width: 315px;
-  height: 53px;
+  flex-grow: 1;
+  padding: 0 10px;
   border: none;
   background: transparent;
   outline: none;
   caret-color: white;
   color: white;
+  font-size: 1rem;
 }
 
-.box {
-  width: 355px;
-  height: 53px;
-  display: block;
-  margin: 25px auto;
-  border-radius: 10px;
-  border: 1px solid var(--White, #fff);
-  background: transparent;
+.icon {
+  color: white;
+  padding: 10px;
+  font-size: 1.5rem;
 }

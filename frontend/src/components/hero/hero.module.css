@@ -31,15 +31,16 @@
 }
 
 .titleContainer {
-  transform: translateY(-30%);
+  transform: translateY(-15%);
+  margin-left: 1rem;
 }
 
 .titleImage {
   max-width: 100%;
 }
 
-.metaContainer {
-}
+/* .metaContainer {
+} */
 
 .ratings {
   margin-bottom: 1rem;
@@ -72,8 +73,8 @@
   margin-right: 1rem;
 }
 
-.addButton {
-}
+/* .addButton {
+} */
 
 .iconCircle {
   display: inline-block;
@@ -112,8 +113,8 @@
     height: 250px;
   }
 
-  .heroImage {
-  }
+  /* .heroImage {
+  } */
 
   .overlay {
     padding: 10px;
@@ -152,8 +153,8 @@
   .navButtons {
     display: block;
   }
-  .navList {
-  }
+  /* .navList {
+  } */
   .navButtons {
     flex-direction: column;
     align-items: center;
@@ -168,5 +169,11 @@
 
   .titleContainer {
     text-align: center;
+    transform: translateY(0%);
+    margin-left: 0rem;
+  }
+
+  .infoButton {
+    margin-right: -0.5rem;
   }
 }

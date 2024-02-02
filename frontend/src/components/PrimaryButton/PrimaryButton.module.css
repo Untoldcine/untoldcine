@@ -1,12 +1,15 @@
 .primaryButton {
   display: flex;
-  width: 339px;
+  max-width: 339px;
   height: 53px;
-  padding: 8px 37px;
+  padding: 0.5rem 1rem;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  border-radius: 10px;
+  gap: 0.625rem;
+  border-radius: 0.625rem;
   background: var(--accent, #1e40d8);
   cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1rem;
 }

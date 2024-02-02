@@ -10,25 +10,14 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.popup}>
-        <h4 className={styles.title}>Sign In</h4>
-        <div className={styles.textFieldContainer}> 
-        <TextField text="User Name" icon="fa fa-user icon" />
-        <TextField text="Password" icon="fa fa-lock icon" /> 
+        <div> 
+            <p className={styles.title}>Confirm Your Account</p>
+            <p className={styles.subTitle}>We've sent a code to your email.</p>
         </div>
+        <TextField text="Enter Code Here" icon="" />
         <div>
-          <div className={styles.container}>
-            <span className={styles.checkmark}></span>
-            <input type="checkbox" className={styles.checkbox} />
-            <p>Remember Me</p>
-            <p>
-              <Link className={styles.forgot} href="forgot-password">Forgot password?</Link>
-            </p>
-          </div>
-
         </div>
-        <div className={styles.buttonContainer}>
-          <PrimaryButton className={styles.primary}>Sign In</PrimaryButton>
-        </div>
+        <PrimaryButton className={styles.primary}>Confirm Account</PrimaryButton>
         <p className={styles.remember}>
           Don't have any account? <Link href="/">Sign up</Link>
         </p>

@@ -101,3 +101,17 @@
     align-items: center;
   }
 }
+
+@media (max-width: 492px) {
+  .navbar {
+    justify-content: space-evenly;
+  }
+
+  .customPrimaryButton {
+    margin-left: 0rem;
+  }
+}
+
+.hamburgerButton {
+  background: transparent;
+}

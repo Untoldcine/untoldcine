@@ -1,3 +1,5 @@
+'useclient'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import Image from 'next/image';
 import styles from './NavBarNotSignedIn.module.css';
@@ -18,7 +20,7 @@ export const NavBarNotSignedIn = () => {
         <Image src={UntoldLogo} alt="Logo" width={140} height={82} />
       </div>
       <button className={styles.hamburger} onClick={() => setIsNavExpanded(!isNavExpanded)}>
-        {/* Icon for the hamburger menu */}
+      <FontAwesomeIcon className={styles.hamburgerButton} icon={faBars} />
       </button>
       
       {isNavExpanded && (
@@ -34,10 +36,10 @@ export const NavBarNotSignedIn = () => {
       
       {isNavExpanded && (
         <div className={styles.navButtons}>
-          <Link href="/signup" passHref>
+          <Link href="/sign-up" passHref>
             <SecondaryButton as="a" className={styles.customSecondaryButton}>Sign Up</SecondaryButton>
           </Link>
-          <Link href="/login" passHref>
+          <Link href="/sign-in" passHref>
             <PrimaryButton as="a" className={styles.customPrimaryButton}>Login</PrimaryButton>
           </Link>
         </div>
