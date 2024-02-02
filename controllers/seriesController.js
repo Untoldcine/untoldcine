@@ -11,7 +11,7 @@ exports.getSummary = async (_req, res) => {
                 series_name: true,
                 series_thumbnail: true,
                 series_status: true,
-                genres: {
+                genres: {                       //references linked series_genres id and then goes deeper for the genre_name
                     select: {
                         genre: {
                             select: {
@@ -20,14 +20,22 @@ exports.getSummary = async (_req, res) => {
                         }
                     }
                 },
-                _count : {
+                _count : {                       //length of series
                     select: {
                         videos: true
                     }
                 }
             }
         })
-        res.status(200).json(data)
+        const processedData = data.map(series => ({
+            series_id: series.series_id,
+            series_name: series.series_name,
+            series_thumbnail: series.series_thumbnail,
+            series_status: series.series_status,
+            genres: series.genres.map(g => g.genre.genre_name),
+            series_length: series._count.videos
+        }));
+        res.status(200).json(processedData)
     }
     catch(err) {
         console.error(err + 'Problem querying DB to retrieve summary of all series');

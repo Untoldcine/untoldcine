@@ -7,14 +7,14 @@ import Podcasts from "./podcasts"
 import CommentComponent from './comment'
 import Login from './login'
 
-interface Show {
-    ID: number,
-    series_type: string,
-    series_name: string,
-    length: number | null,
-    rating: string,
-    genres: string
-}
+interface VideoSummary {
+    series_id: number
+    series_name: string
+    series_status: string
+    genres: string[]
+    series_thumbnail: string | null
+    series_length: number
+  }
 
 interface Podcast {
     ID: number,
@@ -52,7 +52,7 @@ interface DBCommentObj {
 const Page = () => {
 
     const [removeUserID, setRemoveUserID] = useState('')
-    const [seriesData, setSeriesData] = useState<Show[] | []>([])
+    const [seriesData, setSeriesData] = useState<VideoSummary[] | []>([])
     const [podcastData, setPodcastData] = useState<Podcast[] | []>([])
     const [preProdType, setPreProdType] = useState<any>()
     const [prodType, setProdType] = useState<any>()
@@ -105,8 +105,7 @@ const Page = () => {
             const res = await axios.get(`http://localhost:3001/api/series/summary`)
             console.log(res.data);
             
-            // const { results } = res.data
-            // setSeriesData(results)
+            setSeriesData(res.data)
         }
         catch (err) {
             console.error(`Error attempting to retrieve series data: ${err}`);
@@ -206,8 +205,8 @@ const Page = () => {
                 <button className="inputs" onClick={() => getBTSData()}>Get BTS data</button>
             </div>
             <div className='container'>
-                {seriesData.length > 0 && seriesData.map((show) => {
-                    return <Card key={show.ID} content={show} />
+                {seriesData.length > 0 && seriesData.map((video) => {
+                    return <Card key={video.series_id} content={video} />
                 })}
             </div>
             <div className='container'>
