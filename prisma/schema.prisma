@@ -41,3 +41,65 @@ model Bills {
 
   @@map("bills")
 }
+
+model Genres {
+  genre_id            Int @id @default(autoincrement())
+  genre_name          String
+  series              Series_Genres[]
+
+  @@map("genres")
+}
+
+enum ContentStatus {
+  pre
+  prod
+  post
+}
+
+model Series {
+  series_id           Int @id @default(autoincrement())
+  series_name         String
+  series_status       ContentStatus
+  date_created        DateTime @default(now())
+  series_upvotes      Int
+  series_downvotes    Int
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  completed           Boolean @default(false)
+  series_main         String
+  series_directors    String
+  series_producers    String
+  series_thumbnail    String?
+  genres              Series_Genres[]
+  videos              Videos[]
+
+  @@map("series")
+}
+
+model Series_Genres {
+  series_id           Int
+  genre_id            Int
+  series              Series @relation(fields:[series_id], references:[series_id])
+  genre               Genres @relation(fields:[genre_id], references:[genre_id])
+
+  @@id([series_id, genre_id])
+  @@map("series_genres")
+}
+
+model Videos {
+  video_id            Int @id @default(autoincrement())
+  video_name          String
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  parent_series_id    Int
+  video_length        Int
+  video_main          String
+  video_url           String?
+  video_thumbnail     String?
+  video_season        Int
+  video_episode       Int
+  series              Series @relation(fields:[parent_series_id], references:[series_id])
+
+  @@map("videos")
+}

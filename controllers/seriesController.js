@@ -1,17 +1,38 @@
 const connectDB = require('./connectDB')
+const {PrismaClient} = require('@prisma/client')
+const prisma = new PrismaClient();
+
 
 exports.getSummary = async (_req, res) => {
-    const connection = connectDB();
-    const query = 'SELECT ID, series_type, series_name, genres, episodes, length, rating FROM series'
-
-    connection.query(query, (queryError, results) => {
-        connection.end()
-        if (queryError){
-            console.error('Error ' + queryError);   
-            res.status(500).json({'message' : 'Error retrieving summary of Series Data during database operation'})
-        }
-        res.status(200).json({results})
-    })
+    try {
+        const data = await prisma.series.findMany({
+            select: {
+                series_id: true,
+                series_name: true,
+                series_thumbnail: true,
+                series_status: true,
+                genres: {
+                    select: {
+                        genre: {
+                            select: {
+                                genre_name: true
+                            }
+                        }
+                    }
+                },
+                _count : {
+                    select: {
+                        videos: true
+                    }
+                }
+            }
+        })
+        res.status(200).json(data)
+    }
+    catch(err) {
+        console.error(err + 'Problem querying DB to retrieve summary of all series');
+        return res.status(500).json({"message" : "Internal server error"});
+     }
 }
 
 //This can be refactored for sure. Once we cache the initial data from 'getSummary', we don't need to query as many things once we retrieve the specific series data

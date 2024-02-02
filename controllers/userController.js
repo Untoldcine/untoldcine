@@ -5,11 +5,6 @@ const bcrypt = require("bcrypt");
 
 const prisma = new PrismaClient();
 
-exports.testPrisma = async (req, res) => {
-    const users = await prisma.user.findMany();
-    res.send(users)
-}
-
 exports.createNewUser = async(req, res) => {
     const {nickname, email, password } = req.body
     if (!nickname || !email || !password) {

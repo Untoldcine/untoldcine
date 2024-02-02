@@ -7,6 +7,4 @@ router.route('/login').post(userController.logIn)
 router.route('/rating/:choice').post(userController.submitRating)
 router.route('/delete/:userID').post(userController.removeUser)
 
-router.route('/testPrisma').get(userController.testPrisma)
-
 module.exports = router;
