@@ -4,6 +4,9 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import { TextField } from "@/components/TextField/TextField.js";
 import { PrimaryButton } from "@/components/PrimaryButton/PrimaryButton.js";
+import { SocialBar } from "@/components/SocialIconBar/SocialIconBar"; 
+import { FooterLogo } from "@/components/FooterLogo/FooterLogo"; 
+import { Footer } from "@/components/Footer/Footer";
 import axios from "axios";
 
 export default function Home() {
@@ -47,11 +50,14 @@ export default function Home() {
             <input type="checkbox" className={styles.checkbox} />
             <p>Remember Me</p>
             <p>
-              <Link href="forgot-password">Forgot password</Link>
+              <Link className={styles.forgot} href="forgot-password">Forgot password?</Link>
             </p>
           </div>
+
         </div>
-        <PrimaryButton>Sign In</PrimaryButton>
+        <div className={styles.buttonContainer}>
+          <PrimaryButton className={styles.primary}>Sign In</PrimaryButton>
+        </div>
         <p className={styles.remember}>
           Don't have any account? <Link href="/">Sign up</Link>
         </p>

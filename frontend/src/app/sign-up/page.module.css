@@ -1,0 +1,99 @@
+@font-face {
+  font-family: "Circular";
+  src: url("/assets/Fonts/circular-std-medium-500.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.popup {
+  width: 500px;
+  height: 619px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: var(--white-trans, rgba(255, 255, 255, 0.1));
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 2rem;
+}
+.title {
+  margin: 32px 86px;
+  text-align: center;
+}
+
+.container {
+  display: block;
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-left: 81px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+}
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: var(--white-trans, rgba(255, 255, 255, 0.1));
+  border-radius: 5px;
+}
+.container p {
+  margin-left: 30px;
+}
+.container:hover input ~ .checkmark {
+  background-color: white;
+}
+.container input:checked ~ .checkmark {
+  background-color: #2196f3;
+}
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.remember {
+  margin: auto 81px;
+}
+
+.primaryButton {
+  border: none;
+  margin: auto;
+  margin-bottom: 3rem;
+}
+
+.signInLink {
+  text-decoration: underline;
+}

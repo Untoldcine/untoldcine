@@ -1,89 +1,82 @@
 .popup {
-  width: 500px;
-  height: 462px;
-  flex-shrink: 0;
+  max-width: 500px;
+  width: 90%;
   border-radius: 16px;
   background: var(--white-trans, rgba(255, 255, 255, 0.1));
+  margin: 2rem auto;
+  padding: 2rem;
+  box-sizing: border-box;
 }
+
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding-bottom: 10rem;
+  padding: 1rem;
 }
+
 .title {
-  margin: 32px 86px;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
 .container {
-  display: block;
-  position: relative;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  margin-left: 81px;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
 }
-.container input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 18px;
-  width: 18px;
+
+.container input[type="checkbox"] {
+  margin-right: 1rem;
 }
-.container p {
-  display: inline;
-}
-.container a {
-  float: right;
-  margin-right: 79px;
-}
+
 .checkmark {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 18px;
-  width: 18px;
-  background-color: var(--white-trans, rgba(255, 255, 255, 0.1));
+  height: 1rem;
+  width: 1rem;
   border-radius: 5px;
-}
-.container p {
-  margin-left: 30px;
-}
-.container:hover input ~ .checkmark {
-  background-color: white;
-}
-.container input:checked ~ .checkmark {
-  background-color: #2196f3;
-}
-.checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
+  background-color: var(--white-trans, rgba(255, 255, 255, 0.1));
 }
 
-/* Show the checkmark when checked */
-.container input:checked ~ .checkmark:after {
-  display: block;
+.remember,
+.forgot {
+  text-align: center;
+  margin: 1rem 0;
 }
 
-/* Style the checkmark/indicator */
-.container .checkmark:after {
-  left: 9px;
-  top: 5px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 3px 3px 0;
-  -webkit-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  transform: rotate(45deg);
+.primary {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
 }
 
-.remember {
-  margin: auto 81px;
+@media (max-width: 768px) {
+  .popup {
+    width: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  .popup {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .forgot {
+    margin-top: 1rem;
+  }
+
+  .primary {
+    padding: 1rem;
+  }
 }

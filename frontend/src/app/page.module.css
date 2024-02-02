@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "Circular";
+  src: url("../assets/Fonts/circular-std-medium-500.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .popup {
   width: 500px;
   height: 619px;

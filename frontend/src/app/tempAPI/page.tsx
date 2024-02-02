@@ -6,6 +6,11 @@ import Card from "./card"
 import Podcasts from "./podcasts"
 import CommentComponent from './comment'
 import Login from './login'
+import styles from "../page.module.css"
+import { Footer } from '@/components/Footer/Footer'
+import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSignedIn'
+import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn'
+
 
 interface VideoSummary {
     series_id: number
@@ -254,6 +259,10 @@ const Page = () => {
                         <button disabled onClick={() => addToWatchList(content.ID)}>Add to Watchlist</button>
                     </div>
                 }) : null}
+                <div>
+
+                <Footer />
+                </div>
             </div>
         </>
     )

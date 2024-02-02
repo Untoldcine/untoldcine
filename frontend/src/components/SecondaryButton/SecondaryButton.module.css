@@ -1,0 +1,17 @@
+.secondaryButton {
+  display: flex;
+  width: 233px;
+  height: 59px;
+  padding: 8px 37px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 2px solid var(--White, #fff);
+  background-color: transparent;
+}
+
+.secondaryButtonParagraph {
+  font-size: 24px;
+}
