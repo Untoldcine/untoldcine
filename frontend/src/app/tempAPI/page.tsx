@@ -12,7 +12,7 @@ import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSigne
 import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn'
 
 
-interface VideoSummary {
+interface SeriesSummary {
     series_id: number
     series_name: string
     series_status: string
@@ -21,11 +21,21 @@ interface VideoSummary {
     series_length: number
   }
 
-interface Podcast {
-    ID: number,
-    name: string,
-    media_type: string,
-}
+  interface MovieSummary {
+    movie_id: number
+    movie_name: string
+    movie_status: string
+    genres: string[]
+    movie_length: number
+    movie_thumbnail: string | null
+  }
+
+  interface PodcastSummary {
+    podcast_id: number
+    podcast_name: string
+    podcast_status: string
+    podcast_thumbnail: string | null
+  }
 
 interface BTS {
     ID: number,
@@ -57,8 +67,9 @@ interface DBCommentObj {
 const Page = () => {
 
     const [removeUserID, setRemoveUserID] = useState('')
-    const [seriesData, setSeriesData] = useState<VideoSummary[] | []>([])
-    const [podcastData, setPodcastData] = useState<Podcast[] | []>([])
+    const [seriesData, setSeriesData] = useState<SeriesSummary[] | []>([])
+    const [moviesData, setMoviesData] = useState<MovieSummary[] | []>([])
+    const [podcastData, setPodcastData] = useState<PodcastSummary[] | []>([])
     const [preProdType, setPreProdType] = useState<any>()
     const [prodType, setProdType] = useState<any>()
     const [postProdType, setPostProdType] = useState<any>()
@@ -107,10 +118,20 @@ const Page = () => {
     //Likely use IndexedDB API for client side caching
     const getSeriesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/series/summary`)
+            const res = await axios.get(`http://localhost:3001/api/series/seriesSummary`)
             console.log(res.data);
-            
             setSeriesData(res.data)
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve series data: ${err}`);
+        }
+    }
+
+    const getMoviesData = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/series/movieSummary`)
+            console.log(res.data);
+            setMoviesData(res.data)
         }
         catch (err) {
             console.error(`Error attempting to retrieve series data: ${err}`);
@@ -119,9 +140,9 @@ const Page = () => {
 
     const getPodcastData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/podcast/summary`)
-            const { results } = res.data
-            setPodcastData(results)
+            const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`)
+            console.log(res.data);
+            setPodcastData(res.data)
         }
         catch (err) {
             console.error(`Error attempting to retrieve podcast data: ${err}`);
@@ -201,12 +222,9 @@ const Page = () => {
     return (
         <>
             <div className='container' style = {{color: 'white'}}>This page is for API testing
-                {/* <Login /> */}
-                {/* <button className="inputs" onClick={() => createStaticUser()}>Create a new user</button> */}
-                {/* <button className="inputs" onClick={() => triggerDeleteUser()}>Remove a user at this id</button> */}
-                {/* <input value={removeUserID} onChange={(e) => handleUserIDChange(e)} className="inputs"></input> */}
                 <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getSeriesData()}>Get series data</button>
+                <button className="inputs" onClick={() => getMoviesData()}>Get movies data</button>
                 <button className="inputs" onClick={() => getBTSData()}>Get BTS data</button>
             </div>
             <div className='container'>
@@ -215,11 +233,16 @@ const Page = () => {
                 })}
             </div>
             <div className='container'>
-                {podcastData.length > 0 && podcastData.map((podcast) => {
-                    return <Podcasts key={podcast.ID} content={podcast} />
+                {moviesData.length > 0 && moviesData.map((movie) => {
+                    return <Card key={movie.movie_id} content={movie} />
                 })}
             </div>
             <div className='container'>
+                {podcastData.length > 0 && podcastData.map((podcast) => {
+                    return <Card key={podcast.podcast_id} content={podcast} />
+                })}
+            </div>
+            {/* <div className='container'>
                 <h4>Pre-production</h4>
                 {preProdType ? preProdType.map((content: BTS) => {
                     return <div key={content.ID} className="video-block">
@@ -263,7 +286,7 @@ const Page = () => {
 
                 <Footer />
                 </div>
-            </div>
+            </div> */}
         </>
     )
 }

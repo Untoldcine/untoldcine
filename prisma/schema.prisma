@@ -46,6 +46,7 @@ model Genres {
   genre_id            Int @id @default(autoincrement())
   genre_name          String
   series              Series_Genres[]
+  movies              Movie_Genres[]
 
   @@map("genres")
 }
@@ -54,6 +55,12 @@ enum ContentStatus {
   pre
   prod
   post
+}
+
+enum PodcastTypes {
+  highlight
+  review
+  interview
 }
 
 model Series {
@@ -102,4 +109,51 @@ model Videos {
   series              Series @relation(fields:[parent_series_id], references:[series_id])
 
   @@map("videos")
+}
+
+model Movies {
+  movie_id            Int @id @default(autoincrement())
+  movie_name          String
+  movie_status        ContentStatus
+  movie_upvotes       Int
+  movie_downvotes     Int
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  movie_length        Int
+  movie_main          String
+  movie_url           String?
+  movie_thumbnail     String?
+  genres              Movie_Genres[]
+
+  @@map("movies")        
+}
+
+model Movie_Genres {
+  movie_id            Int
+  genre_id            Int
+  movies              Movies @relation(fields:[movie_id], references:[movie_id])
+  genre               Genres @relation(fields:[genre_id], references:[genre_id])
+
+  @@id([movie_id, genre_id])
+  @@map("movie_genres")
+}
+
+model Podcasts {
+  podcast_id          Int @id @default(autoincrement())
+  podcast_name        String
+  podcast_type        PodcastTypes
+  podcast_upvotes     Int
+  podcast_downvotes   Int
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  podcast_main        String
+  podcast_starring    String
+  podcast_directors   String
+  podcast_producers   String
+  podcast_url         String?
+  podcast_thumbnail   String?
+
+  @@map("podcasts")
 }

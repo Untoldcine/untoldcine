@@ -3,7 +3,7 @@ const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient();
 
 
-exports.getSummary = async (_req, res) => {
+exports.getSeriesSummary = async (_req, res) => {
     try {
         const data = await prisma.series.findMany({
             select: {
@@ -87,4 +87,37 @@ exports.getSpecificSeries = async (req, res) => {
 
 
     
+}
+
+
+exports.getMovieSummary = async (_req, res) => {
+    try {
+        const data = await prisma.movies.findMany({
+            select: {
+                movie_id: true,
+                movie_name: true,
+                movie_thumbnail: true,
+                movie_status: true,
+                genres: {                       
+                    select: {
+                        genre: {
+                            select: {
+                                genre_name: true
+                            }
+                        }
+                    }
+                },
+                movie_length: true
+            }
+        })
+        const processedData = data.map(movie => ({
+            ...movie,
+            genres: movie.genres.map(g => g.genre.genre_name),
+        }));
+        res.status(200).json(processedData)
+    }
+    catch(err) {
+        console.error(err + 'Problem querying DB to retrieve summary of all movies');
+        return res.status(500).json({"message" : "Internal server error"});
+     }
 }
