@@ -79,6 +79,7 @@ model Series {
   series_thumbnail    String?
   genres              Series_Genres[]
   videos              Videos[]
+  bts_series          BTS_Series[]
 
   @@map("series")
 }
@@ -156,4 +157,21 @@ model Podcasts {
   podcast_thumbnail   String?
 
   @@map("podcasts")
+}
+
+model BTS_Series {
+  bts_series_id          Int @id @default(autoincrement())
+  bts_series_name        String
+  parent_series_id       Int
+  bts_series_episode     Int
+  bts_series_main        String
+  date_created           DateTime @default(now())
+  deleted                Boolean @default(false)
+  deleted_at             DateTime?
+  bts_series_length      Int
+  bts_series_url         String?
+  bts_series_thumbnail   String?
+  series                 Series @relation(fields:[parent_series_id], references:[series_id])
+
+  @@map("bts_series")
 }

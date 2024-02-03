@@ -37,6 +37,14 @@ interface SeriesSummary {
     podcast_thumbnail: string | null
   }
 
+  interface BTSSeriesSummary {
+    series_id: number
+    bts_series_id: number
+    series_name: string
+    series_status: string
+    series_thumbnail: string | null
+  }
+
 interface BTS {
     ID: number,
     series_name: string
@@ -70,6 +78,7 @@ const Page = () => {
     const [seriesData, setSeriesData] = useState<SeriesSummary[] | []>([])
     const [moviesData, setMoviesData] = useState<MovieSummary[] | []>([])
     const [podcastData, setPodcastData] = useState<PodcastSummary[] | []>([])
+    const [btsSeriesData, setBtsSeriesData] = useState<BTSSeriesSummary[] | []>([])
     const [preProdType, setPreProdType] = useState<any>()
     const [prodType, setProdType] = useState<any>()
     const [postProdType, setPostProdType] = useState<any>()
@@ -150,13 +159,11 @@ const Page = () => {
     }
 
     //all bts content should be in their own components but i got lazy for testing
-    const getBTSData = async () => {
+    const getBTSSeriesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTS`)
-            const { pre, prod, post } = res.data
-            setPreProdType(pre)
-            setProdType(prod)
-            setPostProdType(post)
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSSeries`)
+            console.log(res.data);
+            setBtsSeriesData(res.data)
         }
         catch (err) {
             console.error(`Error attempting to retrieve podcast data: ${err}`);
@@ -225,7 +232,8 @@ const Page = () => {
                 <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getSeriesData()}>Get series data</button>
                 <button className="inputs" onClick={() => getMoviesData()}>Get movies data</button>
-                <button className="inputs" onClick={() => getBTSData()}>Get BTS data</button>
+                <button className="inputs" onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
+                {/* <button className="inputs" onClick={() => getBTSData()}>Get BTS Movies data</button> */}
             </div>
             <div className='container'>
                 {seriesData.length > 0 && seriesData.map((video) => {
@@ -240,6 +248,11 @@ const Page = () => {
             <div className='container'>
                 {podcastData.length > 0 && podcastData.map((podcast) => {
                     return <Card key={podcast.podcast_id} content={podcast} />
+                })}
+            </div>
+            <div className='container'>
+                {btsSeriesData.length > 0 && btsSeriesData.map((btsSeries) => {
+                    return <Card key={btsSeries.bts_series_id} content={btsSeries} />
                 })}
             </div>
             {/* <div className='container'>

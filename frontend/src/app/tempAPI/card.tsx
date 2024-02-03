@@ -35,6 +35,13 @@ interface PodcastSummary {
   podcast_thumbnail: string | null
 }
 
+interface BTSSeriesSummary {
+  series_id: number
+  bts_series_id: number
+  series_name: string
+  series_status: string
+  series_thumbnail: string | null
+}
 
 interface VideoDetail {
   ID: number;
@@ -43,7 +50,7 @@ interface VideoDetail {
   description: string;
 }
 
-type Content = SeriesSummary | MovieSummary | PodcastSummary;
+type Content = SeriesSummary | MovieSummary | PodcastSummary | BTSSeriesSummary;
 
 interface CardProps {
   content: Content;
@@ -54,7 +61,8 @@ const Card: React.FC<CardProps> = ({ content }) => {
 
   //type guards
   function isSeries(content: Content): content is SeriesSummary {
-    return (content as SeriesSummary).series_id !== undefined;
+    return (content as SeriesSummary).series_id !== undefined && (content as BTSSeriesSummary).bts_series_id === undefined;
+    ;
   }
 
   function isMovie(content: Content): content is MovieSummary {
@@ -63,6 +71,11 @@ const Card: React.FC<CardProps> = ({ content }) => {
 
   function isPodcast(content: Content): content is PodcastSummary {
     return (content as PodcastSummary).podcast_id !== undefined;
+  }
+
+  function isBTSSeries(content: Content): content is SeriesSummary {
+    return (content as SeriesSummary).series_id !== undefined && (content as BTSSeriesSummary).bts_series_id !== undefined;
+    ;
   }
 
 
@@ -171,6 +184,28 @@ const Card: React.FC<CardProps> = ({ content }) => {
       <div className="summary-block">
         <img className="summary-img" src={testPod.src} />
         <p>{podcast_name}</p>
+      </div>
+    )
+  }
+
+  if (isBTSSeries(content)) {
+    const { series_id, series_name, series_thumbnail, series_status } = content
+    let status
+    if (series_status === 'pre') {
+      status = 'Pre-Production'
+    }
+    if (series_status === 'prod') {
+      status = 'Production'
+    }
+    if (series_status === 'post') {
+      status = 'Post-Production'
+    }
+
+    return (
+      <div className="summary-block">
+        <img className="summary-img" src={testImg.src} />
+        <p>{series_name}</p>
+        <p>Currently in {status}</p>
       </div>
     )
   }
