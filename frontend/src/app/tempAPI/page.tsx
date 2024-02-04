@@ -221,8 +221,8 @@ const Page = () => {
                 <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getSeriesData()}>Get series data</button>
                 <button className="inputs" onClick={() => getMoviesData()}>Get movies data</button>
-                <button className="inputs" onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
-                <button className="inputs" onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>
+                <button className="inputs" disabled onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
+                <button className="inputs" disabled onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>
                 <button className="inputs" onClick={() => getAllBTSSummaryData()}>Get All BTS (as it should be in production)</button>
                 <p>All BTS content already comes as filtered arrays for pre, prod, and post status</p>
                 
