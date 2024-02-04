@@ -12,7 +12,7 @@ import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSigne
 import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn'
 
 
-interface VideoSummary {
+interface SeriesSummary {
     series_id: number
     series_name: string
     series_status: string
@@ -21,11 +21,36 @@ interface VideoSummary {
     series_length: number
   }
 
-interface Podcast {
-    ID: number,
-    name: string,
-    media_type: string,
-}
+  interface MovieSummary {
+    movie_id: number
+    movie_name: string
+    movie_status: string
+    genres: string[]
+    movie_length: number
+    movie_thumbnail: string | null
+  }
+
+  interface PodcastSummary {
+    podcast_id: number
+    podcast_name: string
+    podcast_status: string
+    podcast_thumbnail: string | null
+  }
+
+  interface BTSSeriesSummary {
+    series_id: number
+    bts_series_id: number
+    series_name: string
+    series_status: string
+    series_thumbnail: string | null
+  }
+  interface BTSMoviesSummary {
+    movie_id: number
+    bts_movies_id: number
+    movie_name: string
+    movie_status: string
+    movie_thumbnail: string | null
+  }
 
 interface BTS {
     ID: number,
@@ -56,60 +81,22 @@ interface DBCommentObj {
 
 const Page = () => {
 
-    const [removeUserID, setRemoveUserID] = useState('')
-    const [seriesData, setSeriesData] = useState<VideoSummary[] | []>([])
-    const [podcastData, setPodcastData] = useState<Podcast[] | []>([])
-    const [preProdType, setPreProdType] = useState<any>()
-    const [prodType, setProdType] = useState<any>()
-    const [postProdType, setPostProdType] = useState<any>()
+    const [seriesData, setSeriesData] = useState<SeriesSummary[] | []>([])
+    const [moviesData, setMoviesData] = useState<MovieSummary[] | []>([])
+    const [podcastData, setPodcastData] = useState<PodcastSummary[] | []>([])
+    const [btsSeriesData, setBtsSeriesData] = useState<BTSSeriesSummary[] | []>([])
+    const [btsMoviesData, setBtsMoviesData] = useState<BTSMoviesSummary[] | []>([])
+
     const [newCommentValue, setNewCommentValue] = useState<string>('')
     const [btsComments, setBTSComments] = useState<DBCommentObj | null>(null)
 
-    const userID = 17; 
-
-    const handleUserIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setRemoveUserID(e.target.value)
-    }
-
-    const createStaticUser = async () => {
-        try {
-            const res = await axios.post('http://localhost:3001/api/user/new', {
-                nickname: 'Tester',
-                email: 'tester@hotmail.com',
-                password: '12345',
-                sub_level: 1
-            })
-            console.log(res.data);
-
-        }
-        catch (err) {
-            console.error(`Error attempting to create new user: ${err}`);
-
-        }
-    }
-
-    const triggerDeleteUser = async () => {
-        if (!removeUserID) {
-            return
-        }
-        try {
-            const res = await axios.post(`http://localhost:3001/api/user/delete/${removeUserID}`)
-            console.log(res.data);
-
-        }
-        catch (err) {
-            console.error(`Error attempting to delete user at id ${removeUserID}: ${err}`);
-
-        }
-    }
 
     //when user enters Untold, get sent JSON data that is cached on client side of superficial series information to reduce calls to DB
     //Likely use IndexedDB API for client side caching
     const getSeriesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/series/summary`)
+            const res = await axios.get(`http://localhost:3001/api/series/seriesSummary`)
             console.log(res.data);
-            
             setSeriesData(res.data)
         }
         catch (err) {
@@ -117,97 +104,128 @@ const Page = () => {
         }
     }
 
+    const getMoviesData = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/series/movieSummary`)
+            console.log(res.data);
+            setMoviesData(res.data)
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve movie data: ${err}`);
+        }
+    }
+
     const getPodcastData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/podcast/summary`)
-            const { results } = res.data
-            setPodcastData(results)
+            const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`)
+            console.log(res.data);
+            setPodcastData(res.data)
         }
         catch (err) {
             console.error(`Error attempting to retrieve podcast data: ${err}`);
         }
     }
 
-    //all bts content should be in their own components but i got lazy for testing
-    const getBTSData = async () => {
+    const getBTSSeriesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTS`)
-            const { pre, prod, post } = res.data
-            setPreProdType(pre)
-            setProdType(prod)
-            setPostProdType(post)
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSSeries`)
+            console.log(res.data);
+            setBtsSeriesData(res.data)
         }
         catch (err) {
-            console.error(`Error attempting to retrieve podcast data: ${err}`);
+            console.error(`Error attempting to retrieve BTS Series data: ${err}`);
         }
     }
 
-    const getSpecificBTS = async (ID: number) => {
+    const getBTSMoviesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/bts/specificBTS/${userID}/${ID}`)
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSMovies`)
+            console.log(res.data);
+            setBtsMoviesData(res.data)
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve BTS Movies data: ${err}`);
+        }
+    }
+
+    const getAllBTSSummaryData = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSAll`)
             console.log(res.data);
         }
         catch (err) {
-            console.error(`Error attempting to retrieve specific BTS data: ${err}`);
+            console.error(`Error attempting to retrieve all BTS summaries data: ${err}`);
         }
     }
 
-    const postNewComment = async (e:React.FormEvent, btsID: number) => {
-        e.preventDefault()
-        const commentObj = {
-            content: newCommentValue,
-            ID: btsID,
-            table_name: 'bts_comments'
-        }
-        try {
-            const res = await axios.post(`http://localhost:3001/api/comments/newComment/${userID}`, commentObj)  
-            if (res.status === 200) {
-                setNewCommentValue('')
-            }
+
+    // const getSpecificBTS = async (ID: number) => {
+    //     try {
+    //         const res = await axios.get(`http://localhost:3001/api/bts/specificBTS/${userID}/${ID}`)
+    //         console.log(res.data);
+    //     }
+    //     catch (err) {
+    //         console.error(`Error attempting to retrieve specific BTS data: ${err}`);
+    //     }
+    // }
+
+    // const postNewComment = async (e:React.FormEvent, btsID: number) => {
+    //     e.preventDefault()
+    //     const commentObj = {
+    //         content: newCommentValue,
+    //         ID: btsID,
+    //         table_name: 'bts_comments'
+    //     }
+    //     try {
+    //         const res = await axios.post(`http://localhost:3001/api/comments/newComment/${userID}`, commentObj)  
+    //         if (res.status === 200) {
+    //             setNewCommentValue('')
+    //         }
             
-        }
-        catch (err) {
-            console.error(`Error attempting to POST new comment data: ${err}`);
-        }
-    }
+    //     }
+    //     catch (err) {
+    //         console.error(`Error attempting to POST new comment data: ${err}`);
+    //     }
+    // }
 
-    const addToWatchList = async (ID: number) => {
-        axios.post('http://localhost:3001/api/watchlist/add', {
-            user_id: 2,
-            content_type: 'BTS',
-            content_id: ID
-        })
-            .then((res) => {
-                if (res.data === 'OK') {
-                    console.log('added to watchlist successfully');
+    // const addToWatchList = async (ID: number) => {
+    //     axios.post('http://localhost:3001/api/watchlist/add', {
+    //         user_id: 2,
+    //         content_type: 'BTS',
+    //         content_id: ID
+    //     })
+    //         .then((res) => {
+    //             if (res.data === 'OK') {
+    //                 console.log('added to watchlist successfully');
 
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-    }
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             console.log(err);
+    //         })
+    // }
 
-    const getBTSComments = async (ID: number) => {
-        try {
-            const res = await axios.get(`http://localhost:3001/api/comments/getBTSDiscussion/${userID}/${ID}`)                        
-            setBTSComments(res.data)
-        }
-        catch (err) {
-            console.error(`Error attempting to retrieve comments data: ${err}`);
-        }
-    }
+    // const getBTSComments = async (ID: number) => {
+    //     try {
+    //         const res = await axios.get(`http://localhost:3001/api/comments/getBTSDiscussion/${userID}/${ID}`)                        
+    //         setBTSComments(res.data)
+    //     }
+    //     catch (err) {
+    //         console.error(`Error attempting to retrieve comments data: ${err}`);
+    //     }
+    // }
 
     return (
         <>
             <div className='container' style = {{color: 'white'}}>This page is for API testing
-                {/* <Login /> */}
-                {/* <button className="inputs" onClick={() => createStaticUser()}>Create a new user</button> */}
-                {/* <button className="inputs" onClick={() => triggerDeleteUser()}>Remove a user at this id</button> */}
-                {/* <input value={removeUserID} onChange={(e) => handleUserIDChange(e)} className="inputs"></input> */}
                 <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getSeriesData()}>Get series data</button>
-                <button className="inputs" onClick={() => getBTSData()}>Get BTS data</button>
+                <button className="inputs" onClick={() => getMoviesData()}>Get movies data</button>
+                <button className="inputs" disabled onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
+                <button className="inputs" disabled onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>
+                <button className="inputs" onClick={() => getAllBTSSummaryData()}>Get All BTS (as it should be in production)</button>
+                <p>All BTS content already comes as filtered arrays for pre, prod, and post status</p>
+                
             </div>
             <div className='container'>
                 {seriesData.length > 0 && seriesData.map((video) => {
@@ -215,54 +233,24 @@ const Page = () => {
                 })}
             </div>
             <div className='container'>
-                {podcastData.length > 0 && podcastData.map((podcast) => {
-                    return <Podcasts key={podcast.ID} content={podcast} />
+                {moviesData.length > 0 && moviesData.map((movie) => {
+                    return <Card key={movie.movie_id} content={movie} />
                 })}
             </div>
             <div className='container'>
-                <h4>Pre-production</h4>
-                {preProdType ? preProdType.map((content: BTS) => {
-                    return <div key={content.ID} className="video-block">
-                        <p>{content.series_name}</p>
-                        <button onClick={() => getSpecificBTS(content.ID)}>See More (get all related bts videos)</button>
-                        <br />
-                        <button disabled onClick={() => addToWatchList(content.ID)}>Add to Watchlist</button>
-                        <br/>
-                        <button onClick={() => getBTSComments(content.ID)}>Open Discussions for this BTS series</button>
-                        <form className='block' onSubmit={(e) => postNewComment(e, content.ID)}>
-                            <input value={newCommentValue} onChange={(e) => setNewCommentValue(e.target.value)}></input>
-                            <button>Submit Comment</button>
-                        </form>
-                        {btsComments ? <div className = "block">
-                            {btsComments.topLevel?.map((comment) => {
-                                return <CommentComponent key = {comment.ID} post = {comment}/>
-
-                            })}
-                        </div> : null}
-                    </div>
-                }) : null}
-                <h4>Production</h4>
-                {prodType ? prodType.map((content: BTS) => {
-                    return <div key={content.ID} className="video-block">
-                        <p>{content.series_name}</p>
-                        <button onClick={() => getSpecificBTS(content.ID)}>See More (get all related bts videos)</button>
-                        <br />
-                        <button disabled onClick={() => addToWatchList(content.ID)}>Add to Watchlist</button>
-                    </div>
-                }) : null}
-                <h4>Post-production</h4>
-                {postProdType ? postProdType.map((content: BTS) => {
-                    return <div key={content.ID} className="video-block">
-                        <p>{content.series_name}</p>
-                        <button onClick={() => getSpecificBTS(content.ID)}>See More (get all related bts videos)</button>
-                        <br />
-                        <button disabled onClick={() => addToWatchList(content.ID)}>Add to Watchlist</button>
-                    </div>
-                }) : null}
-                <div>
-
-                <Footer />
-                </div>
+                {podcastData.length > 0 && podcastData.map((podcast) => {
+                    return <Card key={podcast.podcast_id} content={podcast} />
+                })}
+            </div>
+            <div className='container'>
+                {btsSeriesData.length > 0 && btsSeriesData.map((btsSeries) => {
+                    return <Card key={btsSeries.bts_series_id} content={btsSeries} />
+                })}
+            </div>
+            <div className='container'>
+                {btsMoviesData.length > 0 && btsMoviesData.map((btsMovies) => {
+                    return <Card key={btsMovies.bts_movies_id} content={btsMovies} />
+                })}
             </div>
         </>
     )

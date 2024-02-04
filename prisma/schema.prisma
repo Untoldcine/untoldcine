@@ -46,6 +46,7 @@ model Genres {
   genre_id            Int @id @default(autoincrement())
   genre_name          String
   series              Series_Genres[]
+  movies              Movie_Genres[]
 
   @@map("genres")
 }
@@ -54,6 +55,12 @@ enum ContentStatus {
   pre
   prod
   post
+}
+
+enum PodcastTypes {
+  highlight
+  review
+  interview
 }
 
 model Series {
@@ -72,6 +79,7 @@ model Series {
   series_thumbnail    String?
   genres              Series_Genres[]
   videos              Videos[]
+  bts_series          BTS_Series[]
 
   @@map("series")
 }
@@ -102,4 +110,86 @@ model Videos {
   series              Series @relation(fields:[parent_series_id], references:[series_id])
 
   @@map("videos")
+}
+
+model Movies {
+  movie_id            Int @id @default(autoincrement())
+  movie_name          String
+  movie_status        ContentStatus
+  movie_upvotes       Int
+  movie_downvotes     Int
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  movie_length        Int
+  movie_main          String
+  movie_url           String?
+  movie_thumbnail     String?
+  genres              Movie_Genres[]
+  bts_movies          BTS_Movies[]
+
+  @@map("movies")        
+}
+
+model Movie_Genres {
+  movie_id            Int
+  genre_id            Int
+  movies              Movies @relation(fields:[movie_id], references:[movie_id])
+  genre               Genres @relation(fields:[genre_id], references:[genre_id])
+
+  @@id([movie_id, genre_id])
+  @@map("movie_genres")
+}
+
+model Podcasts {
+  podcast_id          Int @id @default(autoincrement())
+  podcast_name        String
+  podcast_type        PodcastTypes
+  podcast_upvotes     Int
+  podcast_downvotes   Int
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  podcast_main        String
+  podcast_starring    String
+  podcast_directors   String
+  podcast_producers   String
+  podcast_url         String?
+  podcast_thumbnail   String?
+
+  @@map("podcasts")
+}
+
+model BTS_Series {
+  bts_series_id          Int @id @default(autoincrement())
+  bts_series_name        String
+  parent_series_id       Int
+  bts_series_episode     Int
+  bts_series_main        String
+  date_created           DateTime @default(now())
+  deleted                Boolean @default(false)
+  deleted_at             DateTime?
+  bts_series_length      Int
+  bts_series_url         String?
+  bts_series_thumbnail   String?
+  series                 Series @relation(fields:[parent_series_id], references:[series_id])
+
+  @@map("bts_series")
+}
+
+model BTS_Movies {
+  bts_movies_id          Int @id @default(autoincrement())
+  bts_movies_name        String
+  parent_movie_id        Int
+  bts_movies_episode     Int
+  bts_movies_main        String
+  date_created           DateTime @default(now())
+  deleted                Boolean @default(false)
+  deleted_at             DateTime?
+  bts_movies_length      Int
+  bts_movies_url         String?
+  bts_movies_thumbnail   String?
+  movies                 Movies @relation(fields:[parent_movie_id], references:[movie_id])
+
+  @@map("bts_movies")
 }
