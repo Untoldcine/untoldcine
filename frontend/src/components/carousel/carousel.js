@@ -15,7 +15,7 @@ const Carousel = ({ items, title }) => {
   const scrollRight = () => {
     setStartIndex((prevIndex) => Math.min(prevIndex + 1, items.length - itemsToShow));
   };
-
+ 
   return (
     <>
     <div className={styles.carouselContainer}>

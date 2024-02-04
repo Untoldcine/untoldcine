@@ -11,5 +11,6 @@
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
+  border: none;
   font-size: 1rem;
 }

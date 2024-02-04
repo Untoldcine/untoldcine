@@ -50,7 +50,7 @@ const originalContent = [
     id: 1,
     imageUrl: "/assets/MovieThumbnail5.png",
   },  
-];
+]; 
 export default function Test() {
   return (
     <> 
