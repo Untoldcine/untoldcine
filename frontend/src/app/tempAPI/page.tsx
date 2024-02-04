@@ -111,7 +111,7 @@ const Page = () => {
             setMoviesData(res.data)
         }
         catch (err) {
-            console.error(`Error attempting to retrieve series data: ${err}`);
+            console.error(`Error attempting to retrieve movie data: ${err}`);
         }
     }
 
@@ -133,7 +133,7 @@ const Page = () => {
             setBtsSeriesData(res.data)
         }
         catch (err) {
-            console.error(`Error attempting to retrieve podcast data: ${err}`);
+            console.error(`Error attempting to retrieve BTS Series data: ${err}`);
         }
     }
 
@@ -144,9 +144,20 @@ const Page = () => {
             setBtsMoviesData(res.data)
         }
         catch (err) {
-            console.error(`Error attempting to retrieve podcast data: ${err}`);
+            console.error(`Error attempting to retrieve BTS Movies data: ${err}`);
         }
     }
+
+    const getAllBTSSummaryData = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSAll`)
+            console.log(res.data);
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve all BTS summaries data: ${err}`);
+        }
+    }
+
 
     // const getSpecificBTS = async (ID: number) => {
     //     try {
@@ -212,6 +223,8 @@ const Page = () => {
                 <button className="inputs" onClick={() => getMoviesData()}>Get movies data</button>
                 <button className="inputs" onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
                 <button className="inputs" onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>
+                <button className="inputs" onClick={() => getAllBTSSummaryData()}>Get All BTS (as it should be in production)</button>
+                <p>All BTS content already comes as filtered arrays for pre, prod, and post status</p>
                 
             </div>
             <div className='container'>
