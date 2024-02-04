@@ -126,6 +126,7 @@ model Movies {
   movie_url           String?
   movie_thumbnail     String?
   genres              Movie_Genres[]
+  bts_movies          BTS_Movies[]
 
   @@map("movies")        
 }
@@ -174,4 +175,21 @@ model BTS_Series {
   series                 Series @relation(fields:[parent_series_id], references:[series_id])
 
   @@map("bts_series")
+}
+
+model BTS_Movies {
+  bts_movies_id          Int @id @default(autoincrement())
+  bts_movies_name        String
+  parent_movie_id        Int
+  bts_movies_episode     Int
+  bts_movies_main        String
+  date_created           DateTime @default(now())
+  deleted                Boolean @default(false)
+  deleted_at             DateTime?
+  bts_movies_length      Int
+  bts_movies_url         String?
+  bts_movies_thumbnail   String?
+  movies                 Movies @relation(fields:[parent_movie_id], references:[movie_id])
+
+  @@map("bts_movies")
 }

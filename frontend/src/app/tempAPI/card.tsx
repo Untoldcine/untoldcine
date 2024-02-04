@@ -43,6 +43,14 @@ interface BTSSeriesSummary {
   series_thumbnail: string | null
 }
 
+interface BTSMoviesSummary {
+  movie_id: number
+  bts_movies_id: number
+  movie_name: string
+  movie_status: string
+  movie_thumbnail: string | null
+}
+
 interface VideoDetail {
   ID: number;
   name: string;
@@ -50,7 +58,7 @@ interface VideoDetail {
   description: string;
 }
 
-type Content = SeriesSummary | MovieSummary | PodcastSummary | BTSSeriesSummary;
+type Content = SeriesSummary | MovieSummary | PodcastSummary | BTSSeriesSummary | BTSMoviesSummary;
 
 interface CardProps {
   content: Content;
@@ -66,19 +74,22 @@ const Card: React.FC<CardProps> = ({ content }) => {
   }
 
   function isMovie(content: Content): content is MovieSummary {
-    return (content as MovieSummary).movie_id !== undefined;
+    return (content as MovieSummary).movie_id !== undefined && (content as BTSMoviesSummary).bts_movies_id === undefined;
   }
 
   function isPodcast(content: Content): content is PodcastSummary {
     return (content as PodcastSummary).podcast_id !== undefined;
   }
 
-  function isBTSSeries(content: Content): content is SeriesSummary {
-    return (content as SeriesSummary).series_id !== undefined && (content as BTSSeriesSummary).bts_series_id !== undefined;
+  function isBTSSeries(content: Content): content is BTSSeriesSummary {
+    return (content as BTSSeriesSummary).series_id !== undefined && (content as BTSSeriesSummary).bts_series_id !== undefined;
     ;
   }
 
-
+  function isBTSMovies(content: Content): content is BTSMoviesSummary {
+    return (content as BTSMoviesSummary).movie_id !== undefined && (content as BTSMoviesSummary).bts_movies_id !== undefined;
+    ;
+  }
 
   const [seriesDetails, setSeriesDetails] = useState(null)
   const [videoDetails, setVideoDetails] = useState<VideoDetail[] | []>([])
@@ -86,17 +97,6 @@ const Card: React.FC<CardProps> = ({ content }) => {
   let showPositives
   let genreArray
   let formattedLength
-
-  //parse and then calculate viewer ratings
-  // if (rating) {
-  //   const { Upvotes, Downvotes } = JSON.parse(rating);
-  //   showPositives = Math.floor((Upvotes / (Upvotes + Downvotes)) * 100)
-  // }
-  // //parse and display genres
-  // if (genres) {
-  //   const genre = JSON.parse(genres)
-  //   genreArray = genre.join(' ')
-  // }
 
   // //format length which comes as total minutes. If <60min, display just the length and handle down in the markup itself
   // if (length) {
@@ -144,8 +144,6 @@ const Card: React.FC<CardProps> = ({ content }) => {
     }
   }
 
-  //TO FIX: The related videos should be a child component of the Detailed Series Component. We can then update the currently selected season (if its TV) state 
-  //which will render the episodes that are only associated with that season.
 
   if (isSeries(content)) {
     const { series_id, series_name, series_thumbnail, genres, series_length } = content
@@ -167,7 +165,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
       // {/*  </Link> */}
     )
   }
-  if (isMovie(content)) {
+  if (isMovie(content)) {    
     const {movie_id, movie_name, movie_thumbnail, genres, movie_length} = content
     return (
       <div className="summary-block">
@@ -209,6 +207,30 @@ const Card: React.FC<CardProps> = ({ content }) => {
       </div>
     )
   }
+
+  if (isBTSMovies(content)) {
+    const { movie_id, movie_name, movie_thumbnail, movie_status } = content
+    let status
+    if (movie_status === 'pre') {
+      status = 'Pre-Production'
+    }
+    if (movie_status === 'prod') {
+      status = 'Production'
+    }
+    if (movie_status === 'post') {
+      status = 'Post-Production'
+    }
+
+    return (
+      <div className="summary-block">
+        <img className="summary-img" src={testMovieImg.src} />
+        <p>{movie_name}</p>
+        <p>Currently in {status}</p>
+      </div>
+    )
+  }
 }
+
+
 
 export default Card

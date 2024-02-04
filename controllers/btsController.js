@@ -32,7 +32,41 @@ exports.getSummaryBTSSeries = async (_req, res) => {
         return res.status(200).json(seriesData)
     }
     catch(err) {
-        console.error(err + 'Problem querying DB to retrieve summary of all series');
+        console.error(err + 'Problem querying DB to retrieve summary of all BTS Series');
+        return res.status(500).json({"message" : "Internal server error"});
+     }
+}
+
+exports.getSummaryBTSMovies = async (_req, res) => {
+    try {
+        const uniqueMovieIDs = await prisma.BTS_Movies.findMany({
+            select: {
+                bts_movies_id: true,
+                parent_movie_id: true
+            },
+            distinct: ['parent_movie_id']
+        })
+        const moviesData = await Promise.all(uniqueMovieIDs.map(async (bts) => {
+            const moviesDetail = await prisma.movies.findUnique({
+                where: {
+                    movie_id: bts.parent_movie_id
+                },
+                select: {
+                    movie_id: true,
+                    movie_name: true,
+                    movie_status: true,
+                    movie_thumbnail: true
+                }
+            })
+            return {
+                ...moviesDetail,
+                bts_movies_id: bts.bts_movies_id
+            }
+        }))
+        return res.status(200).json(moviesData)
+    }
+    catch(err) {
+        console.error(err + 'Problem querying DB to retrieve summary of all BTS Movies');
         return res.status(500).json({"message" : "Internal server error"});
      }
 }
