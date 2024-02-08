@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const commentsController = require('../controllers/commentsController.js')
 
-router.route('/getDiscussion/:userID/:seriesID').get(commentsController.getSeriesComments)
-router.route('/getPodcastDiscussion/:userID/:podcastID').get(commentsController.getPodcastComments)
+// router.route('/getDiscussion/:userID/:seriesID').get(commentsController.getSeriesComments)
+// router.route('/getPodcastDiscussion/:userID/:podcastID').get(commentsController.getPodcastComments)
 router.route('/getBTSDiscussion/:userID/:seriesID').get(commentsController.getBTSComments)
 router.route('/newComment/:userID').post(commentsController.newComment)
 router.route('/editComment').post(commentsController.editComment)

@@ -2,6 +2,7 @@
 import axios from 'axios'
 import './tempstyles.css'
 import { useState, useEffect } from 'react'
+import {SeriesSummary, MovieSummary, PodcastSummary, BTSSeriesSummary, BTSMoviesSummary} from "./interfaces"
 import Card from "./card"
 import Podcasts from "./podcasts"
 import CommentComponent from './comment'
@@ -11,46 +12,6 @@ import { Footer } from '@/components/Footer/Footer'
 import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSignedIn'
 import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn'
 
-
-interface SeriesSummary {
-    series_id: number
-    series_name: string
-    series_status: string
-    genres: string[]
-    series_thumbnail: string | null
-    series_length: number
-  }
-
-  interface MovieSummary {
-    movie_id: number
-    movie_name: string
-    movie_status: string
-    genres: string[]
-    movie_length: number
-    movie_thumbnail: string | null
-  }
-
-  interface PodcastSummary {
-    podcast_id: number
-    podcast_name: string
-    podcast_status: string
-    podcast_thumbnail: string | null
-  }
-
-  interface BTSSeriesSummary {
-    series_id: number
-    bts_series_id: number
-    series_name: string
-    series_status: string
-    series_thumbnail: string | null
-  }
-  interface BTSMoviesSummary {
-    movie_id: number
-    bts_movies_id: number
-    movie_name: string
-    movie_status: string
-    movie_thumbnail: string | null
-  }
 
 interface BTS {
     ID: number,
@@ -207,8 +168,8 @@ const Page = () => {
     return (
         <>
             <div className='container' style = {{color: 'white'}}>This page is for API testing
-                <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getSeriesData()}>Get series data</button>
+                <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getMoviesData()}>Get movies data</button>
                 <button className="inputs"  onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
                 <button className="inputs"  onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>

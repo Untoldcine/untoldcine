@@ -1,45 +1,114 @@
 const connectDB = require('./connectDB')
+const {PrismaClient} = require('@prisma/client')
+const prisma = new PrismaClient();
+
 
 exports.getSeriesComments = async (req, res) => {
-    const {userID, seriesID} = req.params;
-    if (!seriesID) {
-        res.status(400).json({'message': 'Missing series ID to retrieve comments'})
+    const { userID, seriesID } = req.params;
+
+    if (!seriesID || !userID) {
+        return res.status(400).json({'message': 'Missing series or user ID to retrieve comments'});
     }
-    const connection = connectDB();
-    const query = 'SELECT comments.ID, comments.content, comments.date, comments.parent_id, comments.rating, comments.user_id, comments.series_id, comments.edited, users.nickname, feedback.rating AS user_feedback FROM comments JOIN users on comments.user_id = users.ID LEFT JOIN feedback on comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE comments.series_id = ? AND comments.deleted = FALSE'
-    connection.query(query, [userID, seriesID], (queryError, results) => {
-        connection.end();
-        if (queryError){
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : `Error retrieving summary of comments at ID ${seriesID} during database operation`})
-        }
 
-        //manipulate data to create parent-child structure for client side
-        const commentMap = {}
-        const topLevelComments = []
+    try {
+        const comments = await prisma.series_Comments.findMany({
+            where: {
+                parent_series_id: parseInt(seriesID),
+                deleted: false,
+            },
+            include: {
+                user: true, 
+                // feedback: {
+                //     where: {
+                //         user_ID: parseInt(userID),
+                //     },
+                //     select: {
+                //         rating: true,
+                //     },
+                // },
+            },
+        });
 
-        //create a map for each comment for faster data access
-        results.forEach((comment) => {
-            commentMap[comment.ID] = {
-                ...comment,
-                userHasResponded: comment.user_feedback !== null,
-                replies: []
-            }
-        })
+        const commentMap = {};
+        const topLevelComments = [];
 
-        //if parent_id exists, append to parent comment replies array
-        results.forEach((comment) => {
-            if (comment.parent_id !== null) {
-                let parentComment = commentMap[comment.parent_id];
-                if (parentComment) {
-                    parentComment.replies.push(commentMap[comment.ID]);
-                }
-            } else {
-                topLevelComments.push(commentMap[comment.ID]);
+        //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
+        //those with parent_ids are placed within their respective 'reply' arrays
+        comments.forEach(comment => {
+            commentMap[comment.series_comments_id] = { ...comment, replies: [] };
+
+            if (comment.parent_comment_id === null) {
+                topLevelComments.push(commentMap[comment.series_comments_id]);
             }
         });
-        res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
-    })
+
+        comments.forEach(comment => {
+            if (comment.parent_comment_id !== null) {
+                if (commentMap[comment.parent_comment_id]) {
+                    commentMap[comment.parent_comment_id].replies.push(commentMap[comment.series_comments_id]);
+                }
+            }
+        });
+
+        res.status(200).json(topLevelComments);
+    } catch (error) {
+        console.error('Error', error);
+        res.status(500).json({'message': `Error retrieving summary of comments for series ID ${seriesID} during database operation`});
+    }
+}
+
+exports.getMovieComments = async (req, res) => {
+    const { userID, movieID } = req.params;
+
+    if (!movieID || !userID) {
+        return res.status(400).json({'message': 'Missing movie or user ID to retrieve comments'});
+    }
+
+    try {
+        const comments = await prisma.Movie_Comments.findMany({
+            where: {
+                parent_movie_id: parseInt(movieID),
+                deleted: false,
+            },
+            include: {
+                user: true, 
+                // feedback: {
+                //     where: {
+                //         user_ID: parseInt(userID),
+                //     },
+                //     select: {
+                //         rating: true,
+                //     },
+                // },
+            },
+        });
+
+        const commentMap = {};
+        const topLevelComments = [];
+
+        //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
+        //those with parent_ids are placed within their respective 'reply' arrays
+        comments.forEach(comment => {
+            commentMap[comment.movie_comments_id] = { ...comment, replies: [] };
+
+            if (comment.parent_comment_id === null) {
+                topLevelComments.push(commentMap[comment.movie_comments_id]);
+            }
+        });
+
+        comments.forEach(comment => {
+            if (comment.parent_comment_id !== null) {
+                if (commentMap[comment.parent_comment_id]) {
+                    commentMap[comment.parent_comment_id].replies.push(commentMap[comment.movie_comments_id]);
+                }
+            }
+        });
+
+        res.status(200).json(topLevelComments);
+    } catch (error) {
+        console.error('Error', error);
+        res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+    }
 }
 
 exports.getPodcastComments = async (req, res) => {
@@ -47,37 +116,51 @@ exports.getPodcastComments = async (req, res) => {
     if (!podcastID) {
         res.status(400).json({'message': 'Missing podcast ID to retrieve comments'})
     }
-    const connection = connectDB();
-    const query = 'SELECT distinct podcast_comments.ID, podcast_comments.podcast_id, podcast_comments.content, podcast_comments.date, podcast_comments.rating, podcast_comments.parent_id, podcast_comments.user_id, podcast_comments.edited, users.nickname, feedback.rating AS user_feedback FROM podcast_comments JOIN users on podcast_comments.user_id = users.ID LEFT JOIN feedback on podcast_comments.ID = feedback.item_ID and feedback.user_ID = ? WHERE podcast_comments.podcast_id = ? AND podcast_comments.deleted = FALSE'
-    connection.query(query, [userID, podcastID], (queryError, results) => {
-        connection.end();
-        if (queryError){
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : `Error retrieving summary of podcast comments at ID ${podcastID} during database operation`})
-        }
-        const commentMap = {}
-        const topLevelComments = []
+    try {
+        const comments = await prisma.Podcast_Comments.findMany({
+            where: {
+                parent_podcast_id: parseInt(podcastID),
+                deleted: false,
+            },
+            include: {
+                user: true, 
+                // feedback: {
+                //     where: {
+                //         user_ID: parseInt(userID),
+                //     },
+                //     select: {
+                //         rating: true,
+                //     },
+                // },
+            },
+        });
 
-        results.forEach((comment) => {
-            commentMap[comment.ID] = {
-                ...comment,
-                userHasResponded: comment.user_feedback !== null,
-                replies : []
-            }
-        })
+        const commentMap = {};
+        const topLevelComments = [];
 
-        results.forEach((comment) => {
-            if (comment.parent_id !== null) {
-                let parentComment = commentMap[comment.parent_id];
-                if (parentComment) {
-                    parentComment.replies.push(commentMap[comment.ID]);
-                }
-            } else {
-                topLevelComments.push(commentMap[comment.ID]);
+        //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
+        //those with parent_ids are placed within their respective 'reply' arrays
+        comments.forEach(comment => {
+            commentMap[comment.podcast_comments_id] = { ...comment, replies: [] };
+
+            if (comment.parent_comment_id === null) {
+                topLevelComments.push(commentMap[comment.podcast_comments_id]);
             }
         });
-        res.status(200).json({"topLevel":topLevelComments, "allComments":commentMap});
-    })
+
+        comments.forEach(comment => {
+            if (comment.parent_comment_id !== null) {
+                if (commentMap[comment.parent_comment_id]) {
+                    commentMap[comment.parent_comment_id].replies.push(commentMap[comment.podcast_comments_id]);
+                }
+            }
+        });
+
+        res.status(200).json(topLevelComments);
+    } catch (error) {
+        console.error('Error', error);
+        res.status(500).json({'message': `Error retrieving summary of comments for podcast ID ${podcastID} during database operation`});
+    }
 }
 
 exports.getBTSComments = async (req, res) => {

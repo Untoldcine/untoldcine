@@ -25,6 +25,10 @@ model User {
   pw_reset_token      String?
   reset_token_expiry  DateTime?
 
+  series_comments     Series_Comments[]
+  movie_comments      Movie_Comments[]
+  podcast_comments    Podcast_Comments[]
+
   @@map("users")
 }
 
@@ -80,6 +84,7 @@ model Series {
   genres              Series_Genres[]
   videos              Videos[]
   bts_series          BTS_Series[]
+  series_comments     Series_Comments[]
 
   @@map("series")
 }
@@ -127,6 +132,7 @@ model Movies {
   movie_thumbnail     String?
   genres              Movie_Genres[]
   bts_movies          BTS_Movies[]
+  movie_comments      Movie_Comments[]
 
   @@map("movies")        
 }
@@ -156,6 +162,7 @@ model Podcasts {
   podcast_producers   String
   podcast_url         String?
   podcast_thumbnail   String?
+  podcast_comments    Podcast_Comments[]
 
   @@map("podcasts")
 }
@@ -192,4 +199,64 @@ model BTS_Movies {
   movies                 Movies @relation(fields:[parent_movie_id], references:[movie_id])
 
   @@map("bts_movies")
+}
+
+model Series_Comments {
+  series_comments_id            Int @id @default(autoincrement())
+  user_id                       Int
+  series_comments_content       String
+  series_comments_upvotes       Int    
+  series_comments_downvotes     Int    
+  date_created                  DateTime @default(now())
+  deleted                       Boolean @default(false)
+  deleted_at                    DateTime?
+  edited                        Boolean @default(false)
+  parent_series_id              Int
+  parent_comment_id             Int?
+  user                          User @relation(fields:[user_id], references:[user_id])
+  series                        Series @relation(fields:[parent_series_id], references:[series_id])
+  children                      Series_Comments[] @relation("ParentChild")
+  parent                        Series_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [series_comments_id])
+
+  @@map("series_comments")
+}
+
+model Movie_Comments {
+  movie_comments_id             Int @id @default(autoincrement())
+  user_id                       Int
+  movie_comments_content        String
+  movie_comments_upvotes        Int    
+  movie_comments_downvotes      Int    
+  date_created                  DateTime @default(now())
+  deleted                       Boolean @default(false)
+  deleted_at                    DateTime?
+  edited                        Boolean @default(false)
+  parent_movie_id               Int
+  parent_comment_id             Int?
+  user                          User @relation(fields:[user_id], references:[user_id])
+  movie                         Movies @relation(fields:[parent_movie_id], references:[movie_id])
+  children                      Movie_Comments[] @relation("ParentChild")
+  parent                        Movie_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [movie_comments_id])
+
+  @@map("movie_comments")
+}
+
+model Podcast_Comments {
+  podcast_comments_id           Int @id @default(autoincrement())
+  user_id                       Int
+  podcast_comments_content      String
+  podcast_comments_upvotes      Int    
+  podcast_comments_downvotes    Int    
+  date_created                  DateTime @default(now())
+  deleted                       Boolean @default(false)
+  deleted_at                    DateTime?
+  edited                        Boolean @default(false)
+  parent_podcast_id             Int
+  parent_comment_id             Int?
+  user                          User @relation(fields:[user_id], references:[user_id])
+  podcast                       Podcasts @relation(fields:[parent_podcast_id], references:[podcast_id])
+  children                      Podcast_Comments[] @relation("ParentChild")
+  parent                        Podcast_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [podcast_comments_id])
+
+  @@map("podcast_comments")
 }
