@@ -2,7 +2,8 @@
   display: inline-block;
   min-width: 230px;
   border-radius: 15px;
-
+  max-width: 230px;
+  max-height: 150px;
   margin-right: 10px;
 }
 
@@ -10,6 +11,8 @@
   width: 100%;
   height: auto;
   border-radius: 10px;
+  max-height: 150px;
+  object-fit: cover;
 }
 
 .cardImage {

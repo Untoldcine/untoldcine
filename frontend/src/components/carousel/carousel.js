@@ -1,9 +1,11 @@
+
+
 import React, { useState } from 'react';
 import Card from '../card/card'; 
 import styles from './carousel.module.css'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-
+ 
 
 const Carousel = ({ items, title }) => {
   const [startIndex, setStartIndex] = useState(0);
@@ -28,9 +30,16 @@ const Carousel = ({ items, title }) => {
             <FontAwesomeIcon icon={faChevronLeft} />
           </button>
         )}
-        {items.slice(startIndex, startIndex + itemsToShow).map(item => (
-          <Card key={item.id} {...item} />
+        {items.slice(startIndex, startIndex + itemsToShow).map((item) => (
+          <Card
+            key={item.series_id} 
+            imageUrl={item.series_thumbnail}
+            title={item.series_name}
+            seriesId={item.series_id}
+          />
         ))}
+
+
         {startIndex < items.length - itemsToShow && (
           <button
           className={`${styles.carouselButton} ${styles.carouselButtonRight}`}
