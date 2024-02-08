@@ -106,7 +106,7 @@ const Page = () => {
 
     const getMoviesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/series/movieSummary`)
+            const res = await axios.get(`http://localhost:3001/api/movies/movieSummary`)
             console.log(res.data);
             setMoviesData(res.data)
         }
@@ -157,17 +157,6 @@ const Page = () => {
             console.error(`Error attempting to retrieve all BTS summaries data: ${err}`);
         }
     }
-
-
-    // const getSpecificBTS = async (ID: number) => {
-    //     try {
-    //         const res = await axios.get(`http://localhost:3001/api/bts/specificBTS/${userID}/${ID}`)
-    //         console.log(res.data);
-    //     }
-    //     catch (err) {
-    //         console.error(`Error attempting to retrieve specific BTS data: ${err}`);
-    //     }
-    // }
 
     // const postNewComment = async (e:React.FormEvent, btsID: number) => {
     //     e.preventDefault()
@@ -221,8 +210,8 @@ const Page = () => {
                 <button className="inputs" onClick={() => getPodcastData()}>Get podcast data</button>
                 <button className="inputs" onClick={() => getSeriesData()}>Get series data</button>
                 <button className="inputs" onClick={() => getMoviesData()}>Get movies data</button>
-                <button className="inputs" disabled onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
-                <button className="inputs" disabled onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>
+                <button className="inputs"  onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
+                <button className="inputs"  onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>
                 <button className="inputs" onClick={() => getAllBTSSummaryData()}>Get All BTS (as it should be in production)</button>
                 <p>All BTS content already comes as filtered arrays for pre, prod, and post status</p>
                 

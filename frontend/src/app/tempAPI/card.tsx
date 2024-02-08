@@ -1,10 +1,5 @@
 'use client'
-import { useState } from "react"
-import Link from "next/link";
 import axios from "axios"
-import Detailed from "./detailed"
-import Videos from "./videos"
-
 import testImg from "./testimg.jpeg"
 import testPod from "./testPodcast.jpeg"
 import testMovieImg from "./testmovie.png"
@@ -51,13 +46,6 @@ interface BTSMoviesSummary {
   movie_thumbnail: string | null
 }
 
-interface VideoDetail {
-  ID: number;
-  name: string;
-  episode: string;
-  description: string;
-}
-
 type Content = SeriesSummary | MovieSummary | PodcastSummary | BTSSeriesSummary | BTSMoviesSummary;
 
 interface CardProps {
@@ -91,26 +79,6 @@ const Card: React.FC<CardProps> = ({ content }) => {
     ;
   }
 
-  const [seriesDetails, setSeriesDetails] = useState(null)
-  const [videoDetails, setVideoDetails] = useState<VideoDetail[] | []>([])
-
-  let showPositives
-  let genreArray
-  let formattedLength
-
-  // //format length which comes as total minutes. If <60min, display just the length and handle down in the markup itself
-  // if (length) {
-  //   if (length > 60) {
-  //     const hour = Math.floor(length / 60)
-  //     const minutes = length % 60
-  //     formattedLength = `${hour} h ${minutes} min`
-  //   }
-  //   else {
-  //     formattedLength = `${length} min`
-  //   }
-
-  // }
-
   //currently uses 'userID' to flag which user is saving which piece of content. However this can introduce security risks
   //Need a more sophisticated way to save it
   // const addToWatchList = async () => {
@@ -131,19 +99,35 @@ const Card: React.FC<CardProps> = ({ content }) => {
   //     })
   // }
 
-  const getDeeperSeries = async (seriesID: number) => {
+  const getSpecificContent = async (content: string, id: number) => {
     try {
-      const res = await axios.get(`http://localhost:3001/api/series/specific/${seriesID}`)
-
-      const { seriesInfo, videos } = res.data
-      setSeriesDetails(seriesInfo)
-      setVideoDetails(videos)
+      const res = await axios.get(`http://localhost:3001/api/${content}/specific/${id}`)
+      console.log(res.data);
+      
     }
-    catch (err) {
-      console.error(`Error attempting to get deeper series data at ID ${seriesID}: ${err}`);
+    catch(err) {
+      console.error('Error attempting to GET detailed content data');
+      
     }
   }
 
+
+  const getSpecificBTSContent = async (flag: string, content: string, id: number) => {
+    try {
+      if (flag === 'series') {
+        const res = await axios.get(`http://localhost:3001/api/bts/specificSeries/${id}`)
+        console.log(res.data);
+      }
+      if (flag === 'movies') {
+        const res = await axios.get(`http://localhost:3001/api/bts/specificMovies/${id}`)
+        console.log(res.data);
+      }
+    }
+    catch(err) {
+      console.error('Error attempting to GET detailed content data');
+      
+    }
+  }
 
   if (isSeries(content)) {
     const { series_id, series_name, series_thumbnail, genres, series_length } = content
@@ -154,15 +138,8 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <p>{series_name}</p>
         <p>{series_length} episodes</p>
         {genres.map((genre) => <p key={genre}>{genre}</p>)}
-        {/* <button disabled onClick={() => addToWatchList()}>Add to Watchlist</button> */}
+        <button onClick = {() => getSpecificContent('series', series_id)}>Get more info</button>
       </div>
-      //   {/* {seriesDetails ? <Detailed content={seriesDetails} /> : null}
-      //   <div className="related-block">
-      //     {videoDetails.length > 0 ? videoDetails.map((video) => {
-      //       return <Videos key={video.ID} content={video} />
-      //     }) : null}
-      //   </div> */}
-      // {/*  </Link> */}
     )
   }
   if (isMovie(content)) {    
@@ -172,22 +149,22 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <img className="summary-img" src={testMovieImg.src} />
         <p>{movie_name}</p>
         {genres.map((genre) => <p key={genre}>{genre}</p>)}
+        <button onClick = {() => getSpecificContent('movies', movie_id)}>Get more info</button>
       </div>
     )
   }
-
   if (isPodcast(content)) {
     const {podcast_id, podcast_name, podcast_thumbnail, podcast_status} = content
     return (
       <div className="summary-block">
         <img className="summary-img" src={testPod.src} />
         <p>{podcast_name}</p>
+        <button onClick = {() => getSpecificContent('podcast', podcast_id)}>Get more info</button>
       </div>
     )
   }
-
-  if (isBTSSeries(content)) {
-    const { series_id, series_name, series_thumbnail, series_status } = content
+  if (isBTSSeries(content)) {    
+    const { bts_series_id, series_id, series_name, series_thumbnail, series_status } = content
     let status
     if (series_status === 'pre') {
       status = 'Pre-Production'
@@ -204,12 +181,13 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <img className="summary-img" src={testImg.src} />
         <p>{series_name}</p>
         <p>Currently in {status}</p>
+        <button onClick = {() => getSpecificBTSContent('series', 'bts', bts_series_id)}>Get more info</button>
       </div>
     )
   }
-
   if (isBTSMovies(content)) {
-    const { movie_id, movie_name, movie_thumbnail, movie_status } = content
+    const { bts_movies_id, movie_id, movie_name, movie_thumbnail, movie_status } = content
+    
     let status
     if (movie_status === 'pre') {
       status = 'Pre-Production'
@@ -226,6 +204,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <img className="summary-img" src={testMovieImg.src} />
         <p>{movie_name}</p>
         <p>Currently in {status}</p>
+        <button onClick = {() => getSpecificBTSContent('movies', 'bts', bts_movies_id)}>Get more info</button>
       </div>
     )
   }
