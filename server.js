@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser')
 
 const userRoute = require('./routes/userRoute.js')
 const seriesRoute = require('./routes/seriesRoute.js')
+const moviesRoute = require('./routes/moviesRoute.js')
 const commentsRoute = require('./routes/commentsRoute.js')
 const podcastsRoute = require('./routes/podcastsRoute.js')
 const btsRoute = require('./routes/btsRoute.js')
@@ -18,6 +19,7 @@ app.use(cookieParser()) //for login authorization, sending and receiving JWT as 
 
 app.use('/api/user', userRoute);
 app.use('/api/series', seriesRoute);
+app.use('/api/movies', moviesRoute);
 app.use('/api/comments', commentsRoute);
 app.use('/api/podcast', podcastsRoute);
 app.use('/api/bts', btsRoute)
