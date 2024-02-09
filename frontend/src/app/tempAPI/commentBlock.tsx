@@ -1,4 +1,5 @@
 import {User, SeriesComment, MovieComment, PodcastComment} from "./interfaces"
+import {convertTime, calculateRating} from "./functions"
 
 type Content = SeriesComment | MovieComment | PodcastComment
 
@@ -20,16 +21,21 @@ function isPodcastComment(comment: Content): comment is PodcastComment {
 
 const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
 
-    if (isSeriesComment(content)) {
+    if (isSeriesComment(content)) {        
+        const {user, series_comments_id, series_comments_content, replies, date_created, series_comments_upvotes, series_comments_downvotes} = content
+        const {user_id, user_nickname} = user 
         return (
             <>
                 <div className="block">
-                    <p>{content.series_comments_content}</p>
+                    <p style = {{color: 'red'}}>{user_nickname}</p>
+                    <p>{series_comments_content}</p>
+                    <p>{convertTime(date_created)}</p>
+                    <p>{calculateRating(series_comments_upvotes, series_comments_downvotes)}</p>
                 </div>
-                {content.replies?.length > 0 ?
+                {replies?.length > 0 ?
                     <div className='block'>
                         {content.replies.map(comment => (
-                            <CommentBlock key={comment.series_comments_id} content={comment} />
+                            <CommentBlock key={series_comments_id} content={comment} />
                         ))}
                     </div> : null}
             </>

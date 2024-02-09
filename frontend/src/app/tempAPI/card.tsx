@@ -143,12 +143,14 @@ const Card: React.FC<CardProps> = ({ content }) => {
     }
 
     return (
+      <>
       <div className="summary-block">
         <img className="summary-img" src={testImg.src} />
         <p>{series_name}</p>
         <p>Currently in {status}</p>
         <button onClick = {() => getSpecificBTSContent('series', 'bts', bts_series_id)}>Get more info</button>
       </div>
+      </>
     )
   }
   if (isBTSMovies(content)) {

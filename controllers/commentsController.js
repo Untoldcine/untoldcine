@@ -17,7 +17,12 @@ exports.getSeriesComments = async (req, res) => {
                 deleted: false,
             },
             include: {
-                user: true, 
+                user: {
+                    select: {
+                        user_id: true,
+                        user_nickname: true
+                    }
+                },
                 // feedback: {
                 //     where: {
                 //         user_ID: parseInt(userID),
@@ -71,7 +76,12 @@ exports.getMovieComments = async (req, res) => {
                 deleted: false,
             },
             include: {
-                user: true, 
+                user: {
+                    select: {
+                        user_id: true,
+                        user_nickname: true
+                    }
+                }, 
                 // feedback: {
                 //     where: {
                 //         user_ID: parseInt(userID),
@@ -123,7 +133,12 @@ exports.getPodcastComments = async (req, res) => {
                 deleted: false,
             },
             include: {
-                user: true, 
+                user: {
+                    select: {
+                        user_id: true,
+                        user_nickname: true
+                    }
+                }, 
                 // feedback: {
                 //     where: {
                 //         user_ID: parseInt(userID),
