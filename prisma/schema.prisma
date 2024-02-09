@@ -67,6 +67,22 @@ enum PodcastTypes {
   interview
 }
 
+enum ContentTypes {
+  Movie
+  Series
+  Video
+  Podcast
+  BTS_Series
+  BTS_Movies
+  Series_Comments
+  Movie_Comments
+  Podcast_Comments
+  BTS_Series_Comments
+  BTS_Movies_Comments
+  Blog
+  User
+}
+
 model Series {
   series_id           Int @id @default(autoincrement())
   series_name         String
@@ -205,8 +221,8 @@ model Series_Comments {
   series_comments_id            Int @id @default(autoincrement())
   user_id                       Int
   series_comments_content       String
-  series_comments_upvotes       Int    
-  series_comments_downvotes     Int    
+  series_comments_upvotes       Int @default(0)
+  series_comments_downvotes     Int @default(0)
   date_created                  DateTime @default(now())
   deleted                       Boolean @default(false)
   deleted_at                    DateTime?
@@ -225,8 +241,8 @@ model Movie_Comments {
   movie_comments_id             Int @id @default(autoincrement())
   user_id                       Int
   movie_comments_content        String
-  movie_comments_upvotes        Int    
-  movie_comments_downvotes      Int    
+  movie_comments_upvotes        Int @default(0)
+  movie_comments_downvotes      Int @default(0)   
   date_created                  DateTime @default(now())
   deleted                       Boolean @default(false)
   deleted_at                    DateTime?
@@ -245,8 +261,8 @@ model Podcast_Comments {
   podcast_comments_id           Int @id @default(autoincrement())
   user_id                       Int
   podcast_comments_content      String
-  podcast_comments_upvotes      Int    
-  podcast_comments_downvotes    Int    
+  podcast_comments_upvotes      Int @default(0)
+  podcast_comments_downvotes    Int @default(0)   
   date_created                  DateTime @default(now())
   deleted                       Boolean @default(false)
   deleted_at                    DateTime?
@@ -260,3 +276,13 @@ model Podcast_Comments {
 
   @@map("podcast_comments")
 }
+
+
+model Deleted_Content {
+  id                Int @id @default(autoincrement())
+  content_type      ContentTypes
+  content_id        Int
+  deleted_at        DateTime @default(now())
+
+  @@map("deleted_content")
+} 

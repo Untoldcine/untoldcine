@@ -218,29 +218,35 @@ exports.getBTSComments = async (req, res) => {
 
 exports.newComment = async (req, res) => {
     const {userID} = req.params
-    const {content, table_name, ID} = req.body;
-    if (!userID || !content || !ID || !table_name) {
+    const {comment, table_name, content_id} = req.body;
+    if (!userID || !comment || !content_id || !table_name) {
         return res.status(400).json({'message': 'Missing data to process new POST of comment'})
     }
-    let ID_Type;
-    if (table_name === 'comments' || table_name === 'bts_comments') {
-        ID_Type = 'series_id'
-    }
-    if (table_name === 'podcast_comments') {
-        ID_Type = 'podcast_id'
+    let dataTable
+    let insertionID
+    let insertionText
+    if (table_name === 'series') {
+        dataTable = 'Series_Comments'
+        insertionID = 'parent_series_id'
+        insertionText = 'series_comments_content'
     }
 
-    const connection = connectDB();
-    const query = `INSERT INTO ${table_name} (user_id, content, ${ID_Type}) VALUES (?, ?, ?)`
-    connection.query(query, [userID, content, ID], (queryError, results) => {
-        connection.end()
-        if (queryError){
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : `Error at POST a new comment during database operation`})
+    try {
+        const newComment = await prisma[dataTable].create({
+            data: {
+                [insertionID]: parseInt(content_id),
+                [insertionText]: comment,
+                user_id: parseInt(userID)
             }
-            res.status(200).json(results)
         })
-    
+        if (newComment) {
+            res.status(200).json({'message': 'Success!'})
+        }
+    } 
+    catch (error) {
+        console.error('Error', error);
+        res.status(500).json({'message': `Error posting new comment during database operation`});
+    }
 }
 
 exports.editComment = async (req, res) => {
@@ -324,28 +330,55 @@ exports.replyBTSComment = async (req, res) => {
 //alternative is hard deletion of content but best practice may be to use soft deletes? dunno
 exports.removeComment = async (req, res) => {
     const {userID} = req.params;
-    const {content_ID, content_type } = req.body
-    if (!userID || !content_ID || !content_type) {
+    const {comment_id, table } = req.body
+    if (!userID || !comment_id || !table) {
         return res.status(400).json({'message': 'Missing data to process delete of comment'})
     }
+    let insertionTable
+    let insertionID
+    switch(table) {
+        case 'series':
+            insertionTable = 'Series_Comments'
+            insertionID = 'series_comments_id'
+            break;
+        case 'movie':
+            insertionTable = 'Movie_Comments'
+            insertionID = 'movie_comments_id'
+            break;
+        case 'podcast':
+            insertionTable = 'Podcast_Comments'
+            insertionID = 'podcast_comments_id'
+            break;
+    }
     //insert deleted comment into soft-deletion table
-    const connection = connectDB();
-    const query = 'INSERT INTO deleted_content (content_ID,content_type) VALUES (?, ?)'
-    connection.query(query, [content_ID, content_type], (deleteError, _delete_results) => {
-        if (deleteError) {
-            console.error('Error ' + deleteError);
-            return res.status(500).json({'message': 'Error attempting to add comment to deletion table during database operation'})
-        }
-
-        //then flag the comment deleted to true
-        const updateCommentStatus = `UPDATE ${content_type} SET deleted = TRUE, deleted_at = CURRENT_TIMESTAMP WHERE ID = ?`
-        connection.query(updateCommentStatus, content_ID, (updateError, _update_results) => {
-            connection.end(); 
-            if (updateError) {
-                console.error('Error ' + updateError);
-                return res.status(500).json({'message': 'Error attempting to add comment to deletion table during database operation'})
+    try {
+        const deleted = await prisma.Deleted_Content.create({
+            data: {
+                content_type: insertionTable,
+                content_id: parseInt(comment_id)
             }
-            res.status(200).json({"message": "Successfully flagged comment for deletion and added to delete table"});
         })
-    })
+        if (deleted) {
+            try {
+                const toggleDelete = await prisma[insertionTable].update({
+                    where: {
+                        [insertionID] : parseInt(comment_id),
+                        user_id: parseInt(userID)
+                    },
+                    data: {
+                        deleted: true,
+                        deleted_at: new Date()
+                    }
+                })
+            }
+            catch(error) {
+                console.error('Error', error);
+                res.status(500).json({'message': `Error toggling comment deletion flags during database operation`});
+            }
+        }
+    }
+    catch (error) {
+        console.error('Error', error);
+        res.status(500).json({'message': `Error adding comment to soft-deletion table during database operation`});
+    }
 }

@@ -65,3 +65,9 @@
     color: white;
     background-color: rgba(0, 0 ,0, 0.7);
 }
+
+.comment-block {
+    padding: 1rem;
+    border:1px solid white;
+    background-color: rgba(0, 0 ,0, 0.7);
+}

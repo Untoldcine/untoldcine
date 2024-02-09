@@ -7,6 +7,7 @@ import testPod from "./testPodcast.jpeg"
 import testMovieImg from "./testmovie.png"
 import "./tempstyles.css"
 import Comment from "./comments"
+import CommentInput from "./commentInput"
 
 type Content = SeriesSummary | MovieSummary | PodcastSummary | BTSSeriesSummary | BTSMoviesSummary;
 
@@ -79,7 +80,6 @@ const Card: React.FC<CardProps> = ({ content }) => {
     }
     catch(err) {
       console.error('Error attempting to GET comments data');
-      
     }
   }
 
@@ -96,7 +96,10 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <button onClick = {() => getSpecificContent('series', series_id)}>Get more info</button>
         <button onClick = {() => getComments('series', series_id)}>Get comments</button>
       </div>
-      <Comment array = {commentArray}/>
+      <div className="comment-block">
+        <CommentInput table_name = 'series' content_id = {series_id}/>
+        <Comment array = {commentArray}/>
+      </div>
       </>
     )
   }
@@ -111,8 +114,9 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <button onClick = {() => getSpecificContent('movies', movie_id)}>Get more info</button>
         <button onClick = {() => getComments('movies', movie_id)}>Get comments</button>
       </div>
-            <Comment array = {commentArray}/>
-      </>
+      <div className="comment-block">
+        <Comment array = {commentArray}/>
+      </div>      </>
     )
   }
   if (isPodcast(content)) {
@@ -125,8 +129,9 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <button onClick = {() => getSpecificContent('podcast', podcast_id)}>Get more info</button>
         <button onClick = {() => getComments('podcast', podcast_id)}>Get comments</button>
       </div>
-      <Comment array = {commentArray}/>
-      </>
+      <div className="comment-block">
+        <Comment array = {commentArray}/>
+      </div>      </>
     )
   }
   if (isBTSSeries(content)) {    

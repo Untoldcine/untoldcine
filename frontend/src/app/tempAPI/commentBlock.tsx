@@ -1,5 +1,6 @@
 import {User, SeriesComment, MovieComment, PodcastComment} from "./interfaces"
 import {convertTime, calculateRating} from "./functions"
+import axios from "axios";
 
 type Content = SeriesComment | MovieComment | PodcastComment
 
@@ -19,7 +20,20 @@ function isPodcastComment(comment: Content): comment is PodcastComment {
     return 'podcast_comments_id' in comment;
 }
 
+const handleCommentDelete = async (userID: number, table: string, comment_id: number) => {
+    try {
+        const res = await axios.post(`http://localhost:3001/api/comments/removeComment/${userID}`, {
+            table,
+            comment_id
+        })
+    }
+     catch(err) {
+      console.error('Error attempting to delete comment');
+    }
+}
+
 const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
+    const user_id = 19
 
     if (isSeriesComment(content)) {        
         const {user, series_comments_id, series_comments_content, replies, date_created, series_comments_upvotes, series_comments_downvotes} = content
@@ -31,6 +45,7 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
                     <p>{series_comments_content}</p>
                     <p>{convertTime(date_created)}</p>
                     <p>{calculateRating(series_comments_upvotes, series_comments_downvotes)}</p>
+                    <button onClick = {() => handleCommentDelete(user_id, 'series', series_comments_id)}>Delete Comment</button>
                 </div>
                 {replies?.length > 0 ?
                     <div className='block'>
