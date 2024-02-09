@@ -7,9 +7,10 @@ const commentsController = require('../controllers/commentsController.js')
 // router.route('/getBTSDiscussion/:userID/:seriesID').get(commentsController.getBTSComments)
 router.route('/newComment/:userID').post(commentsController.newComment)
 router.route('/removeComment/:userID').post(commentsController.removeComment)
-
 router.route('/editComment').post(commentsController.editComment)
-router.route('/newReply/:userID').post(commentsController.replyComment)
+router.route('/newReply').post(commentsController.replyComment)
+
+
 router.route('/newPodcastReply/:userID').post(commentsController.replyPodcastComment)
 router.route('/newBTSReply/:userID').post(commentsController.replyBTSComment)
 

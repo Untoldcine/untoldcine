@@ -250,39 +250,94 @@ exports.newComment = async (req, res) => {
 }
 
 exports.editComment = async (req, res) => {
-    const { ID, content, table } = req.body;
-    if (!ID|| !content || !table) {
+    const { comment_id, table, editedComment } = req.body;
+    if (!comment_id|| !editedComment || !table) {
         return res.status(400).json({'message': 'Missing data to process POST of comment edit'})
     }
-    const connection = connectDB();
-    const query = 'UPDATE ?? SET content = ?, edited = ? WHERE ID = ?';
-    connection.query(query, [table, content, 1,  ID], (queryError, _results) => {
-        connection.end();
-        if (queryError) {
-            console.error('Error ' + queryError);
-            return res.status(500).json({ 'message': `Error editing comment in table: ${table} at ID: ${ID} during database operation` });
+    let insertionTable
+    let insertionID
+    let insertionContent
+    switch(table) {
+        case 'series':
+            insertionTable = 'Series_Comments'
+            insertionID = 'series_comments_id'
+            insertionContent = 'series_comments_content'
+            break;
+        case 'movie':
+            insertionTable = 'Movie_Comments'
+            insertionID = 'movie_comments_id'
+            insertionContent = 'movie_comments_content'
+            break;
+        case 'podcast':
+            insertionTable = 'Podcast_Comments'
+            insertionID = 'podcast_comments_id'
+            insertionContent = 'podcast_comments_content'
+            break;
+    }
+    try {
+        const edited = await prisma[insertionTable].update({
+            where: {
+                [insertionID] : parseInt(comment_id)
+            },
+            data: {
+                [insertionContent]:editedComment,
+                edited: true
+            }
+        })
+        if (edited) {
+            return res.status(200).json({'message': 'OK!'})
         }
-        res.sendStatus(200);
-    });
+    }
+    catch (error) {
+        console.error('Error', error);
+        res.status(500).json({'message': `Error editing comment during database operation`});
+    }
 };
 
 exports.replyComment = async (req, res) => {
-    const {userID} = req.params
-    const {content, parent_id, series_id} = req.body;
-    if (!userID || !content || !parent_id || !series_id ) {
+    const {user_id, comment, parent_comment_id, table, parent_content_id} = req.body;
+    if (!user_id || !comment || !parent_comment_id || !table || !parent_content_id) {
         return res.status(400).json({'message': 'Missing data to process POST of reply'})
     }
+    let insertionTable
+    let insertionParentID 
+    let insertionContent 
 
-    const connection = connectDB();
-    const query = `INSERT INTO comments (user_id, content, series_id, parent_id) VALUES (?, ?, ?, ?)`
-    connection.query(query, [userID, content, series_id, parent_id], (queryError, results) => {
-        connection.end()
-        if (queryError){
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : `Error at POST to new reply to a comment during database operation`})
+    switch(table) {
+        case 'series':
+            insertionTable = 'Series_Comments'
+            insertionParentID = 'parent_series_id'
+            insertionContent = 'series_comments_content'
+            break;
+        case 'movie':
+            insertionTable = 'Movie_Comments'
+            insertionParentID = 'parent_movie_id'
+            insertionContent = 'movie_comments_content'
+            break;
+        case 'podcast':
+            insertionTable = 'Podcast_Comments'
+            insertionParentID = 'parent_podcast_id'
+            insertionContent = 'podcast_comments_content'
+            break;
+    }
+
+    try {
+        const reply = await prisma[insertionTable].create({
+            data: {
+                user_id,
+                [insertionParentID]: parent_content_id,
+                parent_comment_id,
+                [insertionContent]: comment
+            }
+        })
+        if (reply) {
+            return res.status(200).json({'message': 'OK!'})
         }
-        res.status(200).json(results)
-    })
+    }
+    catch (error) {
+        console.error('Error', error);
+        res.status(500).json({'message': `Error creating reply comment during database operation`});
+    }
 }
 
 exports.replyPodcastComment = async (req, res) => {
