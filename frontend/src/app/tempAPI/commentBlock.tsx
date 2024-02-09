@@ -3,6 +3,7 @@ import {convertTime, calculateRating} from "./functions"
 import axios from "axios";
 import CommentEdit from "./commentEdit";
 import CommentReply from "./commentReply";
+import CommentRate from "./commentRate";
 
 type Content = SeriesComment | MovieComment | PodcastComment
 
@@ -48,6 +49,7 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
                     <p style = {{color: 'red'}}>{user_nickname}</p>
                     <p>{series_comments_content}</p>
                     <p>{convertTime(date_created)}</p>
+                    <CommentRate comment_id = {series_comments_id} table = 'series'/>
                     <p>{calculateRating(series_comments_upvotes, series_comments_downvotes)}</p>
                     <CommentEdit id = {series_comments_id} text = {series_comments_content} table = 'series'/>
                     <button onClick = {() => handleCommentDelete(user_id, 'series', series_comments_id)}>Delete Comment</button>

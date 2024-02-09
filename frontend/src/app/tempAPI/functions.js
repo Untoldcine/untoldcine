@@ -30,5 +30,5 @@ export function convertTime(date) {
 }
 
 export function calculateRating(up, down) {
-  return `${up - down} rating`;
+  return `${up - down} score`;
 }

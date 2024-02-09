@@ -28,6 +28,7 @@ model User {
   series_comments     Series_Comments[]
   movie_comments      Movie_Comments[]
   podcast_comments    Podcast_Comments[]
+  feedback            Feedback[]
 
   @@map("users")
 }
@@ -65,22 +66,6 @@ enum PodcastTypes {
   highlight
   review
   interview
-}
-
-enum ContentTypes {
-  Movie
-  Series
-  Video
-  Podcast
-  BTS_Series
-  BTS_Movies
-  Series_Comments
-  Movie_Comments
-  Podcast_Comments
-  BTS_Series_Comments
-  BTS_Movies_Comments
-  Blog
-  User
 }
 
 model Series {
@@ -277,6 +262,22 @@ model Podcast_Comments {
   @@map("podcast_comments")
 }
 
+enum ContentTypes {
+  Movie
+  Series
+  Video
+  Podcast
+  BTS_Series
+  BTS_Movies
+  Series_Comments
+  Movie_Comments
+  Podcast_Comments
+  BTS_Series_Comments
+  BTS_Movies_Comments
+  Blog
+  User
+}
+
 
 model Deleted_Content {
   id                Int @id @default(autoincrement())
@@ -286,3 +287,20 @@ model Deleted_Content {
 
   @@map("deleted_content")
 } 
+
+enum Rating {
+  up
+  down
+}
+
+model Feedback {
+  feedback_id       Int @id @default(autoincrement())
+  user_id           Int
+  table_name        ContentTypes
+  item_id           Int
+  feedback_rating   Rating
+  date_created      DateTime @default(now())
+  user              User @relation(fields:[user_id], references:[user_id])
+
+  @@map("feedback")
+}

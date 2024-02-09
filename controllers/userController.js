@@ -1,5 +1,5 @@
 const connectDB = require('./connectDB')
-const {PrismaClient} = require('@prisma/client')
+const { PrismaClient, ContentTypes} = require('@prisma/client')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -76,66 +76,118 @@ exports.logIn = async (req, res) => {
 }
 
 exports.submitRating = async (req, res) => {
-    const connection = connectDB();
-    //written in async/await format for readability. Check if user has already submitted a rating. If not, then update the rating and then insert into feedback table
-    //If they have, change the existing entry to prevent duplicates
-    try {
-        const {userID, content_ID, table} = req.body;
-        console.log(table);
-        const {choice} = req.params;
-        const feedbackExists = await checkFeedbackExists(connection, userID, table, content_ID)
-    
-        if (!feedbackExists) {
-            await updateRating(connection, choice, table, content_ID);
-            await insertNewFeedback(connection, userID, table, content_ID, choice);
-            res.sendStatus(200);
-        }
-        else {
-            await changeExistingFeedback(connection, userID, table, content_ID, choice);
-            res.sendStatus(200);
-        }
+    const {choice} = req.params
+    const {userID, comment_id, table} = req.body;
+    if (!userID || !comment_id || !table) {
+        return res.status(400).json({'Message': 'Missing Data to fulfill user submitted rating of content'})
     }
 
-    catch(err) {
-        console.error(err + ':Error attempting to update rating during database operation');
+    let insertionTable
+    let insertionID
+    let ratingColumn
+
+    switch(table) {
+        case 'series':
+            insertionTable = 'Series_Comments'
+            insertionID = 'series_comments_id'
+            ratingColumn = choice === 'up' ? 'series_comments_upvotes' : 'series_comments_downvotes'
+            break;
+        case 'movie':
+            insertionTable = 'Movie_Comments'
+            insertionID = 'movie_comments_id'
+            ratingColumn = choice === 'up' ? 'movie_comments_upvotes' : 'movie_comments_downvotes'
+            break;
+        case 'podcast':
+            insertionTable = 'Podcast_Comments'
+            insertionID = 'podcast_comments_id'
+            ratingColumn = choice === 'up' ? 'podcast_comments_upvotes' : 'podcast_comments_downvotes'
+            break;
     }
-    finally {
-        if (connection) connection.end()
+    try {
+        //check for existing submission of feedback
+        const feedbackExists = await findFeedback(userID, comment_id, insertionTable)
+        //if it exists, then change the rating as needed (to prevent voting multiple times)
+        if (feedbackExists && feedbackExists.feedback_rating !== choice) {
+            updateRating(feedbackExists, choice)
+        } 
+        //if it doesn't exist, then add a new feedback item
+        try {
+            const insertNew = newFeedback(userID, insertionTable, comment_id, choice)
+            //then update the actual rating score for piece of content: either upvote or downvote
+            if (insertNew) {
+                updateContentRating(insertionTable, insertionID, comment_id, ratingColumn)
+            }
+            
+        }
+        catch(err) {
+            console.error(err + ': Unable to add new feedback item to DB');
+        }
+    }
+    catch(err) {
+        console.error(err + ': Unable to check if user submitted rating already exists');
     }
 }
-    
-//next 4 functions are all for submitRating API
-    async function updateRating(connection, choice, table, content_ID) {
-        let query;
-        if (choice === 'like') {
-            query = 'UPDATE ?? SET rating = JSON_SET(rating, \'$.Upvotes\', JSON_VALUE(rating, \'$.Upvotes\') + 1) WHERE id = ?';
-        } else if (choice === 'dislike') {
-            query = 'UPDATE ?? SET rating = JSON_SET(rating, \'$.Downvotes\', JSON_VALUE(rating, \'$.Downvotes\') + 1) WHERE id = ?';
-        }
-        return connection.query(query, [table, content_ID])
-    }
-    async function checkFeedbackExists(connection, userID, table, content_ID) {
-        const query = 'SELECT * FROM feedback WHERE user_ID = ? AND table_name = ? AND item_ID = ?';
-        const results = await new Promise((resolve, reject) => {
-            connection.query(query, [userID, table, content_ID], (queryError, results) => {
-                if (queryError) {
-                    reject(error);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
-        return results.length > 0;
-    }
-    async function insertNewFeedback(connection, userID, table, content_ID, choice) {
-        const addToFeedback = `INSERT INTO feedback (user_ID, table_name, item_ID, rating) VALUES (?, ?, ?, ?)`
-        return connection.query(addToFeedback, [userID, table, content_ID, choice])
-    }
-    async function changeExistingFeedback(connection, userID, table, content_ID, choice) {
-        const query = 'UPDATE feedback SET rating = ? WHERE user_ID = ? AND table_name = ? AND item_ID = ?'
-        return connection.query(query, [choice, userID, table, content_ID])
-    }
 
+//these 4 async functions are all for submitRating
+async function findFeedback(userID, comment_id, insertionTable) {
+    const existingFeedback = await prisma.Feedback.findFirst({
+        where: {
+            user_id: userID,
+            table_name: insertionTable,
+            item_id: comment_id
+        }
+    })
+    return existingFeedback
+}
+
+async function updateRating(feedbackObj, choice) {
+    const {feedback_id, feedback_rating} = feedbackObj
+
+    let newRating
+    if (choice === 'up' && feedback_rating !== 'up') {
+        newRating = 'up'
+    }
+    else if (choice === 'down' && feedback_rating !== 'down') {
+        newRating = 'down'
+    }
+    else {
+        newRating = feedback_rating
+    }
+    return prisma.Feedback.update({
+        where: {
+            feedback_id: feedback_id,
+        },
+        data: {
+            feedback_rating: newRating
+        },
+    });
+}
+
+async function newFeedback(userID, insertionTable, comment_id, choice) {
+    const insertFeedback = await prisma.Feedback.create({
+        data: {
+            user_id: userID,
+            table_name: insertionTable,
+            item_id: comment_id,
+            feedback_rating: choice
+        }
+    })
+    return insertFeedback;
+}
+
+async function updateContentRating(insertionTable, insertionID, comment_id, ratingColumn) {
+    return prisma[insertionTable].update({
+        where:{
+            [insertionID]: comment_id
+        },
+        data: {
+            [ratingColumn]: {
+                increment: 1
+            }
+        }
+    })
+}
+    
 
 exports.removeUser = async (req, res) => {
     const { userID } = req.params;
