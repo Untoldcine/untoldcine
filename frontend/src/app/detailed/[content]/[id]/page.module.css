@@ -1,3 +1,10 @@
 .text {
   color: white;
 }
+
+.carouselContainer {
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
