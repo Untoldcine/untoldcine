@@ -56,7 +56,7 @@ const Page = () => {
     //Likely use IndexedDB API for client side caching
     const getSeriesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/series/seriesSummary`)
+            const res = await axios.get(`http://localhost:3001/api/series/seriesSummary`, {withCredentials: true})
             console.log(res.data);
             setSeriesData(res.data)
         }
@@ -119,25 +119,6 @@ const Page = () => {
         }
     }
 
-    // const postNewComment = async (e:React.FormEvent, btsID: number) => {
-    //     e.preventDefault()
-    //     const commentObj = {
-    //         content: newCommentValue,
-    //         ID: btsID,
-    //         table_name: 'bts_comments'
-    //     }
-    //     try {
-    //         const res = await axios.post(`http://localhost:3001/api/comments/newComment/${userID}`, commentObj)  
-    //         if (res.status === 200) {
-    //             setNewCommentValue('')
-    //         }
-            
-    //     }
-    //     catch (err) {
-    //         console.error(`Error attempting to POST new comment data: ${err}`);
-    //     }
-    // }
-
     // const addToWatchList = async (ID: number) => {
     //     axios.post('http://localhost:3001/api/watchlist/add', {
     //         user_id: 2,
@@ -153,16 +134,6 @@ const Page = () => {
     //         .catch((err) => {
     //             console.log(err);
     //         })
-    // }
-
-    // const getBTSComments = async (ID: number) => {
-    //     try {
-    //         const res = await axios.get(`http://localhost:3001/api/comments/getBTSDiscussion/${userID}/${ID}`)                        
-    //         setBTSComments(res.data)
-    //     }
-    //     catch (err) {
-    //         console.error(`Error attempting to retrieve comments data: ${err}`);
-    //     }
     // }
 
     return (

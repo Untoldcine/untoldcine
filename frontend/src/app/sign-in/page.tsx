@@ -24,10 +24,9 @@ export default function Home() {
       const res = await axios.post('http://localhost:3001/api/user/login', {
         email: inputFields.email.trim(),
         password: inputFields.password.trim()
-      })
+      }, { withCredentials: true })
       if (res.status === 200) {
         //Browser will receive cookie for authorization, handles submission automatically on subsequent API calls
-       localStorage.setItem('loggedInToken', 'true')
        console.log('works!');
        
       }

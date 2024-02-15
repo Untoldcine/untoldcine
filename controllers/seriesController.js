@@ -1,8 +1,19 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient();
+const jwt = require("jsonwebtoken");
+require('dotenv').config();
 
 
-exports.getSeriesSummary = async (_req, res) => {
+exports.getSeriesSummary = async (req, res) => {
+    const token = req.cookies.token
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Decoded token:', decoded);
+    } catch (err) {
+        console.error('Token verification error:', err);
+        return res.status(401).json({"message": "Invalid or expired token"});
+    }
+
     try {
         const data = await prisma.series.findMany({
             select: {

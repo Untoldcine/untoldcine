@@ -2,6 +2,7 @@ const connectDB = require('./connectDB')
 const { PrismaClient, ContentTypes} = require('@prisma/client')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+require('dotenv').config();
 
 const prisma = new PrismaClient();
 
@@ -56,23 +57,27 @@ exports.logIn = async (req, res) => {
             return res.status(401).json({"message" : "Password does not match!"})
         }
         
-        let token = jwt.sign(user, "secretKey");
+        const token = jwt.sign(user, process.env.JWT_SECRET);
 
         //cookie properties for more secure transmission
         res.cookie('token', token, {
             httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict', 
+            // secure: process.env.NODE_ENV === 'production',
+            secure: false,
+            sameSite: 'lax', 
             maxAge: 24 * 60 * 60 * 1000 // expires in a day
         });
-        return res.status(200).json({ message: "Login successful" });
+   
+        return res.status(200).json({
+            status: 200,
+            message: 'Login Success'
+        })
 
      }
      catch(err) {
         console.error('Problem querying DB to log in');
         return res.status(500).json({"message" : "Internal server error"});
-     }
-    
+     } 
 }
 
 exports.submitRating = async (req, res) => {
