@@ -115,7 +115,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <button onClick = {() => getComments('movies', movie_id)}>Get comments</button>
       </div>
       <div className="comment-block">
-        {/* <CommentInput table_name = 'movies' content_id = {movie_id}/> */}
+        <CommentInput table_name = 'movie' content_id = {movie_id}/>
         <Comment array = {commentArray}/>
       </div>      </>
     )

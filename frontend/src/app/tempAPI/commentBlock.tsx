@@ -79,10 +79,10 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
                     <p>{convertTime(date_created)}</p>
                     <CommentRate comment_id = {movie_comments_id} table = 'movie'/>
                     <p>{calculateRating(movie_comments_upvotes, movie_comments_downvotes)}</p>
-                    <CommentEdit id = {movie_comments_id} text = {movie_comments_content} table = 'movies'/>
-                    <button onClick = {() => handleCommentDelete(user_id, 'movies', movie_comments_id)}>Delete Comment</button>
+                    <CommentEdit id = {movie_comments_id} text = {movie_comments_content} table = 'movie'/>
+                    <button onClick = {() => handleCommentDelete(user_id, 'movie', movie_comments_id)}>Delete Comment</button>
                     <br/>
-                    <CommentReply comment_id = {movie_comments_id} table = 'movies' parent_id = {parent_movie_id}/>
+                    <CommentReply comment_id = {movie_comments_id} table = 'movie' parent_id = {parent_movie_id}/>
                 </div>
                 {replies?.length > 0 ?
                     <div className='block'>

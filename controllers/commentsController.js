@@ -223,12 +223,24 @@ exports.newComment = async (req, res) => {
         return res.status(400).json({'message': 'Missing data to process new POST of comment'})
     }
     let dataTable
-    let insertionID
     let insertionText
-    if (table_name === 'series') {
-        dataTable = 'Series_Comments'
-        insertionID = 'parent_series_id'
-        insertionText = 'series_comments_content'
+
+    switch(table_name) {
+        case 'series':
+            dataTable = 'Series_Comments'
+            insertionID = 'parent_series_id'
+            insertionText = 'series_comments_content'
+            break;
+        case 'movie':
+            dataTable = 'Movie_Comments'
+            insertionID = 'parent_movie_id'
+            insertionText = 'movie_comments_content'
+            break;
+        case 'podcast':
+            dataTable = 'Podcast_Comments'
+            insertionID = 'parent_podcast_id'
+            insertionText = 'podcast_comments_content'
+            break;
     }
 
     try {
