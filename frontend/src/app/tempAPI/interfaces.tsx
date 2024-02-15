@@ -4,7 +4,8 @@ export interface SeriesSummary {
     series_status: string
     genres: string[]
     series_thumbnail: string | null
-    series_length: number
+    series_length: number,
+    reviewed: boolean 
 }
 
 export interface MovieSummary {
@@ -14,6 +15,8 @@ export interface MovieSummary {
     genres: string[]
     movie_length: number
     movie_thumbnail: string | null
+    reviewed: boolean 
+
 }
 
 export interface PodcastSummary {
@@ -21,7 +24,10 @@ export interface PodcastSummary {
     podcast_name: string
     podcast_status: string
     podcast_thumbnail: string | null
+    reviewed: boolean 
+
 }
+
 
 export interface BTSSeriesSummary {
     series_id: number

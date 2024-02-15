@@ -78,9 +78,9 @@ model Series {
   deleted             Boolean @default(false)
   deleted_at          DateTime?
   completed           Boolean @default(false)
-  series_main         String
-  series_directors    String
-  series_producers    String
+  series_main         String?
+  series_directors    String?
+  series_producers    String?
   series_thumbnail    String?
   genres              Series_Genres[]
   videos              Videos[]
@@ -108,7 +108,7 @@ model Videos {
   deleted_at          DateTime?
   parent_series_id    Int
   video_length        Int
-  video_main          String
+  video_main          String?
   video_url           String?
   video_thumbnail     String?
   video_season        Int
@@ -128,7 +128,10 @@ model Movies {
   deleted             Boolean @default(false)
   deleted_at          DateTime?
   movie_length        Int
-  movie_main          String
+  movie_main          String?
+  movie_starring      String?
+  movie_directors     String?
+  movie_producers     String?
   movie_url           String?
   movie_thumbnail     String?
   genres              Movie_Genres[]
@@ -157,10 +160,10 @@ model Podcasts {
   date_created        DateTime @default(now())
   deleted             Boolean @default(false)
   deleted_at          DateTime?
-  podcast_main        String
-  podcast_starring    String
-  podcast_directors   String
-  podcast_producers   String
+  podcast_main        String?
+  podcast_starring    String?
+  podcast_directors   String?
+  podcast_producers   String?
   podcast_url         String?
   podcast_thumbnail   String?
   podcast_comments    Podcast_Comments[]
@@ -263,7 +266,7 @@ model Podcast_Comments {
 }
 
 enum ContentTypes {
-  Movie
+  Movies
   Series
   Video
   Podcast

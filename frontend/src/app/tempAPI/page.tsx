@@ -57,7 +57,7 @@ const Page = () => {
     const getSeriesData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/series/seriesSummary`, {withCredentials: true})
-            console.log(res.data);
+            // console.log(res.data);
             setSeriesData(res.data)
         }
         catch (err) {
@@ -67,7 +67,7 @@ const Page = () => {
 
     const getMoviesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/movies/movieSummary`)
+            const res = await axios.get(`http://localhost:3001/api/movies/movieSummary`, {withCredentials: true})
             console.log(res.data);
             setMoviesData(res.data)
         }
@@ -78,7 +78,7 @@ const Page = () => {
 
     const getPodcastData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`)
+            const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`, {withCredentials: true})
             console.log(res.data);
             setPodcastData(res.data)
         }
@@ -89,7 +89,7 @@ const Page = () => {
 
     const getBTSSeriesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSSeries`)
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSSeries`, {withCredentials: true})
             console.log(res.data);
             setBtsSeriesData(res.data)
         }
@@ -100,7 +100,7 @@ const Page = () => {
 
     const getBTSMoviesData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSMovies`)
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSMovies`, {withCredentials: true})
             console.log(res.data);
             setBtsMoviesData(res.data)
         }
@@ -111,7 +111,7 @@ const Page = () => {
 
     const getAllBTSSummaryData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSAll`)
+            const res = await axios.get(`http://localhost:3001/api/bts/summaryBTSAll`, {withCredentials: true})
             console.log(res.data);
         }
         catch (err) {

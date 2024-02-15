@@ -6,6 +6,7 @@ import testImg from "./testimg.jpeg"
 import testPod from "./testPodcast.jpeg"
 import testMovieImg from "./testmovie.png"
 import "./tempstyles.css"
+import MediaRating from "./mediaRating"
 import Comment from "./comments"
 import CommentInput from "./commentInput"
 
@@ -84,7 +85,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
   }
 
   if (isSeries(content)) {
-    const { series_id, series_name, series_thumbnail, genres, series_length } = content
+    const { series_id, series_name, series_thumbnail, genres, series_length, reviewed } = content    
 
     return (
       <>
@@ -93,6 +94,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <p>{series_name}</p>
         <p>{series_length} episodes</p>
         {genres.map((genre) => <p key={genre}>{genre}</p>)}
+        {reviewed ? <p style = {{color: 'orange'}}>Already submitted rating</p>:<MediaRating table_name = 'series' content_id = {series_id}/>}
         <button onClick = {() => getSpecificContent('series', series_id)}>Get more info</button>
         <button onClick = {() => getComments('series', series_id)}>Get comments</button>
       </div>
@@ -104,13 +106,14 @@ const Card: React.FC<CardProps> = ({ content }) => {
     )
   }
   if (isMovie(content)) {    
-    const {movie_id, movie_name, movie_thumbnail, genres, movie_length} = content
+    const {movie_id, movie_name, movie_thumbnail, genres, movie_length, reviewed} = content
     return (
       <>
       <div className="summary-block">
         <img className="summary-img" src={testMovieImg.src} />
         <p>{movie_name}</p>
         {genres.map((genre) => <p key={genre}>{genre}</p>)}
+        {reviewed ? <p style = {{color: 'orange'}}>Already submitted rating</p>:<MediaRating table_name = 'movies' content_id = {movie_id}/>}
         <button onClick = {() => getSpecificContent('movies', movie_id)}>Get more info</button>
         <button onClick = {() => getComments('movies', movie_id)}>Get comments</button>
       </div>

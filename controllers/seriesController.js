@@ -6,51 +6,84 @@ require('dotenv').config();
 
 exports.getSeriesSummary = async (req, res) => {
     const token = req.cookies.token
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Decoded token:', decoded);
-    } catch (err) {
-        console.error('Token verification error:', err);
-        return res.status(401).json({"message": "Invalid or expired token"});
+    //if there is no token, just return all the content as is. If there is, go to ELSE
+    if (!token) {
+        try {
+            const data = await prisma.series.findMany({
+                include: {
+                    genres: {                       //references linked series_genres id and then goes deeper for the genre_name
+                        select: {
+                            genre: {
+                                select: {
+                                    genre_name: true
+                                }
+                            }
+                        }
+                    },
+                    _count : {                       //length of series
+                        select: {
+                            videos: true
+                        }
+                    }
+                }
+            })
+            const processedData = data.map(series => ({
+                ...series,
+                genres: series.genres.map(g => g.genre.genre_name),
+                series_length: series._count.videos
+            }));
+            res.status(200).json(processedData)
+        }
+        catch(err) {
+            console.error(err + 'Problem querying DB to retrieve summary of all series');
+            return res.status(500).json({"message" : "Internal server error"});
+         }
     }
-
-    try {
-        const data = await prisma.series.findMany({
-            select: {
-                series_id: true,
-                series_name: true,
-                series_thumbnail: true,
-                series_status: true,
-                genres: {                       //references linked series_genres id and then goes deeper for the genre_name
-                    select: {
-                        genre: {
+    //checks if the logged in user has already reviewed content (either upvote/downvote), return that piece of information
+    else {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const [seriesData, feedbackData] = await Promise.all([
+                prisma.series.findMany({
+                    include: {
+                        genres: {                       
                             select: {
-                                genre_name: true
+                                genre: {
+                                    select: {
+                                        genre_name: true
+                                    }
+                                }
+                            }
+                        },
+                        _count : {                       
+                            select: {
+                                videos: true
                             }
                         }
                     }
-                },
-                _count : {                       //length of series
-                    select: {
-                        videos: true
+                }),
+                prisma.feedback.findMany({
+                    where: {
+                        user_id: decoded.user_id,
+                        table_name: 'Series',
                     }
-                }
-            }
-        })
-        const processedData = data.map(series => ({
-            series_id: series.series_id,
-            series_name: series.series_name,
-            series_thumbnail: series.series_thumbnail,
-            series_status: series.series_status,
-            genres: series.genres.map(g => g.genre.genre_name),
-            series_length: series._count.videos
-        }));
-        res.status(200).json(processedData)
+                })
+            ]) 
+            const reviewedSeriesIds = new Set(feedbackData.map(feedback => feedback.item_id));
+
+            const processedData = seriesData.map(series => ({
+                ...series,
+                genres: series.genres.map(g => g.genre.genre_name),
+                series_length: series._count.videos, 
+                reviewed: reviewedSeriesIds.has(series.series_id)               
+            }));
+            res.status(200).json(processedData)
+        } catch (err) {
+            console.error('Token verification error:', err);
+            return res.status(401).json({"message": "Invalid or expired token"});
+        }
     }
-    catch(err) {
-        console.error(err + 'Problem querying DB to retrieve summary of all series');
-        return res.status(500).json({"message" : "Internal server error"});
-     }
+    
 }
 
 //This can be refactored for sure. Once we cache the initial data from 'getSummary', we don't need to query as many things once we retrieve the specific series data
@@ -113,37 +146,72 @@ exports.getSpecificSeries = async (req, res) => {
     // })
 }
 
-
-exports.getMovieSummary = async (_req, res) => {
-    try {
-        const data = await prisma.movies.findMany({
-            select: {
-                movie_id: true,
-                movie_name: true,
-                movie_thumbnail: true,
-                movie_status: true,
-                genres: {                       
-                    select: {
-                        genre: {
-                            select: {
-                                genre_name: true
+exports.getMovieSummary = async (req, res) => {
+    const token = req.cookies.token
+    if (!token) {
+        try {
+            const data = await prisma.movies.findMany({
+                include: {
+                    genres: {                       
+                        select: {
+                            genre: {
+                                select: {
+                                    genre_name: true
+                                }
                             }
                         }
                     }
-                },
-                movie_length: true
-            }
-        })
-        const processedData = data.map(movie => ({
-            ...movie,
-            genres: movie.genres.map(g => g.genre.genre_name),
-        }));
-        res.status(200).json(processedData)
+                }
+            })
+            const processedData = data.map(movie => ({
+                ...movie,
+                genres: movie.genres.map(g => g.genre.genre_name),
+            }));
+            res.status(200).json(processedData)
+        }
+        catch(err) {
+            console.error(err + 'Problem querying DB to retrieve summary of all movies');
+            return res.status(500).json({"message" : "Internal server error"});
+         }
     }
-    catch(err) {
-        console.error(err + 'Problem querying DB to retrieve summary of all movies');
-        return res.status(500).json({"message" : "Internal server error"});
-     }
+    else {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const [movieData, feedbackData] = await Promise.all([
+                prisma.movies.findMany({
+                    include: {
+                        genres: {                       
+                            select: {
+                                genre: {
+                                    select: {
+                                        genre_name: true
+                                    }
+                                }
+                            }
+                        },
+                        
+                    }
+                }),
+                prisma.feedback.findMany({
+                    where: {
+                        user_id: decoded.user_id,
+                        table_name: 'Movies',
+                    }
+                })
+            ]) 
+            const reviewedMovieIds = new Set(feedbackData.map(feedback => feedback.item_id));
+
+            const processedData = movieData.map(movie => ({
+                ...movie,
+                genres: movie.genres.map(g => g.genre.genre_name),
+                reviewed: reviewedMovieIds.has(movie.movie_id)               
+            }));
+            res.status(200).json(processedData)
+        } catch (err) {
+            console.error('Token verification error:', err);
+            return res.status(401).json({"message": "Invalid or expired token"});
+        }
+    }
 }
 
 exports.getSpecificMovies = async (req, res) => {

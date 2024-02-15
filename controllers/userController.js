@@ -80,7 +80,7 @@ exports.logIn = async (req, res) => {
      } 
 }
 
-exports.submitRating = async (req, res) => {
+exports.submitCommentRating = async (req, res) => {
     const {choice} = req.params
     const {userID, comment_id, table} = req.body;
     if (!userID || !comment_id || !table) {
@@ -133,11 +133,63 @@ exports.submitRating = async (req, res) => {
     }
 }
 
+exports.submitMediaRating = async (req, res) => {
+    const token = req.cookies.token
+    const {table_name, content_id} = req.body;
+    const { choice } = req.params
+
+    let insertionTable
+    let insertionID
+    let ratingColumn
+
+    switch(table_name) {
+        case 'series':
+            insertionTable = 'Series'
+            insertionID = 'series_id'
+            ratingColumn = choice === 'up' ? 'series_upvotes' : 'series_downvotes'
+            break;
+        case 'movies':
+            insertionTable = 'Movies'
+            insertionID = 'movie_id'
+            ratingColumn = choice === 'up' ? 'movie_upvotes' : 'movie_downvotes'
+            break;
+        case 'podcasts':
+            insertionTable = 'Podcasts'
+            insertionID = 'podcast_id'
+            ratingColumn = choice === 'up' ? 'podcast_upvotes' : 'podcast_downvotes'
+            break;
+    }
+
+    if (!token) {
+        return res.status(400).json({'message': 'No user token found, unable to handle user submitted rating'})
+    }
+    try {
+        //Decode token to access user details
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // console.log('Decoded token:', decoded);
+
+        const feedbackExists = await findFeedback(decoded.user_id, content_id, insertionTable)
+        if (feedbackExists) {
+           return res.status(400).json({'Message': 'Rating has already been submitted from this user'})
+        } else {
+            const insertNew = await newFeedback(decoded.user_id, insertionTable, content_id, choice);
+            if (insertNew) {
+                await updateContentRating(insertionTable, insertionID, content_id, ratingColumn);
+            }
+        }
+        res.status(200).json({ 'Message': 'Rating submitted successfully' });
+
+    } catch (err) {
+        console.error('Token verification error:', err);
+        return res.status(401).json({"message": "Invalid or expired token"});
+    }
+}
+
 //these 4 async functions are all for submitRating
-async function findFeedback(userID, comment_id, insertionTable) {
+async function findFeedback(user_id, comment_id, insertionTable) {
     const existingFeedback = await prisma.Feedback.findFirst({
         where: {
-            user_id: userID,
+            user_id: user_id,
             table_name: insertionTable,
             item_id: comment_id
         }
@@ -168,22 +220,22 @@ async function updateFeedbackEntry(feedbackObj, choice) {
     });
 }
 
-async function newFeedback(userID, insertionTable, comment_id, choice) {
+async function newFeedback(user_id, insertionTable, content_id, choice) {
     const insertFeedback = await prisma.Feedback.create({
         data: {
-            user_id: userID,
+            user_id: user_id,
             table_name: insertionTable,
-            item_id: comment_id,
+            item_id: content_id,
             feedback_rating: choice
         }
     })
     return insertFeedback;
 }
 
-async function updateContentRating(insertionTable, insertionID, comment_id, ratingColumn) {
+async function updateContentRating(insertionTable, insertionID, content_id, ratingColumn) {
     return prisma[insertionTable].update({
         where:{
-            [insertionID]: comment_id
+            [insertionID]: content_id
         },
         data: {
             [ratingColumn]: {
