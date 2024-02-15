@@ -1,7 +1,6 @@
 // import { useState, useEffect } from "react"
 import CommentBlock from "./commentBlock"
 import {User, SeriesComment, MovieComment, PodcastComment} from "./interfaces"
-import CommentInput from "./commentInput"
 
 
 type CommentArray = SeriesComment[] | MovieComment[] | PodcastComment[]

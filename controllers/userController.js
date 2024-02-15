@@ -104,27 +104,27 @@ exports.submitRating = async (req, res) => {
             break;
     }
     try {
-        //check for existing submission of feedback
-        const feedbackExists = await findFeedback(userID, comment_id, insertionTable)
-        //if it exists, then change the rating as needed (to prevent voting multiple times)
-        if (feedbackExists && feedbackExists.feedback_rating !== choice) {
-            updateRating(feedbackExists, choice)
-        } 
-        //if it doesn't exist, then add a new feedback item
-        try {
-            const insertNew = newFeedback(userID, insertionTable, comment_id, choice)
-            //then update the actual rating score for piece of content: either upvote or downvote
-            if (insertNew) {
-                updateContentRating(insertionTable, insertionID, comment_id, ratingColumn)
+        const feedbackExists = await findFeedback(userID, comment_id, insertionTable);
+
+        // If feedback exists, check if the rating choice has changed
+        if (feedbackExists) {
+            if (feedbackExists.feedback_rating !== choice) {
+                // Update the feedback entry and the content rating
+                await updateFeedbackEntry(feedbackExists, choice);
+                await updateContentRating(insertionTable, insertionID, comment_id, ratingColumn);
             }
-            
+            // If the choice hasn't changed, do nothing to avoid duplicate voting
+        } else {
+            // If feedback doesn't exist, add new feedback and update the content rating
+            const insertNew = await newFeedback(userID, insertionTable, comment_id, choice);
+            if (insertNew) {
+                await updateContentRating(insertionTable, insertionID, comment_id, ratingColumn);
+            }
         }
-        catch(err) {
-            console.error(err + ': Unable to add new feedback item to DB');
-        }
-    }
-    catch(err) {
-        console.error(err + ': Unable to check if user submitted rating already exists');
+        res.status(200).json({ 'Message': 'Rating submitted successfully' });
+    } catch (err) {
+        console.error(err + ': Unable to process rating submission');
+        return res.status(500).json({ 'Message': 'Unable to check if user submitted rating already exists' });
     }
 }
 
@@ -140,7 +140,7 @@ async function findFeedback(userID, comment_id, insertionTable) {
     return existingFeedback
 }
 
-async function updateRating(feedbackObj, choice) {
+async function updateFeedbackEntry(feedbackObj, choice) {
     const {feedback_id, feedback_rating} = feedbackObj
 
     let newRating

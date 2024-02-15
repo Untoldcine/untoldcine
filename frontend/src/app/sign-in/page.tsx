@@ -28,6 +28,8 @@ export default function Home() {
       if (res.status === 200) {
         //Browser will receive cookie for authorization, handles submission automatically on subsequent API calls
        localStorage.setItem('loggedInToken', 'true')
+       console.log('works!');
+       
       }
     }
     catch (err:any) {
