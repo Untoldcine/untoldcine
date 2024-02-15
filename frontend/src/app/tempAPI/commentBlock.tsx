@@ -95,15 +95,26 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
     }
 
     if (isPodcastComment(content)) {
+        const {user, podcast_comments_id, podcast_comments_content, replies, date_created, podcast_comments_upvotes, podcast_comments_downvotes, edited, parent_podcast_id} = content
+        const {user_id, user_nickname} = user 
         return (
             <>
                 <div className="block">
-                    <p>{content.podcast_comments_content}</p>
+                    {edited ? <p style ={{fontSize:'0.6rem', fontStyle:'italic'}}>Edited</p> : null}
+                    <p style = {{color: 'red'}}>{user_nickname}</p>
+                    <p>{podcast_comments_content}</p>
+                    <p>{convertTime(date_created)}</p>
+                    <CommentRate comment_id = {podcast_comments_id} table = 'podcast'/>
+                    <p>{calculateRating(podcast_comments_upvotes, podcast_comments_downvotes)}</p>
+                    <CommentEdit id = {podcast_comments_id} text = {podcast_comments_content} table = 'podcast'/>
+                    <button onClick = {() => handleCommentDelete(user_id, 'podcast', podcast_comments_id)}>Delete Comment</button>
+                    <br/>
+                    <CommentReply comment_id = {podcast_comments_id} table = 'podcast' parent_id = {parent_podcast_id}/>
                 </div>
-                {content.replies?.length > 0 ?
+                {replies?.length > 0 ?
                     <div className='block'>
                         {content.replies.map(comment => (
-                            <CommentBlock key={comment.podcast_comments_id} content={comment} />
+                            <CommentBlock key={podcast_comments_id} content={comment} />
                         ))}
                     </div> : null}
             </>
