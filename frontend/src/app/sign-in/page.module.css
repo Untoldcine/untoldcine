@@ -8,6 +8,12 @@
   box-sizing: border-box;
 }
 
+.buttonContainer {
+  margin: auto;
+  display: flex;
+  justify-content: center;
+}
+
 .main {
   display: flex;
   flex-direction: column;
@@ -19,19 +25,24 @@
 .title {
   margin-bottom: 2rem;
   text-align: center;
+  margin-top: 0rem;
 }
 
-.container {
+.checkboxContainer {
+  display: flex;
+}
+
+/* .container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin: 1rem 0;
-}
+} */
 
-.container input[type="checkbox"] {
+/* .container input[type="checkbox"] {
   margin-right: 1rem;
-}
+} */
 
 .checkmark {
   height: 1rem;
@@ -40,10 +51,12 @@
   background-color: var(--white-trans, rgba(255, 255, 255, 0.1));
 }
 
-.remember,
-.forgot {
+.remember {
   text-align: center;
-  margin: 1rem 0;
+}
+
+.forgot {
+  margin-top: 0rem;
 }
 
 .primary {

@@ -24,7 +24,7 @@
 .carouselButton {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-52%);
   background: linear-gradient(to left, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
   color: white;
   border: none;

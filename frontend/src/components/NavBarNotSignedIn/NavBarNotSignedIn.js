@@ -1,15 +1,12 @@
-'useclient'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import styles from './NavBarNotSignedIn.module.css';
 import UntoldLogo from "../../assets/UntoldLogoHeader.svg"
 import { SecondaryButton } from '../SecondaryButton/SecondaryButton';
 import { PrimaryButton } from '../PrimaryButton/PrimaryButton';
 import Link from 'next/link';
-import { useState } from 'react';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-
 
 export const NavBarNotSignedIn = () => {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
@@ -19,31 +16,30 @@ export const NavBarNotSignedIn = () => {
       <div className={styles.logoContainer}>
         <Image src={UntoldLogo} alt="Logo" width={140} height={82} />
       </div>
-      <button className={styles.hamburger} onClick={() => setIsNavExpanded(!isNavExpanded)}>
-      <FontAwesomeIcon className={styles.hamburgerButton} icon={faBars} />
+      <button
+        className={styles.hamburgerButton}
+        onClick={() => setIsNavExpanded(!isNavExpanded)}
+      >
+        <FontAwesomeIcon icon={faBars} size="2x" />
       </button>
-      
-      {isNavExpanded && (
-        <ul className={styles.navList}>
+      <ul className={`${styles.navList} ${isNavExpanded ? styles.show : ''}`}>
+        <Link href='/test'>
           <li>Home</li>
-          <li>Behind-the-scenes</li>
-          <li>Podcasts</li>
-          <li>Watchlists</li>
-          <li>Live Events</li>
-          <li>News Feed</li>
-        </ul>
-      )}
-      
-      {isNavExpanded && (
-        <div className={styles.navButtons}>
-          <Link href="/sign-up" passHref>
-            <SecondaryButton as="a" className={styles.customSecondaryButton}>Sign Up</SecondaryButton>
-          </Link>
-          <Link href="/sign-in" passHref>
-            <PrimaryButton as="a" className={styles.customPrimaryButton}>Login</PrimaryButton>
-          </Link>
-        </div>
-      )}
+        </Link>
+        <li>Behind-the-scenes</li>
+        <li>Podcasts</li>
+        <li>Watchlists</li> 
+        <li>Live Events</li>
+        <li>News Feed</li>
+      </ul>
+      <div className={`${styles.navButtons} ${isNavExpanded ? styles.showButtons : ''}`}>
+        <Link href="/sign-up" passHref>
+          <SecondaryButton as="a" className={styles.customSecondaryButton}>Sign Up</SecondaryButton>
+        </Link>
+        <Link className={styles.signButton} href="/sign-in" passHref>
+          <PrimaryButton as="a" className={styles.customPrimaryButton}>Login</PrimaryButton>
+        </Link>
+      </div>
     </nav>
   ); 
 };

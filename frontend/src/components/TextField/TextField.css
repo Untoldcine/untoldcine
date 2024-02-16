@@ -6,6 +6,7 @@
   border-radius: 10px;
   border: 1px solid #fff;
   background: transparent;
+  align-items: center;
 }
 
 .input {
@@ -17,6 +18,7 @@
   caret-color: white;
   color: white;
   font-size: 1rem;
+  width: 100%;
 }
 
 .icon {
@@ -25,7 +27,7 @@
   font-size: 1.5rem;
 }
 .box {
-  width: 355px;
+  width: 75%;
   height: 53px;
   display: flex;
   justify-content: space-between;
@@ -35,10 +37,10 @@
   color: white;
   border: 1px solid var(--White, #fff);
   padding-left: 1rem;
+  padding-right: 1rem;
   background: transparent;
 }
-
-#pw-hidden {
+*/ #pw-hidden {
   margin-right: 15px;
   cursor: pointer;
 }

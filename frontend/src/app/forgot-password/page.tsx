@@ -23,18 +23,20 @@ export default function Home() {
             <p>If the email is registered with us, you will receive a link to reset your password.</p>
           </div>
         </div>
-        :
+        : 
         <form className={styles.popup} onSubmit={(e) => handlePasswordResetEmail(e)}>
           <div className={styles.title}>
             <h4>Forgot Password?</h4>
             <p>Your password will be reset by email</p>
           </div>
           <input className="box" placeholder="Email" value={emailValue} onChange={(e) => setEmailValue(e.target.value)} />
+          <div className={styles.primaryButton}> 
           <PrimaryButton>Get a Link</PrimaryButton>
+          </div>
           <p className={styles.remember}>
             You remember your password? <Link href="/sign-in">Sign In</Link>
           </p>
         </form>}
-    </main>
+    </main> 
   );
 }

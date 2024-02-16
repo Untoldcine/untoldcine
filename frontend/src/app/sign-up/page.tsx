@@ -21,7 +21,9 @@ export default function Home() {
             <p>Remember Me</p>
           </div>
         </div>
+        <div className={styles.buttonContainer}> 
         <PrimaryButton className={styles.primaryButton}>Create an Account</PrimaryButton>
+        </div>
         <p className={styles.remember}>
           Already have an account with us? <Link className={styles.signInLink} href="/sign-in">Sign in</Link>
         </p>

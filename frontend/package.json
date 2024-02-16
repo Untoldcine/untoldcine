@@ -9,11 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@videojs/themes": "^1.0.1",
     "axios": "^1.6.4",
     "next": "^14.1.0",
     "node": "^21.6.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-modal": "^3.16.1",
+    "react-player": "^2.14.1",
+    "video-react": "^0.16.0",
+    "video.js": "^8.10.0"
   },
   "devDependencies": {
     "@types/node": "^20",
