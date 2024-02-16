@@ -6,12 +6,10 @@ const commentsController = require('../controllers/commentsController.js')
 // router.route('/getPodcastDiscussion/:userID/:podcastID').get(commentsController.getPodcastComments)
 // router.route('/getBTSDiscussion/:userID/:seriesID').get(commentsController.getBTSComments)
 router.route('/newComment/').post(commentsController.newComment)
-router.route('/removeComment/:userID').post(commentsController.removeComment)
+router.route('/removeComment/').post(commentsController.removeComment)
 router.route('/editComment').post(commentsController.editComment)
 router.route('/newReply').post(commentsController.replyComment)
 
-
-router.route('/newPodcastReply/:userID').post(commentsController.replyPodcastComment)
 router.route('/newBTSReply/:userID').post(commentsController.replyBTSComment)
 
 module.exports = router;

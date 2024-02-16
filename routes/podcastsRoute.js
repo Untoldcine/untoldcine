@@ -5,7 +5,7 @@ const commentsController = require('../controllers/commentsController.js')
 
 router.route('/podcastSummary').get(podcastsController.getPodcastSummary)
 router.route('/specific/:podcastID').get(podcastsController.getSpecificPodcast)
-router.route('/comments/:userID/:podcastID').get(commentsController.getPodcastComments)
+router.route('/comments/:podcastID').get(commentsController.getPodcastComments)
 
 
 module.exports = router;

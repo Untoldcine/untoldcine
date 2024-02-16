@@ -26,9 +26,12 @@ function isPodcastComment(comment: Content): comment is PodcastComment {
 
 const handleCommentDelete = async (userID: number, table: string, comment_id: number) => {
     try {
-        const res = await axios.post(`http://localhost:3001/api/comments/removeComment/${userID}`, {
+        const res = await axios.post(`http://localhost:3001/api/comments/removeComment/`, {
             table,
             comment_id
+        },
+        {
+            withCredentials: true
         })
     }
      catch(err) {
@@ -41,10 +44,10 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
     if (isSeriesComment(content)) {        
         const {user, series_comments_id, series_comments_content, replies, date_created, series_comments_upvotes, series_comments_downvotes, edited, parent_series_id, ownComment, reviewed, reviewChoice} = content
         const {user_id, user_nickname} = user 
-        console.log('reviewed?:' + reviewed);
-        console.log('choice?:' + reviewChoice);
+        // console.log('reviewed?:' + reviewed);
+        // console.log('choice?:' + reviewChoice);
         
-        
+            
         if (ownComment) {
             return (
                 <>
@@ -94,6 +97,29 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
         const {user, movie_comments_id, movie_comments_content, replies, date_created, movie_comments_upvotes, movie_comments_downvotes, edited, parent_movie_id, ownComment, reviewed, reviewChoice} = content
         const {user_id, user_nickname} = user 
 
+        if (ownComment) {
+            return (
+                <>
+                <div className="self-block">
+                    {edited ? <p style ={{fontSize:'0.6rem', fontStyle:'italic'}}>Edited</p> : null}
+                    <p style = {{color: 'red'}}>{user_nickname}</p>
+                    <p>{movie_comments_content}</p>
+                    <p>{convertTime(date_created)}</p>
+                    <p>{calculateRating(movie_comments_upvotes, movie_comments_downvotes)}</p>
+                    <CommentEdit id = {movie_comments_id} text = {movie_comments_content} table = 'movie'/>
+                    <button onClick = {() => handleCommentDelete(user_id, 'movie', movie_comments_id)}>Delete Comment</button>
+                    <br/>
+                    <CommentReply comment_id = {movie_comments_id} table = 'movie' parent_id = {parent_movie_id}/>
+                </div>
+                {replies?.length > 0 ?
+                    <div className='block'>
+                        {content.replies.map(comment => (
+                            <CommentBlock key={movie_comments_id} content={comment} />
+                        ))}
+                    </div> : null}
+                </>
+            )
+        }
         return (
             <>
                 <div className="block">
@@ -101,10 +127,8 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
                     <p style = {{color: 'red'}}>{user_nickname}</p>
                     <p>{movie_comments_content}</p>
                     <p>{convertTime(date_created)}</p>
-                    <CommentRate comment_id = {movie_comments_id} table = 'movie' reviewChoice={reviewChoice}/>
+                    <CommentRate comment_id = {movie_comments_id} table = 'movie' reviewChoice = {reviewChoice}/>
                     <p>{calculateRating(movie_comments_upvotes, movie_comments_downvotes)}</p>
-                    <CommentEdit id = {movie_comments_id} text = {movie_comments_content} table = 'movie'/>
-                    <button onClick = {() => handleCommentDelete(user_id, 'movie', movie_comments_id)}>Delete Comment</button>
                     <br/>
                     <CommentReply comment_id = {movie_comments_id} table = 'movie' parent_id = {parent_movie_id}/>
                 </div>
@@ -121,14 +145,14 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
     if (isPodcastComment(content)) {
         const {user, podcast_comments_id, podcast_comments_content, replies, date_created, podcast_comments_upvotes, podcast_comments_downvotes, edited, parent_podcast_id, ownComment, reviewed, reviewChoice} = content
         const {user_id, user_nickname} = user 
-        return (
-            <>
-                <div className="block">
+        if (ownComment) {
+            return (
+                <>
+                <div className="self-block">
                     {edited ? <p style ={{fontSize:'0.6rem', fontStyle:'italic'}}>Edited</p> : null}
                     <p style = {{color: 'red'}}>{user_nickname}</p>
                     <p>{podcast_comments_content}</p>
                     <p>{convertTime(date_created)}</p>
-                    <CommentRate comment_id = {podcast_comments_id} table = 'podcast' reviewChoice={reviewChoice}/>
                     <p>{calculateRating(podcast_comments_upvotes, podcast_comments_downvotes)}</p>
                     <CommentEdit id = {podcast_comments_id} text = {podcast_comments_content} table = 'podcast'/>
                     <button onClick = {() => handleCommentDelete(user_id, 'podcast', podcast_comments_id)}>Delete Comment</button>
@@ -141,10 +165,30 @@ const CommentBlock: React.FC<CommentBlockProps> = ({ content }) => {
                             <CommentBlock key={podcast_comments_id} content={comment} />
                         ))}
                     </div> : null}
+                </>
+            )
+        }
+        return (
+            <>
+                <div className="block">
+                    {edited ? <p style ={{fontSize:'0.6rem', fontStyle:'italic'}}>Edited</p> : null}
+                    <p style = {{color: 'red'}}>{user_nickname}</p>
+                    <p>{podcast_comments_content}</p>
+                    <p>{convertTime(date_created)}</p>
+                    <CommentRate comment_id = {podcast_comments_id} table = 'podcast' reviewChoice = {reviewChoice}/>
+                    <p>{calculateRating(podcast_comments_upvotes, podcast_comments_downvotes)}</p>
+                    <br/>
+                    <CommentReply comment_id = {podcast_comments_id} table = 'podcast' parent_id = {parent_podcast_id}/>
+                </div>
+                {replies?.length > 0 ?
+                    <div className='block'>
+                        {content.replies.map(comment => (
+                            <CommentBlock key={podcast_comments_id} content={comment} />
+                        ))}
+                    </div> : null}
             </>
         )
-    }
-
+     }
 }
 
 export default CommentBlock

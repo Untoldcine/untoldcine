@@ -5,7 +5,7 @@ const commentsController = require('../controllers/commentsController.js')
 
 router.route('/movieSummary').get(seriesController.getMovieSummary)
 router.route('/specific/:movieID').get(seriesController.getSpecificMovies)
-router.route('/comments/:userID/:movieID').get(commentsController.getMovieComments)
+router.route('/comments/:movieID').get(commentsController.getMovieComments)
 
 
 module.exports = router;

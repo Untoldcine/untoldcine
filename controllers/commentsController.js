@@ -132,118 +132,252 @@ exports.getSeriesComments = async (req, res) => {
 }
 
 exports.getMovieComments = async (req, res) => {
-    const { userID, movieID } = req.params;
+    const token = req.cookies.token
+    const { movieID } = req.params;
 
-    if (!movieID || !userID) {
-        return res.status(400).json({'message': 'Missing movie or user ID to retrieve comments'});
+    if (!movieID) {
+        return res.status(400).json({'message': 'Missing movie to retrieve comments'});
     }
 
-    try {
-        const comments = await prisma.Movie_Comments.findMany({
-            where: {
-                parent_movie_id: parseInt(movieID),
-                deleted: false,
-            },
-            include: {
-                user: {
-                    select: {
-                        user_id: true,
-                        user_nickname: true
+    if (!token) {
+        try {
+            const comments = await prisma.Movie_Comments.findMany({
+                where: {
+                    parent_movie_id: parseInt(movieID),
+                    deleted: false,
+                },
+                include: {
+                    user: {
+                        select: {
+                            user_id: true,
+                            user_nickname: true
+                        }
                     }
-                }, 
-                // feedback: {
-                //     where: {
-                //         user_ID: parseInt(userID),
-                //     },
-                //     select: {
-                //         rating: true,
-                //     },
-                // },
-            },
-        });
-
-        const commentMap = {};
-        const topLevelComments = [];
-
-        //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
-        //those with parent_ids are placed within their respective 'reply' arrays
-        comments.forEach(comment => {
-            commentMap[comment.movie_comments_id] = { ...comment, replies: [] };
-
-            if (comment.parent_comment_id === null) {
-                topLevelComments.push(commentMap[comment.movie_comments_id]);
-            }
-        });
-
-        comments.forEach(comment => {
-            if (comment.parent_comment_id !== null) {
-                if (commentMap[comment.parent_comment_id]) {
-                    commentMap[comment.parent_comment_id].replies.push(commentMap[comment.movie_comments_id]);
                 }
-            }
-        });
+            });
+    
+            const commentMap = {};
+            const topLevelComments = [];
+    
+            //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
+            //those with parent_ids are placed within their respective 'reply' arrays
+            comments.forEach(comment => {
+                commentMap[comment.movie_comments_id] = { ...comment, replies: [] };
+    
+                if (comment.parent_comment_id === null) {
+                    topLevelComments.push(commentMap[comment.movie_comments_id]);
+                }
+            });
+    
+            comments.forEach(comment => {
+                if (comment.parent_comment_id !== null) {
+                    if (commentMap[comment.parent_comment_id]) {
+                        commentMap[comment.parent_comment_id].replies.push(commentMap[comment.movie_comments_id]);
+                    }
+                }
+            });
+    
+            res.status(200).json(topLevelComments);
+        } catch (error) {
+            console.error('Error', error);
+            res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+        }
+    }
+    else  {
+        //if there is a user through the retrieved token, alter data below
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const [commentData, feedbackData] = await Promise.all([
+                prisma.Movie_Comments.findMany({
+                    where: {
+                        parent_movie_id: parseInt(movieID),
+                        deleted: false
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                user_id: true,
+                                user_nickname: true
+                            }
+                        }
+                    }
+                }),
+                prisma.feedback.findMany({
+                    where: {
+                        user_id: decoded.user_id,
+                        table_name: 'Movie_Comments'
+                    }
+                })
+            ])
 
-        res.status(200).json(topLevelComments);
-    } catch (error) {
-        console.error('Error', error);
-        res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+            //map that holds what the user has interacted with and what their rating was: either up or down
+            const feedbackMap = {}
+            feedbackData.forEach(feedback => {
+                feedbackMap[feedback.item_id] = feedback.feedback_rating
+            })
+
+            const processedComments = commentData.map((comment) => {
+                const ownComment = comment.user_id === decoded.user_id      //is this their own comment?
+                const reviewed = feedbackMap.hasOwnProperty(comment.movie_comments_id);            //have they reviewed? 
+                const reviewChoice = reviewed ? feedbackMap[comment.movie_comments_id] : null;     //what was their choice?
+
+                return {
+                    ...comment,
+                    ownComment,
+                    reviewed,                   //having both reviewed/reviewedChocie is redundant I believe but whatever
+                    reviewChoice
+                }
+            })
+
+            const commentMap = {};
+            const topLevelComments = [];
+            
+            processedComments.forEach(comment => {
+                commentMap[comment.movie_comments_id] = { ...comment, replies: [] };
+    
+                if (comment.parent_comment_id === null) {
+                    topLevelComments.push(commentMap[comment.movie_comments_id]);
+                }
+            });
+    
+            processedComments.forEach(comment => {
+                if (comment.parent_comment_id !== null) {
+                    if (commentMap[comment.parent_comment_id]) {
+                        commentMap[comment.parent_comment_id].replies.push(commentMap[comment.movie_comments_id]);
+                    }
+                }
+            });
+
+            
+            res.status(200).json(topLevelComments);
+        } catch (error) {
+            console.error('Error', error);
+            res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+        }
     }
 }
 
 exports.getPodcastComments = async (req, res) => {
-    const {userID, podcastID} = req.params;
+    const token = req.cookies.token
+
+    const {podcastID} = req.params;
     if (!podcastID) {
         res.status(400).json({'message': 'Missing podcast ID to retrieve comments'})
     }
-    try {
-        const comments = await prisma.Podcast_Comments.findMany({
-            where: {
-                parent_podcast_id: parseInt(podcastID),
-                deleted: false,
-            },
-            include: {
-                user: {
-                    select: {
-                        user_id: true,
-                        user_nickname: true
+    if (!token) {
+        try {
+            const comments = await prisma.Podcast_Comments.findMany({
+                where: {
+                    parent_podcast_id: parseInt(movieID),
+                    deleted: false,
+                },
+                include: {
+                    user: {
+                        select: {
+                            user_id: true,
+                            user_nickname: true
+                        }
                     }
-                }, 
-                // feedback: {
-                //     where: {
-                //         user_ID: parseInt(userID),
-                //     },
-                //     select: {
-                //         rating: true,
-                //     },
-                // },
-            },
-        });
-
-        const commentMap = {};
-        const topLevelComments = [];
-
-        //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
-        //those with parent_ids are placed within their respective 'reply' arrays
-        comments.forEach(comment => {
-            commentMap[comment.podcast_comments_id] = { ...comment, replies: [] };
-
-            if (comment.parent_comment_id === null) {
-                topLevelComments.push(commentMap[comment.podcast_comments_id]);
-            }
-        });
-
-        comments.forEach(comment => {
-            if (comment.parent_comment_id !== null) {
-                if (commentMap[comment.parent_comment_id]) {
-                    commentMap[comment.parent_comment_id].replies.push(commentMap[comment.podcast_comments_id]);
                 }
-            }
-        });
+            });
+    
+            const commentMap = {};
+            const topLevelComments = [];
+    
+            //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
+            //those with parent_ids are placed within their respective 'reply' arrays
+            comments.forEach(comment => {
+                commentMap[comment.podcast_comments_id] = { ...comment, replies: [] };
+    
+                if (comment.parent_comment_id === null) {
+                    topLevelComments.push(commentMap[comment.podcast_comments_id]);
+                }
+            });
+    
+            comments.forEach(comment => {
+                if (comment.parent_comment_id !== null) {
+                    if (commentMap[comment.parent_comment_id]) {
+                        commentMap[comment.parent_comment_id].replies.push(commentMap[comment.podcast_comments_id]);
+                    }
+                }
+            });
+    
+            res.status(200).json(topLevelComments);
+        } catch (error) {
+            console.error('Error', error);
+            res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+        }
+    }
+     else {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const [commentData, feedbackData] = await Promise.all([
+                prisma.Podcast_Comments.findMany({
+                    where: {
+                        parent_podcast_id: parseInt(podcastID),
+                        deleted: false
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                user_id: true,
+                                user_nickname: true
+                            }
+                        }
+                    }
+                }),
+                prisma.feedback.findMany({
+                    where: {
+                        user_id: decoded.user_id,
+                        table_name: 'Podcast_Comments'
+                    }
+                })
+            ])
 
-        res.status(200).json(topLevelComments);
-    } catch (error) {
-        console.error('Error', error);
-        res.status(500).json({'message': `Error retrieving summary of comments for podcast ID ${podcastID} during database operation`});
+            //map that holds what the user has interacted with and what their rating was: either up or down
+            const feedbackMap = {}
+            feedbackData.forEach(feedback => {
+                feedbackMap[feedback.item_id] = feedback.feedback_rating
+            })
+
+            const processedComments = commentData.map((comment) => {
+                const ownComment = comment.user_id === decoded.user_id      //is this their own comment?
+                const reviewed = feedbackMap.hasOwnProperty(comment.podcast_comments_id);            //have they reviewed? 
+                const reviewChoice = reviewed ? feedbackMap[comment.podcast_comments_id] : null;     //what was their choice?
+
+                return {
+                    ...comment,
+                    ownComment,
+                    reviewed,                   //having both reviewed/reviewedChocie is redundant I believe but whatever
+                    reviewChoice
+                }
+            })
+
+            const commentMap = {};
+            const topLevelComments = [];
+            
+            processedComments.forEach(comment => {
+                commentMap[comment.podcast_comments_id] = { ...comment, replies: [] };
+    
+                if (comment.parent_comment_id === null) {
+                    topLevelComments.push(commentMap[comment.podcast_comments_id]);
+                }
+            });
+    
+            processedComments.forEach(comment => {
+                if (comment.parent_comment_id !== null) {
+                    if (commentMap[comment.parent_comment_id]) {
+                        commentMap[comment.parent_comment_id].replies.push(commentMap[comment.podcast_comments_id]);
+                    }
+                }
+            });
+
+            
+            res.status(200).json(topLevelComments);
+        } catch (error) {
+            console.error('Error', error);
+            res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+        }
     }
 }
 
@@ -431,25 +565,6 @@ exports.replyComment = async (req, res) => {
     }
 }
 
-exports.replyPodcastComment = async (req, res) => {
-    const {userID} = req.params
-    const {content, parent_id, podcast_id} = req.body;
-    if (!userID || !content || !parent_id || !podcast_id) {
-        return res.status(400).json({'message': 'Missing data to process POST of reply'})
-    }
-
-    const connection = connectDB();
-    const query = `INSERT INTO podcast_comments (user_id, content, podcast_id, parent_id) VALUES (?, ?, ?, ?)`
-    connection.query(query, [userID, content, podcast_id, parent_id], (queryError, results) => {
-        connection.end()
-        if (queryError){
-            console.error('Error ' + queryError);   
-            return res.status(500).json({'message' : `Error at POST to new reply to a podcast comment during database operation`})
-        }
-        res.status(200).json(results)
-    })
-}
-
 exports.replyBTSComment = async (req, res) => {
     const {userID} = req.params
     const {content, parent_id, series_id} = req.body;
@@ -475,9 +590,14 @@ exports.replyBTSComment = async (req, res) => {
 
 //alternative is hard deletion of content but best practice may be to use soft deletes? dunno
 exports.removeComment = async (req, res) => {
-    const {userID} = req.params;
+    const token = req.cookies.token
+    if (!token) {
+        return res.status(401).json({'Message' : 'Not logged in, cannot create a new comment'})
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     const {comment_id, table } = req.body
-    if (!userID || !comment_id || !table) {
+    if (!comment_id || !table) {
         return res.status(400).json({'message': 'Missing data to process delete of comment'})
     }
     let insertionTable
@@ -506,10 +626,10 @@ exports.removeComment = async (req, res) => {
         })
         if (deleted) {
             try {
-                const toggleDelete = await prisma[insertionTable].update({
+                await prisma[insertionTable].update({
                     where: {
                         [insertionID] : parseInt(comment_id),
-                        user_id: parseInt(userID)
+                        user_id: decoded.user_id
                     },
                     data: {
                         deleted: true,
