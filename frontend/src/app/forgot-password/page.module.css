@@ -1,6 +1,7 @@
 .popup {
-  width: 500px;
-  height: 379px;
+  width: 90%;
+  max-width: 500px;
+  height: 479px;
   flex-shrink: 0;
   border-radius: 16px;
   background: var(--white-trans, rgba(255, 255, 255, 0.1));

@@ -178,3 +178,227 @@
     margin-right: -0.5rem;
   }
 }
+
+.videoModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #fff;
+  border: none;
+  padding: 10px;
+  display: none;
+  cursor: pointer;
+}
+.customControls {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+}
+
+.video-js .vjsControlBar {
+  display: none;
+}
+
+.customControlsContainer {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 95%;
+  padding: 10px;
+  /* background: rgba(0, 0, 0, 0.5); */
+  z-index: 1001;
+}
+
+.customButton {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 36px;
+}
+
+.playButton {
+  font-size: 2rem;
+  position: static;
+  margin: 0 20px;
+}
+
+.video-js .vjs-big-play-button,
+.video-js .vjs-control-bar,
+.video-js .vjs-progress-control .vjs-progress-holder {
+  display: none !important;
+}
+
+.left-controls,
+.right-controls {
+  display: flex;
+  align-items: center;
+}
+
+.modalCloseButton {
+  z-index: 1001;
+}
+
+.fullscreenButton {
+  position: absolute;
+  right: 2rem;
+  bottom: 2rem;
+  color: white;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.backButton {
+  position: absolute;
+  left: 2rem;
+  top: 2rem;
+  color: white;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.topLeftControls {
+  position: absolute;
+  left: 2rem;
+  top: 2rem;
+  color: white;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.topRightControls {
+  position: absolute;
+  right: 2rem;
+  top: 2rem;
+  color: white;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.trackbar {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  background: white;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.trackbar:hover {
+  cursor: pointer;
+}
+
+.trackbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.trackbar::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  background: white;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.trackbarContainer {
+  width: 95%;
+  display: flex;
+  align-items: center;
+}
+
+.customPlayButton {
+  font-size: 36px;
+}
+
+.remainingTime {
+  color: white;
+  margin-left: 1rem;
+}
+
+.volumeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 5px;
+  background: white;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.volumeSlider:hover {
+  opacity: 1;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  background: white;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.volumeControl {
+  position: relative;
+  /* styles for your volume control icon */
+}
+
+.volumeSlider {
+  position: absolute;
+  bottom: 100%; /* Adjust as needed */
+  left: 50%; /* Adjust as needed */
+  transform: translateX(-50%);
+  display: none; /* Hide by default */
+}
+
+.volumeControl:hover .volumeSlider {
+  display: block; /* Show on hover */
+}

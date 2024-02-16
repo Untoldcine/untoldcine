@@ -31,12 +31,16 @@
 }
 
 .titleContainer {
-  transform: translateY(-15%);
+  transform: translateY(-30%);
   margin-left: 1rem;
 }
 
 .titleImage {
   max-width: 100%;
+}
+
+.title {
+  margin: 0rem !important;
 }
 
 /* .metaContainer {
@@ -220,4 +224,8 @@
 
 .seasonButton {
   margin-top: 1rem;
+}
+
+.sliderBar:hover {
+  cursor: pointer;
 }

@@ -9,7 +9,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 
 const Carousel = ({ items, title }) => {
   const [startIndex, setStartIndex] = useState(0);
-  const itemsToShow = 6; 
+  const itemsToShow = 8; 
   const scrollLeft = () => {
     setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0));
   };
