@@ -1,44 +1,9 @@
 'use client'
 import axios from 'axios'
 import './tempstyles.css'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {SeriesSummary, MovieSummary, PodcastSummary, BTSSeriesSummary, BTSMoviesSummary} from "./interfaces"
 import Card from "./card"
-import Podcasts from "./podcasts"
-import CommentComponent from './comment'
-import Login from './login'
-import styles from "../page.module.css"
-import { Footer } from '@/components/Footer/Footer'
-import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSignedIn'
-import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn'
-
-
-interface BTS {
-    ID: number,
-    series_name: string
-}
-
-interface Comment {
-    ID: number,
-    content: string,
-    date: string,
-    parent_id: number | null,
-    series_id: number | null,
-    nickname: string,
-    user_id: number,
-    rating: string,
-    replies: Comment[] | [],
-    podcast_id: number | null,
-    btsflag: boolean | null
-    edited: boolean
-    user_feedback: string | null
-
-}
-
-interface DBCommentObj {
-    topLevel: Comment[] | null,
-    allComments: Comment[] | null
-}
 
 const Page = () => {
 
@@ -47,9 +12,6 @@ const Page = () => {
     const [podcastData, setPodcastData] = useState<PodcastSummary[] | []>([])
     const [btsSeriesData, setBtsSeriesData] = useState<BTSSeriesSummary[] | []>([])
     const [btsMoviesData, setBtsMoviesData] = useState<BTSMoviesSummary[] | []>([])
-
-    const [newCommentValue, setNewCommentValue] = useState<string>('')
-    const [btsComments, setBTSComments] = useState<DBCommentObj | null>(null)
 
 
     //when user enters Untold, get sent JSON data that is cached on client side of superficial series information to reduce calls to DB
