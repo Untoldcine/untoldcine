@@ -124,12 +124,13 @@ const Card: React.FC<CardProps> = ({ content }) => {
     )
   }
   if (isPodcast(content)) {
-    const {podcast_id, podcast_name, podcast_thumbnail, podcast_status} = content
+    const {podcast_id, podcast_name, podcast_thumbnail, podcast_status, reviewed} = content
     return (
       <>
       <div className="summary-block">
         <img className="summary-img" src={testPod.src} />
         <p>{podcast_name}</p>
+        {reviewed ? <p style = {{color: 'orange'}}>Already submitted rating</p>:<MediaRating table_name = 'podcasts' content_id = {podcast_id}/>}
         <button onClick = {() => getSpecificContent('podcast', podcast_id)}>Get more info</button>
         <button onClick = {() => getComments('podcast', podcast_id)}>Get comments</button>
       </div>

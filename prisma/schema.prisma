@@ -269,7 +269,7 @@ enum ContentTypes {
   Movies
   Series
   Video
-  Podcast
+  Podcasts
   BTS_Series
   BTS_Movies
   Series_Comments

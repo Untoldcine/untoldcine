@@ -160,13 +160,12 @@ exports.submitMediaRating = async (req, res) => {
             break;
     }
 
-    if (!token) {
+    if (!token) { //if somebody not logged tries to submit rating, nothing happens.
         return res.status(400).json({'message': 'No user token found, unable to handle user submitted rating'})
     }
     try {
         //Decode token to access user details
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log('Decoded token:', decoded);
 
         const feedbackExists = await findFeedback(decoded.user_id, content_id, insertionTable)
         if (feedbackExists) {
