@@ -21,11 +21,13 @@
 
 .self-block {
     border: 1px solid green;
+    background-color: rgb(74, 90, 71);
     padding: 0.5rem;
 }
 
 .like-button-done {
     background-color: green;
+    color: white;
 }
 .dislike-button-done {
     background-color: red;

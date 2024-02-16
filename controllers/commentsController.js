@@ -1,64 +1,133 @@
 const connectDB = require('./connectDB')
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient();
+const jwt = require("jsonwebtoken");
+require('dotenv').config();
 
 
 exports.getSeriesComments = async (req, res) => {
-    const { userID, seriesID } = req.params;
+    const token = req.cookies.token
+    const { seriesID } = req.params;
 
-    if (!seriesID || !userID) {
-        return res.status(400).json({'message': 'Missing series or user ID to retrieve comments'});
+    if (!seriesID) {
+        return res.status(400).json({'message': 'Missing series to retrieve comments'});
     }
 
-    try {
-        const comments = await prisma.series_Comments.findMany({
-            where: {
-                parent_series_id: parseInt(seriesID),
-                deleted: false,
-            },
-            include: {
-                user: {
-                    select: {
-                        user_id: true,
-                        user_nickname: true
-                    }
+    if (!token) {
+        try {
+            const comments = await prisma.series_Comments.findMany({
+                where: {
+                    parent_series_id: parseInt(seriesID),
+                    deleted: false,
                 },
-                // feedback: {
-                //     where: {
-                //         user_ID: parseInt(userID),
-                //     },
-                //     select: {
-                //         rating: true,
-                //     },
-                // },
-            },
-        });
-
-        const commentMap = {};
-        const topLevelComments = [];
-
-        //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
-        //those with parent_ids are placed within their respective 'reply' arrays
-        comments.forEach(comment => {
-            commentMap[comment.series_comments_id] = { ...comment, replies: [] };
-
-            if (comment.parent_comment_id === null) {
-                topLevelComments.push(commentMap[comment.series_comments_id]);
-            }
-        });
-
-        comments.forEach(comment => {
-            if (comment.parent_comment_id !== null) {
-                if (commentMap[comment.parent_comment_id]) {
-                    commentMap[comment.parent_comment_id].replies.push(commentMap[comment.series_comments_id]);
+                include: {
+                    user: {
+                        select: {
+                            user_id: true,
+                            user_nickname: true
+                        }
+                    }
                 }
-            }
-        });
+            });
+    
+            const commentMap = {};
+            const topLevelComments = [];
+    
+            //take returned database result, create comment relationship structure where those w/o parent_ids are 'top level'. 
+            //those with parent_ids are placed within their respective 'reply' arrays
+            comments.forEach(comment => {
+                commentMap[comment.series_comments_id] = { ...comment, replies: [] };
+    
+                if (comment.parent_comment_id === null) {
+                    topLevelComments.push(commentMap[comment.series_comments_id]);
+                }
+            });
+    
+            comments.forEach(comment => {
+                if (comment.parent_comment_id !== null) {
+                    if (commentMap[comment.parent_comment_id]) {
+                        commentMap[comment.parent_comment_id].replies.push(commentMap[comment.series_comments_id]);
+                    }
+                }
+            });
+    
+            res.status(200).json(topLevelComments);
+        } catch (error) {
+            console.error('Error', error);
+            res.status(500).json({'message': `Error retrieving summary of comments for series ID ${seriesID} during database operation`});
+        }
+    }
+    else {
+        //if there is a user through the retrieved token, alter data below
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const [commentData, feedbackData] = await Promise.all([
+                prisma.series_Comments.findMany({
+                    where: {
+                        parent_series_id: parseInt(seriesID),
+                        deleted: false
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                user_id: true,
+                                user_nickname: true
+                            }
+                        }
+                    }
+                }),
+                prisma.feedback.findMany({
+                    where: {
+                        user_id: decoded.user_id,
+                        table_name: 'Series_Comments'
+                    }
+                })
+            ])
 
-        res.status(200).json(topLevelComments);
-    } catch (error) {
-        console.error('Error', error);
-        res.status(500).json({'message': `Error retrieving summary of comments for series ID ${seriesID} during database operation`});
+            //map that holds what the user has interacted with and what their rating was: either up or down
+            const feedbackMap = {}
+            feedbackData.forEach(feedback => {
+                feedbackMap[feedback.item_id] = feedback.feedback_rating
+            })
+
+            const processedComments = commentData.map((comment) => {
+                const ownComment = comment.user_id === decoded.user_id      //is this their own comment?
+                const reviewed = feedbackMap.hasOwnProperty(comment.series_comments_id);            //have they reviewed? 
+                const reviewChoice = reviewed ? feedbackMap[comment.series_comments_id] : null;     //what was their choice?
+
+                return {
+                    ...comment,
+                    ownComment,
+                    reviewed,                   //having both reviewed/reviewedChocie is redundant I believe but whatever
+                    reviewChoice
+                }
+            })
+
+            const commentMap = {};
+            const topLevelComments = [];
+            
+            processedComments.forEach(comment => {
+                commentMap[comment.series_comments_id] = { ...comment, replies: [] };
+    
+                if (comment.parent_comment_id === null) {
+                    topLevelComments.push(commentMap[comment.series_comments_id]);
+                }
+            });
+    
+            processedComments.forEach(comment => {
+                if (comment.parent_comment_id !== null) {
+                    if (commentMap[comment.parent_comment_id]) {
+                        commentMap[comment.parent_comment_id].replies.push(commentMap[comment.series_comments_id]);
+                    }
+                }
+            });
+
+            
+            res.status(200).json(topLevelComments);
+        } catch (error) {
+            console.error('Error', error);
+            res.status(500).json({'message': `Error retrieving summary of comments for series ID ${seriesID} during database operation`});
+        }
     }
 }
 
@@ -217,9 +286,13 @@ exports.getBTSComments = async (req, res) => {
 }
 
 exports.newComment = async (req, res) => {
-    const {userID} = req.params
+    const token = req.cookies.token
+    if (!token) {
+        return res.status(401).json({'Message' : 'Not logged in, cannot create a new comment'})
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const {comment, table_name, content_id} = req.body;
-    if (!userID || !comment || !content_id || !table_name) {
+    if (!comment || !content_id || !table_name) {
         return res.status(400).json({'message': 'Missing data to process new POST of comment'})
     }
     let dataTable
@@ -248,7 +321,7 @@ exports.newComment = async (req, res) => {
             data: {
                 [insertionID]: parseInt(content_id),
                 [insertionText]: comment,
-                user_id: parseInt(userID)
+                user_id: decoded.user_id
             }
         })
         if (newComment) {
@@ -307,8 +380,14 @@ exports.editComment = async (req, res) => {
 };
 
 exports.replyComment = async (req, res) => {
-    const {user_id, comment, parent_comment_id, table, parent_content_id} = req.body;
-    if (!user_id || !comment || !parent_comment_id || !table || !parent_content_id) {
+    const token = req.cookies.token
+    if (!token) {
+        return res.status(401).json({'Message' : 'Not logged in, cannot create a new comment'})
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const {comment, parent_comment_id, table, parent_content_id} = req.body;
+    if (!comment || !parent_comment_id || !table || !parent_content_id) {
         return res.status(400).json({'message': 'Missing data to process POST of reply'})
     }
     let insertionTable
@@ -336,7 +415,7 @@ exports.replyComment = async (req, res) => {
     try {
         const reply = await prisma[insertionTable].create({
             data: {
-                user_id,
+                user_id: decoded.user_id,
                 [insertionParentID]: parent_content_id,
                 parent_comment_id,
                 [insertionContent]: comment

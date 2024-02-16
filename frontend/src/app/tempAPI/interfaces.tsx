@@ -73,6 +73,9 @@ export interface SeriesComment {
     deleted: boolean
     deleted_at: string | null
     replies: SeriesComment[] | []
+    ownComment: boolean
+    reviewed: boolean
+    reviewChoice: string | null
 }
 
 export interface MovieComment {
@@ -89,6 +92,9 @@ export interface MovieComment {
     deleted: boolean
     deleted_at: string | null
     replies: MovieComment[] | []
+    ownComment: boolean
+    reviewed: boolean
+    reviewChoice: string | null
 }
 
 export interface PodcastComment {
@@ -105,4 +111,7 @@ export interface PodcastComment {
     deleted: boolean
     deleted_at: string | null
     replies: PodcastComment[] | []
+    ownComment: boolean
+    reviewed: boolean
+    reviewChoice: string | null
 }

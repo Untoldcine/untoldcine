@@ -8,17 +8,17 @@ interface CommentInputProps {
 }
 
 const CommentInput:React.FC<CommentInputProps> = ({table_name, content_id}) => {
-    const user_id = 19 //hard coded to my test profile
 
     const [newCommentValue, setNewCommentValue] = useState<string>('')
 
     const postNewComment = async () => {        
         try {
-            const res = await axios.post(`http://localhost:3001/api/comments/newComment/${user_id}`, {
+            const res = await axios.post(`http://localhost:3001/api/comments/newComment/`, {
                 table_name,
                 content_id,
                 comment: newCommentValue
-            })
+            },
+            {withCredentials: true})
             console.log(res.data);
             setNewCommentValue('')
         }

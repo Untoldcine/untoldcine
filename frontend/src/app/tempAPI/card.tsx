@@ -72,10 +72,10 @@ const Card: React.FC<CardProps> = ({ content }) => {
   }
 
   const getComments = async (content: string, content_id: number) => {
-    const user_id = 19 //my test id
     try {
-      const res = await axios.get(`http://localhost:3001/api/${content}/comments/${user_id}/${content_id}`)
-      // console.log(res.data);
+      const res = await axios.get(`http://localhost:3001/api/${content}/comments/${content_id}`, {withCredentials: true})
+      console.log(res.data);
+      
       setCommentArray(res.data)
       
     }

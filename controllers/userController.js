@@ -81,9 +81,15 @@ exports.logIn = async (req, res) => {
 }
 
 exports.submitCommentRating = async (req, res) => {
+    const token = req.cookies.token
+    if (!token) {
+        return res.status(401).json({'Message' : 'Not logged in, cannot submit rating'})
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     const {choice} = req.params
-    const {userID, comment_id, table} = req.body;
-    if (!userID || !comment_id || !table) {
+    const {comment_id, table} = req.body;
+    if (!comment_id || !table) {
         return res.status(400).json({'Message': 'Missing Data to fulfill user submitted rating of content'})
     }
 
@@ -109,7 +115,7 @@ exports.submitCommentRating = async (req, res) => {
             break;
     }
     try {
-        const feedbackExists = await findFeedback(userID, comment_id, insertionTable);
+        const feedbackExists = await findFeedback(decoded.user_id, comment_id, insertionTable);
 
         // If feedback exists, check if the rating choice has changed
         if (feedbackExists) {
@@ -121,7 +127,7 @@ exports.submitCommentRating = async (req, res) => {
             // If the choice hasn't changed, do nothing to avoid duplicate voting
         } else {
             // If feedback doesn't exist, add new feedback and update the content rating
-            const insertNew = await newFeedback(userID, insertionTable, comment_id, choice);
+            const insertNew = await newFeedback(decoded.user_id, insertionTable, comment_id, choice);
             if (insertNew) {
                 await updateContentRating(insertionTable, insertionID, comment_id, ratingColumn);
             }
@@ -135,6 +141,9 @@ exports.submitCommentRating = async (req, res) => {
 
 exports.submitMediaRating = async (req, res) => {
     const token = req.cookies.token
+    if (!token) {
+        return res.status(401).json({'Message' : 'Not logged in, cannot submit rating'})
+    }
     const {table_name, content_id} = req.body;
     const { choice } = req.params
 
@@ -158,10 +167,6 @@ exports.submitMediaRating = async (req, res) => {
             insertionID = 'podcast_id'
             ratingColumn = choice === 'up' ? 'podcast_upvotes' : 'podcast_downvotes'
             break;
-    }
-
-    if (!token) { //if somebody not logged tries to submit rating, nothing happens.
-        return res.status(400).json({'message': 'No user token found, unable to handle user submitted rating'})
     }
     try {
         //Decode token to access user details

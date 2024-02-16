@@ -15,12 +15,13 @@ const CommentReply:React.FC<CommentReplyProps> = ({comment_id, table, parent_id}
   const handleCommentReply = async () => {
     try {
       const res = await axios.post(`http://localhost:3001/api/comments/newReply`, {
-        user_id: 19, //hard coded
         parent_comment_id: comment_id,
         parent_content_id: parent_id,
         comment: replyValue,
         table
-      })
+      },
+      {withCredentials: true}
+      )
     }
     catch(err) {
       console.error(err);
