@@ -85,7 +85,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
   }
 
   if (isSeries(content)) {
-    const { series_id, series_name, series_thumbnail, genres, series_length, reviewed } = content    
+    const { series_id, series_name, series_thumbnail, genres, series_length, reviewed } = content        
 
     return (
       <>

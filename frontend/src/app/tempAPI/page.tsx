@@ -19,7 +19,7 @@ const Page = () => {
     const getSeriesData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/series/seriesSummary`, {withCredentials: true})
-            // console.log(res.data);
+            console.log(res.data);
             setSeriesData(res.data)
         }
         catch (err) {

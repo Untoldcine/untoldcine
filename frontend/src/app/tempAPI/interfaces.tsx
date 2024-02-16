@@ -6,6 +6,7 @@ export interface SeriesSummary {
     series_thumbnail: string | null
     series_length: number,
     reviewed: boolean 
+    country_name: string
 }
 
 export interface MovieSummary {
@@ -16,6 +17,8 @@ export interface MovieSummary {
     movie_length: number
     movie_thumbnail: string | null
     reviewed: boolean 
+    country_name: string
+
 
 }
 
@@ -25,6 +28,7 @@ export interface PodcastSummary {
     podcast_status: string
     podcast_thumbnail: string | null
     reviewed: boolean 
+    country_name: string
 
 }
 

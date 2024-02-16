@@ -86,6 +86,7 @@ model Series {
   videos              Videos[]
   bts_series          BTS_Series[]
   series_comments     Series_Comments[]
+  series_country      Series_Countries[]
 
   @@map("series")
 }
@@ -137,6 +138,7 @@ model Movies {
   genres              Movie_Genres[]
   bts_movies          BTS_Movies[]
   movie_comments      Movie_Comments[]
+  movie_country       Movie_Countries[]
 
   @@map("movies")        
 }
@@ -167,6 +169,7 @@ model Podcasts {
   podcast_url         String?
   podcast_thumbnail   String?
   podcast_comments    Podcast_Comments[]
+  podcast_country     Podcast_Countries[]
 
   @@map("podcasts")
 }
@@ -306,4 +309,47 @@ model Feedback {
   user              User @relation(fields:[user_id], references:[user_id])
 
   @@map("feedback")
+}
+
+model Countries {
+  country_id        Int @id @default(autoincrement())
+  country_name      String
+  country_code      String
+
+  series            Series_Countries[]
+  movie             Movie_Countries[]
+  podcast           Podcast_Countries[]
+
+
+  @@map("countries")
+}
+
+model Series_Countries {
+  series_id           Int
+  country_id          Int
+  series              Series @relation(fields:[series_id], references:[series_id])
+  country             Countries @relation(fields:[country_id], references:[country_id])
+
+  @@id([series_id, country_id])
+  @@map("series_countries")
+}
+
+model Movie_Countries {
+  movie_id           Int
+  country_id          Int
+  movies              Movies @relation(fields:[movie_id], references:[movie_id])
+  country             Countries @relation(fields:[country_id], references:[country_id])
+
+  @@id([movie_id, country_id])
+  @@map("movie_countries")
+}
+
+model Podcast_Countries {
+  podcast_id          Int
+  country_id          Int
+  podcast             Podcasts @relation(fields:[podcast_id], references:[podcast_id])
+  country             Countries @relation(fields:[country_id], references:[country_id])
+
+  @@id([podcast_id, country_id])
+  @@map("podcast_countries")
 }

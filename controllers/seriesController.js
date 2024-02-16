@@ -24,13 +24,23 @@ exports.getSeriesSummary = async (req, res) => {
                         select: {
                             videos: true
                         }
+                    },
+                    series_country: {
+                        select: {
+                            country: {
+                                select: {
+                                    country_name: true
+                                }
+                            }
+                        }
                     }
                 }
             })
             const processedData = data.map(series => ({
                 ...series,
                 genres: series.genres.map(g => g.genre.genre_name),
-                series_length: series._count.videos
+                series_length: series._count.videos,
+                country_name: series.series_country[0].country.country_name
             }));
             res.status(200).json(processedData)
         }
@@ -59,6 +69,15 @@ exports.getSeriesSummary = async (req, res) => {
                             select: {
                                 videos: true
                             }
+                        },
+                        series_country: {
+                            select: {
+                                country: {
+                                    select: {
+                                        country_name: true
+                                    }
+                                }
+                            }
                         }
                     }
                 }),
@@ -72,11 +91,12 @@ exports.getSeriesSummary = async (req, res) => {
             const reviewedSeriesIds = new Set(feedbackData.map(feedback => feedback.item_id));
 
             const processedData = seriesData.map(series => ({
-                ...series,
-                genres: series.genres.map(g => g.genre.genre_name),
-                series_length: series._count.videos, 
-                reviewed: reviewedSeriesIds.has(series.series_id)               
-            }));
+                    ...series,
+                    genres: series.genres.map(g => g.genre.genre_name),
+                    series_length: series._count.videos, 
+                    country_name: series.series_country[0].country.country_name,
+                    reviewed: reviewedSeriesIds.has(series.series_id)  
+                }));
             res.status(200).json(processedData)
         } catch (err) {
             console.error('Token verification error:', err);
@@ -160,12 +180,22 @@ exports.getMovieSummary = async (req, res) => {
                                 }
                             }
                         }
+                    },
+                    movie_country: {
+                        select: {
+                            country: {
+                                select: {
+                                    country_name: true
+                                }
+                            }
+                        }
                     }
                 }
             })
             const processedData = data.map(movie => ({
                 ...movie,
                 genres: movie.genres.map(g => g.genre.genre_name),
+                country_name: movie.movie_country[0].country.country_name
             }));
             res.status(200).json(processedData)
         }
@@ -189,7 +219,15 @@ exports.getMovieSummary = async (req, res) => {
                                 }
                             }
                         },
-                        
+                        movie_country: {
+                            select: {
+                                country: {
+                                    select: {
+                                        country_name: true
+                                    }
+                                }
+                            }
+                        }
                     }
                 }),
                 prisma.feedback.findMany({
@@ -204,7 +242,8 @@ exports.getMovieSummary = async (req, res) => {
             const processedData = movieData.map(movie => ({
                 ...movie,
                 genres: movie.genres.map(g => g.genre.genre_name),
-                reviewed: reviewedMovieIds.has(movie.movie_id)               
+                reviewed: reviewedMovieIds.has(movie.movie_id),
+                country_name: movie.movie_country[0].country.country_name
             }));
             res.status(200).json(processedData)
         } catch (err) {
