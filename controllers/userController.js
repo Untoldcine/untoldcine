@@ -29,6 +29,7 @@ exports.createNewUser = async(req, res) => {
                 user_level: 0
             }
         })
+        res.status(200).json({"message":"OK!"})
     }
     catch(err) {
         console.error('Problem querying DB to create new user');
