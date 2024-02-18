@@ -84,6 +84,25 @@ const Card: React.FC<CardProps> = ({ content }) => {
     }
   }
 
+  const addToWatchList = async (content: string, content_id: number) => {
+    try {
+      const res = await axios.post(`http://localhost:3001/api/watchlist/add`, {
+        content,
+        content_id
+      }, {
+        withCredentials: true
+      })
+      if (res.status === 200) {
+        console.log('ok!');
+        
+      }
+    }
+    catch(err) {
+      console.error(err + `: Error adding ${content} at ID ${content_id} to watchlist`);
+      
+    }
+  }
+
   if (isSeries(content)) {
     const { series_id, series_name, series_thumbnail, genres, series_length, reviewed } = content        
 
@@ -97,6 +116,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
         {reviewed ? <p style = {{color: 'orange'}}>Already submitted rating</p>:<MediaRating table_name = 'series' content_id = {series_id}/>}
         <button onClick = {() => getSpecificContent('series', series_id)}>Get more info</button>
         <button onClick = {() => getComments('series', series_id)}>Get comments</button>
+        {/* <button onClick = {() => addToWatchList('bts_series', 8)}>Add to Watchlist</button> */}
       </div>
       <div className="comment-block">
         <CommentInput table_name = 'series' content_id = {series_id}/>

@@ -29,6 +29,7 @@ model User {
   movie_comments      Movie_Comments[]
   podcast_comments    Podcast_Comments[]
   feedback            Feedback[]
+  watchlist           Watchlist[]
 
   @@map("users")
 }
@@ -335,7 +336,7 @@ model Series_Countries {
 }
 
 model Movie_Countries {
-  movie_id           Int
+  movie_id            Int
   country_id          Int
   movies              Movies @relation(fields:[movie_id], references:[movie_id])
   country             Countries @relation(fields:[country_id], references:[country_id])
@@ -352,4 +353,23 @@ model Podcast_Countries {
 
   @@id([podcast_id, country_id])
   @@map("podcast_countries")
+}
+
+enum WatchlistTypes {
+  Video
+  Movie
+  Podcast
+  BTS_Series
+  BTS_Movie
+}
+
+model Watchlist {
+  watchlist_id          Int @id @default(autoincrement())
+  user_id               Int
+  content_type          WatchlistTypes
+  content_id            Int
+  date_added            DateTime @default(now())
+  user                  User @relation(fields:[user_id], references:[user_id])
+
+  @@map("watchlist")
 }

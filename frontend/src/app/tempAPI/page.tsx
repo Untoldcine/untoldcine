@@ -81,22 +81,16 @@ const Page = () => {
         }
     }
 
-    // const addToWatchList = async (ID: number) => {
-    //     axios.post('http://localhost:3001/api/watchlist/add', {
-    //         user_id: 2,
-    //         content_type: 'BTS',
-    //         content_id: ID
-    //     })
-    //         .then((res) => {
-    //             if (res.data === 'OK') {
-    //                 console.log('added to watchlist successfully');
-
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //         })
-    // }
+    const getWatchlistData = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3001/api/watchlist/getList`, {withCredentials: true})
+            console.log(res.data);
+            
+        }
+        catch (err) {
+            console.error(`Error attempting to retrieve watchlist data: ${err}`);
+        }
+    }
 
     return (
         <>
@@ -107,6 +101,7 @@ const Page = () => {
                 <button className="inputs"  onClick={() => getBTSSeriesData()}>Get BTS Series data</button>
                 <button className="inputs"  onClick={() => getBTSMoviesData()}>Get BTS Movies data</button>
                 <button className="inputs" onClick={() => getAllBTSSummaryData()}>Get All BTS (as it should be in production)</button>
+                <button className="inputs" onClick={() => getWatchlistData()}>Get Watchlist</button>
                 <p>All BTS content already comes as filtered arrays for pre, prod, and post status</p>
                 
             </div>
