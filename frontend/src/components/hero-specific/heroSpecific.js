@@ -5,7 +5,8 @@ import PlayNowButton from '../PlayNow/PlayNow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp as farThumbsUp, faThumbsDown as farThumbsDown, faPlus, faInfo } from '@fortawesome/free-solid-svg-icons';
 
-const HeroSpecificSection = ({ seriesId, onTabChange }) => {
+
+const HeroSpecificSection = ({ seriesId, onTabChange, activeTab  }) => {
   const [seriesData, setSeriesData] = useState(null);
 
   useEffect(() => { 
@@ -23,7 +24,7 @@ const HeroSpecificSection = ({ seriesId, onTabChange }) => {
       }
     }
     if (seriesId) {
-      fetchData();
+      fetchData(); 
     }
   }, [seriesId]);
 
@@ -38,7 +39,7 @@ const HeroSpecificSection = ({ seriesId, onTabChange }) => {
           <h2 className={styles.title}>{seriesData.series_name}</h2>
           <div className={styles.metaContainer}>
             <PlayNowButton title="Season 1" className={styles.seasonButton} />
-            <p className={styles.summaryContainer}>{seriesData.series_description}</p>
+            <p className={styles.summaryContainer}>{seriesData.series_main}</p>
             <div className={styles.ratings}>
               <FontAwesomeIcon icon={farThumbsUp} /> <span className={styles.rating}>85%</span>
               <FontAwesomeIcon icon={farThumbsDown} /> <span className={styles.userRating}>15%</span>
@@ -57,15 +58,15 @@ const HeroSpecificSection = ({ seriesId, onTabChange }) => {
             <PlayNowButton title="Play Now" className={styles.playButton} />
             <FontAwesomeIcon className={`${styles.iconCircle} ${styles.plusSign}`} icon={faPlus} />
             <FontAwesomeIcon className={`${styles.iconCircle} ${styles.infoButton}`} icon={faInfo} />
-          </div>
+          </div> 
         </div> 
       </div>
       <div className={styles.sliderBarContainer}>
-        <p className={styles.sliderBar} onClick={() => onTabChange('episodes')}>Episodes</p>
-        <p className={styles.sliderBar} onClick={() => onTabChange('related')}>Related</p>
-        <p className={styles.sliderBar} onClick={() => onTabChange('discussions')}>Discussions</p>
-        <p className={styles.sliderBar} onClick={() => onTabChange('behindTheScenes')}>Behind the Scenes</p>
-        <p className={styles.sliderBar} onClick={() => onTabChange('details')}>Details</p>
+        <p className={`${styles.sliderBar} ${activeTab === 'episodes' ? styles.underlineTab : ''}`} onClick={() => onTabChange('episodes')}>Episodes</p>
+        <p className={`${styles.sliderBar} ${activeTab === 'related' ? styles.underlineTab : ''}`} onClick={() => onTabChange('related')}>Related</p>
+        <p className={`${styles.sliderBar} ${activeTab === 'discussions' ? styles.underlineTab : ''}`} onClick={() => onTabChange('discussions')}>Discussions</p>
+        <p className={`${styles.sliderBar} ${activeTab === 'behindTheScenes' ? styles.underlineTab : ''}`} onClick={() => onTabChange('behindTheScenes')}>Behind the Scenes</p>
+        <p className={`${styles.sliderBar} ${activeTab === 'details' ? styles.underlineTab : ''}`} onClick={() => onTabChange('details')}>Details</p>
       </div>
     </div>
   );

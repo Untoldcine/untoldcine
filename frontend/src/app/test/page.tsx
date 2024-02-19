@@ -28,10 +28,9 @@ export default function Test() {
 
         async function fetchMovies() {
             const moviesRes = await axios.get('http://localhost:3001/api/movies/movieSummary');
-            // Transform movie data to include a 'type' property
             const transformedMovieData = moviesRes.data.map(item => ({
                 ...item,
-                type: 'movies', // Ensure 'movies' matches your routing structure
+                type: 'movies', 
                 id: item.movie_id,
                 imageUrl: item.movie_thumbnail,
                 title: item.movie_name

@@ -14,6 +14,7 @@
   opacity: 0;
   transform: translateY(20px);
   display: none;
+  padding-top: 2rem;
 }
 
 .tabContent.active {
@@ -21,7 +22,353 @@
   transform: translateY(0);
   display: block;
 }
+.commentDate {
+  color: white;
+}
+
+.discussionTabContainer {
+  margin-bottom: 1rem;
+  width: 50%;
+  margin: auto;
+  background: rgb(255, 255, 255, 0.1);
+  padding: 4rem;
+  padding-top: 0rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 3%;
+}
+
+.commentContainer {
+  /* background-color: rgb(255, 255, 255, 0.2); */
+  border-radius: 8px;
+  padding: 16px;
+  padding-top: 0rem;
+  margin-bottom: 24px;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.commentAuthor {
+  color: #f3f3f3;
+  font-weight: bold;
+  margin-right: 1rem;
+  /* font-weight: 500; */
+  font-size: 1rem;
+}
+
+.commentContent {
+  color: #f3f3f3;
+  margin: 8px 0;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+}
+
+.voteButtons {
+  display: flex;
+  align-items: center;
+}
+
+.voteButton {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #f3f3f3;
+  font-size: 1.25rem;
+  margin: 0 4px;
+}
+
+.replySection {
+  margin-top: 16px;
+  border-left: 2px solid #f3f3f3;
+  padding-left: 32px;
+}
+
+.replyButton {
+  color: white;
+  font-size: 0.75rem;
+}
+
+.reply {
+  /* background-color: rgb(255, 255, 255, 0.1); */
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.newCommentTextarea {
+  resize: none;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  height: 70px;
+}
+
+.newCommentTextareaReply {
+  resize: none;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  height: 70px;
+  margin-top: 1rem;
+}
+
+.newCommentButton {
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.discussionTab {
+  width: 50%;
+  margin: auto;
+}
+
+@media (max-width: 768px) {
+  .discussionTab {
+    width: 100%;
+  }
+}
+
+.discussionTabContainer {
+  margin-bottom: 2rem;
+}
+
+.tabContent.discussions .commentContainer:first-child {
+  margin-top: 2rem;
+}
+
+.underlineTab {
+  text-decoration: underline;
+}
+.voteAndCommentContainer {
+  display: flex;
+  align-items: center;
+}
+
+.voteButtonsContainer {
+  flex-direction: column;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  background: rgb(255, 255, 255, 0.1);
+  align-items: center;
+  border-radius: 10%;
+  margin-right: 1rem;
+}
+
+.voteCount {
+  color: white;
+  font-size: 0.75rem;
+}
+
+.commentFooter {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.commentAndFooterContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.userIcon {
+  color: white;
+  margin-right: 0.5rem;
+  border: 1px solid white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  padding: 0.5rem;
+}
+
+.newCommentForm {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 24px;
+}
+
+.newCommentTextarea {
+  resize: none;
+  padding: 10px 20px;
+  border: 1px solid white;
+  margin-bottom: 8px;
+  font-size: 16px;
+  background: rgb(255, 255, 255, 0.1);
+  width: 90%;
+  color: white;
+}
+
+.newCommentTextareaReply {
+  resize: none;
+  padding: 10px 20px;
+  border: 1px solid white;
+  margin-bottom: 8px;
+  font-size: 16px;
+  background: rgb(255, 255, 255, 0.1);
+  width: 90%;
+  color: white;
+}
+
+.newCommentButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  height: 30%;
+  margin-left: 1rem;
+}
+
+.commentSection {
+  background: rgb(255, 255, 255, 0.1);
+  padding: 2rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  border-radius: 2%;
+}
+/* ... existing styles ... */
+
+.newCommentForm {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.newCommentTextarea {
+  flex-grow: 1;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  margin-right: 8px;
+  font-size: 16px;
+  background: #2c2c2e; /* Adjust the color to match your design */
+  color: white;
+}
+
+.newCommentButton {
+  padding: 10px 20px;
+  background-color: #007bff; /* Adjust the color to match your design */
+  border: none;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+}
+
+.commentContainer {
+  background-color: rgb(255, 255, 255, 0.1); /* Semi-transparent background */
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.voteAndCommentContainer {
+  display: flex;
+  align-items: flex-start; /* Align the voting buttons and the comment text */
+}
+
+.voteButtonsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.voteButton {
+  background: none;
+  border: none;
+  color: #f3f3f3;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.voteCount {
+  color: #f3f3f3;
+  margin: 4px 0; /* Space between buttons and vote count */
+}
+
+.commentAndFooterContainer {
+  flex: 1;
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+}
+
+.userIcon {
+  margin-right: 10px;
+}
+
+.commentAuthor {
+  font-weight: bold;
+  color: #f3f3f3;
+}
+
+.commentDate {
+  color: #a1a1a1;
+}
+
+.commentContent {
+  color: #f3f3f3;
+  margin-bottom: 8px;
+}
+
+.replyButton {
+  background: none;
+  border: none;
+  color: #6e7ffc;
+  cursor: pointer;
+  display: inline;
+  margin-left: 10px;
+}
+
+.replySection {
+  margin-top: 16px;
+  border-left: 2px solid #f3f3f3;
+  padding-left: 16px;
+}
+
+.replyInputContainer {
+  display: flex;
+}
+
+.replyToComment {
+  padding-left: calc(20px + 2px);
+  border-left: 2px solid #f3f3f3;
+}
 
 .bottomContainer {
   margin-bottom: 1rem;
+  width: 50%;
+  margin: auto;
+  background: rgb(255, 255, 255, 0.1);
+  padding: 4rem;
+  padding-top: 0rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 3%;
 }

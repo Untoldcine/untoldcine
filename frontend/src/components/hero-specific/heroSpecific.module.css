@@ -229,3 +229,7 @@
 .sliderBar:hover {
   cursor: pointer;
 }
+.underlineTab {
+  border-bottom: 2.5px solid white;
+  padding-bottom: 5px;
+}
