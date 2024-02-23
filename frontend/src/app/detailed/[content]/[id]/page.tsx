@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faReply } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import Comments from "@/components/comments/comments";
 
 const Detailed = ({ params }: { params: { content: string, id: number, imageurl: string } }) => {
   const { id } = params;
@@ -28,47 +29,49 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
     fetchData();
   }, []);
 
-  useEffect(() => {
-    async function fetchComments() {
-      if (activeTab === 'discussions') {
-        try {
-          const response = await axios.get(`http://localhost:3001/api/series/comments/${id}`);
-          setComments(response.data);
-        } catch (error) {
-          console.error('Failed to fetch comments:', error);
-          setComments([]);
-        }
-      }
-    }
-    fetchComments();
-  }, [activeTab, id]);
+  // useEffect(() => {
+  //   async function fetchComments() {
+  //     if (activeTab === 'discussions') {
+  //       try {
+  //         const response = await axios.get(`http://localhost:3001/api/series/comments/${id}`);
+  //         setComments(response.data);
+  //       } catch (error) {
+  //         console.error('Failed to fetch comments:', error);
+  //         setComments([]);
+  //       }
+  //     }
+  //   }
+  //   fetchComments();
+  // }, [activeTab, id]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
 
-  const formatDate = (date) => {
-    return formatDistanceToNow(new Date(date), { addSuffix: true });
-  };
+//   const formatDate = (date) => {
+//     return formatDistanceToNow(new Date(date), { addSuffix: true });
+//   };
 
-  const postNewComment = async () => {
-    try {
-      const res = await axios.post(`http://localhost:3001/api/series/newComment/`, {
-        series_id: id,
-        content: newComment,
-      },
-        { withCredentials: true });
-      console.log(res.data);
-      setNewComment('');
-    }
-    catch (err) {
-      console.error(err + ': Error posting new comment');
-    }
-  };
+//   const postNewComment = async () => {        
+//     try {
+//         const res = await axios.post(`http://localhost:3001/api/comments/newComment/`, {
+//             content_id: id,
+//             table_name: 'series',
+//             comment: newComment,
+//         },
+//         { withCredentials: true });
+//         console.log(res.data);
+//         setNewComment(''); // Reset the input field after posting
+//     }
+//     catch(err) {
+//         console.error(err + ': Error posting new comment');
+//     }
+// };
+  
 
-  const handleReplyClick = (commentId) => {
-    setReplyToCommentId(commentId);
-  };
+  // const handleReplyClick = (commentId) => {
+  //   setReplyToCommentId(commentId);
+  // };
     return (
       <>  
         <NavBarNotSignedIn />
@@ -78,9 +81,9 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
             <Carousel items={contentData} title="" />
           </div>
           <div className={`${styles.tabContent} ${activeTab === 'related' ? styles.active : ''}`}>
-            <p>Related content goes here...</p>
           </div>
-          <div className={`${styles.tabContent} ${activeTab === 'discussions' ? styles.active : ''}${styles.discussionTabContainer}`}>
+          <div className={`${styles.tabContent} ${activeTab === 'discussions' ? styles.active : ''}`}>
+          <Comments contentId={id} />
           </div>
           <div className={`${styles.tabContent} ${activeTab === 'behindTheScenes' ? styles.active : ''}`}>
             <p>Behind the Scenes content goes here...</p>
@@ -89,7 +92,7 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
             <p>Details content goes here...</p>
           </div>
           <div className={`${styles.tabContent} bottomContainer ${activeTab === 'discussions' ? styles.active : ''}`}>
-    <div className={styles.newCommentForm}>
+    {/* <div className={styles.newCommentForm}>
     <input
       className={styles.newCommentTextarea}
       value={newComment}
@@ -185,7 +188,7 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
     ))
   ) : (
     <p className={styles.noComments}>No comments yet.</p>
-  )}
+  )} */}
 </div>
 
         </div>

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 interface CommentInputProps {
     table_name: string
     content_id: number
-}
+} 
 
 const CommentInput:React.FC<CommentInputProps> = ({table_name, content_id}) => {
 

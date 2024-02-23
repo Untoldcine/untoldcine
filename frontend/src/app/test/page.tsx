@@ -7,11 +7,12 @@ import styles from './page.module.css';
 import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSignedIn.js';
 import HeroSection from '../../components/hero/herosection.js';
 import axios from 'axios';
+import PodcastCarousel from "@/components/podcastCarousel/podcastCarousel"
 
 export default function Test() {
     const [seriesData, setSeriesData] = useState([]);
     const [movieData, setMovieData] = useState([]);
-
+    const [podcastData, setPodcastData] = useState([])
     useEffect(() => {
         async function fetchSeries() {
             const seriesRes = await axios.get('http://localhost:3001/api/series/seriesSummary/');
@@ -38,6 +39,18 @@ export default function Test() {
             setMovieData(transformedMovieData);
         }
 
+        async function fetchPodcast() {
+            const podcastRes = await axios.get('http://localhost:3001/api/podcast/podcastSummary/');
+            const transformedPodcastData = podcastRes.data.map(item => ({
+                ...item,
+                type: 'podcast',
+                id: item.podcast_id,
+                imageUrl: item.podcast_thumbnail,
+                title: item.podcast_name
+            }));
+            setPodcastData(transformedPodcastData);
+        }
+        fetchPodcast();
         fetchSeries();
         fetchMovies();
     }, []);
@@ -54,7 +67,7 @@ export default function Test() {
                     <Carousel items={movieData} title="Movies " />
                 </div>
                   <div>
-                    <Carousel items={[]} title="Podcasts " />
+                  <PodcastCarousel items={podcastData} title="Podcasts " />
                 </div>
                 <div>
                     <Carousel items={[]} title="Behind The Scenes " />
