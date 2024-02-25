@@ -64,7 +64,7 @@ export default function Home() {
           <PrimaryButton className={styles.primary}>Sign In</PrimaryButton>
         </div>
         <p className={styles.remember}>
-          Don't have any account? <Link href="/">Sign up</Link>
+          Don&apos;t have any account? <Link href="/">Sign up</Link>
         </p>
       </form>
     </main>

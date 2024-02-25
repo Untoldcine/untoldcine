@@ -12,14 +12,14 @@ export default function Home() {
       <div className={styles.popup}>
         <div> 
             <p className={styles.title}>Confirm Your Account</p>
-            <p className={styles.subTitle}>We've sent a code to your email.</p>
+            <p className={styles.subTitle}>We&apos;ve sent a code to your email.</p>
         </div>
         <TextField text="Enter Code Here" icon="" />
         <div>
         </div>
         <PrimaryButton className={styles.primary}>Confirm Account</PrimaryButton>
         <p className={styles.remember}>
-          Don't have any account? <Link href="/">Sign up</Link>
+          Don&apos;t have any account? <Link href="/">Sign up</Link>
         </p>
       </div>
       <div className={styles.test}>
