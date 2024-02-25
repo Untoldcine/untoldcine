@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import './FooterLogo.css';
-import UntoldFooterLogo from '../../assets/Logo.svg'; 
+import UntoldFooterLogo from '../../assets/UntoldLogoHeader.svg'; 
 
 export const FooterLogo = () => {
   return (

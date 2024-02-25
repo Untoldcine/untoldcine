@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from './Footer.module.css'; 
-import UntoldFooterLogo from '../../assets/Logo.svg'; 
+import UntoldFooterLogo from '../../assets/UntoldLogoHeader.svg'; 
 import { SocialBar } from "@/components/SocialIconBar/SocialIconBar"; 
 
 export const Footer = () => {
