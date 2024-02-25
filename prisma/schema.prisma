@@ -169,6 +169,7 @@ model Podcasts {
   podcast_producers   String?
   podcast_url         String?
   podcast_thumbnail   String?
+  podcast_episode     Int?
   podcast_comments    Podcast_Comments[]
   podcast_country     Podcast_Countries[]
 

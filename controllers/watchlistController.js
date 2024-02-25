@@ -62,9 +62,9 @@ exports.addToWatchlist = async (req, res) => {
 }
 
 exports.getWatchlist = async (req, res) => {
-    const token = req.cookies.token
+    const token = req.cookies.token;
     if (!token) {
-        return res.status(401).json({'Message' : 'Not logged in, cannot add to watchlist'})
+        return res.status(403).json({'Message': 'Not logged in, cannot add to watchlist'});
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -72,10 +72,13 @@ exports.getWatchlist = async (req, res) => {
         const data = await prisma.Watchlist.findMany({
             where: {
                 user_id: decoded.user_id
+            },
+            orderBy: {
+                date_added: 'desc' // This will order the results by date_added from most recent to least recent
             }
-        })
-        const chronologicalData = data.sort((a, b) => new Date(a.date_added) - new Date(b.date_added)); //will sort by earliest added to watchlist to latest
-        //takes data, if category (e.g. video, movie, etc) doesnt exist, create array. Otherwise, add to array
+        });
+                
+        // Categorizes data by content type
         const categorizedData = data.reduce((acc, item) => {
             if (!acc[item.content_type]) {
                 acc[item.content_type] = [];
@@ -83,10 +86,11 @@ exports.getWatchlist = async (req, res) => {
             acc[item.content_type].push(item);
             return acc;
         }, {});
-        res.status(200).json({dateOrder: chronologicalData, typeOrder: categorizedData})
+
+        res.status(200).json({dateOrder: data, typeOrder: categorizedData});
     }
     catch (err) {
-        console.error(err + ': Unable to retrieve watchlist during database operaiton');
+        console.error(err + ': Unable to retrieve watchlist during database operation');
         return res.status(500).json({ 'Message': 'Unable to get your watchlist' });
     }
 }
