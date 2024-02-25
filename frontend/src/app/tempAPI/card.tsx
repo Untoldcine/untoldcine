@@ -72,6 +72,8 @@ const Card: React.FC<CardProps> = ({ content }) => {
   }
 
   const getComments = async (content: string, content_id: number) => {
+    // console.log(content_id);
+    
     try {
       const res = await axios.get(`http://localhost:3001/api/${content}/comments/${content_id}`, {withCredentials: true})
       // console.log(res.data);

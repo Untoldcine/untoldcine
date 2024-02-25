@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("RDS_DATABASE_URL")
 }
 
 model User {
@@ -43,7 +43,7 @@ model Bills {
   bill_duedate        DateTime?
   bill_paid           Boolean @default(false)
   bill_paiddate       DateTime?
-  user                User @relation(fields:[user_id], references:[user_id])
+  user                User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
 
   @@map("bills")
 }
@@ -95,8 +95,8 @@ model Series {
 model Series_Genres {
   series_id           Int
   genre_id            Int
-  series              Series @relation(fields:[series_id], references:[series_id])
-  genre               Genres @relation(fields:[genre_id], references:[genre_id])
+  series              Series @relation(fields:[series_id], references:[series_id], onDelete: Cascade)
+  genre               Genres @relation(fields:[genre_id], references:[genre_id], onDelete: Cascade)
 
   @@id([series_id, genre_id])
   @@map("series_genres")
@@ -115,7 +115,7 @@ model Videos {
   video_thumbnail     String?
   video_season        Int
   video_episode       Int
-  series              Series @relation(fields:[parent_series_id], references:[series_id])
+  series              Series @relation(fields:[parent_series_id], references:[series_id], onDelete: Cascade)
 
   @@map("videos")
 }
@@ -147,8 +147,8 @@ model Movies {
 model Movie_Genres {
   movie_id            Int
   genre_id            Int
-  movies              Movies @relation(fields:[movie_id], references:[movie_id])
-  genre               Genres @relation(fields:[genre_id], references:[genre_id])
+  movies              Movies @relation(fields:[movie_id], references:[movie_id], onDelete: Cascade)
+  genre               Genres @relation(fields:[genre_id], references:[genre_id], onDelete: Cascade)
 
   @@id([movie_id, genre_id])
   @@map("movie_genres")
@@ -188,7 +188,7 @@ model BTS_Series {
   bts_series_length      Int
   bts_series_url         String?
   bts_series_thumbnail   String?
-  series                 Series @relation(fields:[parent_series_id], references:[series_id])
+  series                 Series @relation(fields:[parent_series_id], references:[series_id], onDelete: Cascade)
 
   @@map("bts_series")
 }
@@ -205,7 +205,7 @@ model BTS_Movies {
   bts_movies_length      Int
   bts_movies_url         String?
   bts_movies_thumbnail   String?
-  movies                 Movies @relation(fields:[parent_movie_id], references:[movie_id])
+  movies                 Movies @relation(fields:[parent_movie_id], references:[movie_id], onDelete: Cascade)
 
   @@map("bts_movies")
 }
@@ -222,10 +222,10 @@ model Series_Comments {
   edited                        Boolean @default(false)
   parent_series_id              Int
   parent_comment_id             Int?
-  user                          User @relation(fields:[user_id], references:[user_id])
-  series                        Series @relation(fields:[parent_series_id], references:[series_id])
+  user                          User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+  series                        Series @relation(fields:[parent_series_id], references:[series_id], onDelete: Cascade)
   children                      Series_Comments[] @relation("ParentChild")
-  parent                        Series_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [series_comments_id])
+  parent                        Series_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [series_comments_id], onDelete: Cascade)
 
   @@map("series_comments")
 }
@@ -242,10 +242,10 @@ model Movie_Comments {
   edited                        Boolean @default(false)
   parent_movie_id               Int
   parent_comment_id             Int?
-  user                          User @relation(fields:[user_id], references:[user_id])
-  movie                         Movies @relation(fields:[parent_movie_id], references:[movie_id])
+  user                          User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+  movie                         Movies @relation(fields:[parent_movie_id], references:[movie_id], onDelete: Cascade)
   children                      Movie_Comments[] @relation("ParentChild")
-  parent                        Movie_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [movie_comments_id])
+  parent                        Movie_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [movie_comments_id], onDelete: Cascade)
 
   @@map("movie_comments")
 }
@@ -262,10 +262,10 @@ model Podcast_Comments {
   edited                        Boolean @default(false)
   parent_podcast_id             Int
   parent_comment_id             Int?
-  user                          User @relation(fields:[user_id], references:[user_id])
-  podcast                       Podcasts @relation(fields:[parent_podcast_id], references:[podcast_id])
+  user                          User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+  podcast                       Podcasts @relation(fields:[parent_podcast_id], references:[podcast_id], onDelete: Cascade)
   children                      Podcast_Comments[] @relation("ParentChild")
-  parent                        Podcast_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [podcast_comments_id])
+  parent                        Podcast_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [podcast_comments_id], onDelete: Cascade)
 
   @@map("podcast_comments")
 }
@@ -308,7 +308,7 @@ model Feedback {
   item_id           Int
   feedback_rating   Rating
   date_created      DateTime @default(now())
-  user              User @relation(fields:[user_id], references:[user_id])
+  user              User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
 
   @@map("feedback")
 }
@@ -329,8 +329,8 @@ model Countries {
 model Series_Countries {
   series_id           Int
   country_id          Int
-  series              Series @relation(fields:[series_id], references:[series_id])
-  country             Countries @relation(fields:[country_id], references:[country_id])
+  series              Series @relation(fields:[series_id], references:[series_id], onDelete: Cascade)
+  country             Countries @relation(fields:[country_id], references:[country_id], onDelete: Cascade)
 
   @@id([series_id, country_id])
   @@map("series_countries")
@@ -339,8 +339,8 @@ model Series_Countries {
 model Movie_Countries {
   movie_id            Int
   country_id          Int
-  movies              Movies @relation(fields:[movie_id], references:[movie_id])
-  country             Countries @relation(fields:[country_id], references:[country_id])
+  movies              Movies @relation(fields:[movie_id], references:[movie_id], onDelete: Cascade)
+  country             Countries @relation(fields:[country_id], references:[country_id], onDelete: Cascade)
 
   @@id([movie_id, country_id])
   @@map("movie_countries")
@@ -349,8 +349,8 @@ model Movie_Countries {
 model Podcast_Countries {
   podcast_id          Int
   country_id          Int
-  podcast             Podcasts @relation(fields:[podcast_id], references:[podcast_id])
-  country             Countries @relation(fields:[country_id], references:[country_id])
+  podcast             Podcasts @relation(fields:[podcast_id], references:[podcast_id], onDelete: Cascade)
+  country             Countries @relation(fields:[country_id], references:[country_id], onDelete: Cascade)
 
   @@id([podcast_id, country_id])
   @@map("podcast_countries")

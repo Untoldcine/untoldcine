@@ -268,7 +268,7 @@ exports.getPodcastComments = async (req, res) => {
         try {
             const comments = await prisma.Podcast_Comments.findMany({
                 where: {
-                    parent_podcast_id: parseInt(movieID),
+                    parent_podcast_id: parseInt(podcastID),
                     deleted: false,
                 },
                 include: {
@@ -305,7 +305,7 @@ exports.getPodcastComments = async (req, res) => {
             res.status(200).json(topLevelComments);
         } catch (error) {
             console.error('Error', error);
-            res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+            res.status(500).json({'message': `Error retrieving summary of comments for podcast at ID ${podcastID} during database operation`});
         }
     }
      else {
@@ -376,7 +376,7 @@ exports.getPodcastComments = async (req, res) => {
             res.status(200).json(topLevelComments);
         } catch (error) {
             console.error('Error', error);
-            res.status(500).json({'message': `Error retrieving summary of comments for movie ID ${movieID} during database operation`});
+            res.status(500).json({'message': `Error retrieving summary of comments for podcast at ID ${podcastID} during database operation`});
         }
     }
 }
