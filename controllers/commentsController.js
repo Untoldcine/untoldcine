@@ -49,7 +49,7 @@ exports.getSeriesComments = async (req, res) => {
                         commentMap[comment.parent_comment_id].replies.push(commentMap[comment.series_comments_id]);
                     }
                 }
-            });
+            }); 
     
             res.status(200).json(topLevelComments);
         } catch (error) {

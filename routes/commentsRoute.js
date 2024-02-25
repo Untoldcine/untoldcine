@@ -12,4 +12,4 @@ router.route('/newReply').post(commentsController.replyComment)
 
 router.route('/newBTSReply/:userID').post(commentsController.replyBTSComment)
 
-module.exports = router;
+module.exports = router; 
