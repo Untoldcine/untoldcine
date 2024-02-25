@@ -11,7 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faReply } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
-import Comments from "@/components/comments/comments";
+import PodcastCommentsSection from "@/components/podcastComments/podcastComments";
 
 const PodcastDetailed = ({ params }: { params: { content: string, id: number, imageurl: string } }) => {
   const { id } = params;
@@ -46,7 +46,7 @@ const PodcastDetailed = ({ params }: { params: { content: string, id: number, im
           <div className={`${styles.tabContent} ${activeTab === 'related' ? styles.active : ''}`}>
           </div>
           <div className={`${styles.tabContent} ${activeTab === 'discussions' ? styles.active : ''}`}>
-          <Comments contentId={id} />
+          <PodcastCommentsSection contentId={id} />
           </div>
           <div className={`${styles.tabContent} ${activeTab === 'behindTheScenes' ? styles.active : ''}`}>
             <p>Behind the Scenes content goes here...</p>

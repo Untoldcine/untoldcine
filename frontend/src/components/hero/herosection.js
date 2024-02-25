@@ -40,7 +40,7 @@
     const videoUrl = './assets/TestVideo1.mp4';
 
     const videoJsOptions = {
-      autoplay: true,
+      autoplay: true, 
       controls: false,
       muted: true, 
       sources: [{
@@ -148,7 +148,8 @@
                 </div>
               </div>
               <div className={styles.actions}>
-              <PlayNowButton title="Play Now" onClick={() => {setIsVideoModalOpen(true);}} className={styles.playButton} />            <FontAwesomeIcon className={`${styles.iconCircle} ${styles.plusSign}`} icon={faPlus} />
+              <PlayNowButton title="Play Now" onClick={() => {setIsVideoModalOpen(true);}} className={styles.playButton} />  
+                        <FontAwesomeIcon className={`${styles.iconCircle} ${styles.plusSign}`} icon={faPlus} />
                 <FontAwesomeIcon className={`${styles.iconCircle} ${styles.infoButton}`} icon={faInfo} />
               </div>
             </div>
