@@ -31,14 +31,14 @@ const PodcastDetailed = ({ params }: { params: { content: string, id: number, im
 
 
 
-  const handleTabChange = (tab) => {
+  const handleTabChange = (tab:string) => {
     setActiveTab(tab);
   };
 
     return (
       <>  
         <NavBarNotSignedIn />
-        <HeroSpecificPodcast podcastId={parseInt(id, 10)} onTabChange={handleTabChange} activeTab={activeTab} />
+        <HeroSpecificPodcast podcastId={id} onTabChange={handleTabChange} activeTab={activeTab} />
         <div >
           <div className={`${styles.tabContent} ${activeTab === 'episodes' ? styles.active : ''}`}>
             <Carousel items={contentData} title="" />

@@ -14,7 +14,7 @@ export default function Home() {
             <p className={styles.title}>Confirm Your Account</p>
             <p className={styles.subTitle}>We&apos;ve sent a code to your email.</p>
         </div>
-        <TextField text="Enter Code Here" icon="" />
+        {/* <TextField text="Enter Code Here" icon="" /> */}
         <div>
         </div>
         <PrimaryButton className={styles.primary}>Confirm Account</PrimaryButton>

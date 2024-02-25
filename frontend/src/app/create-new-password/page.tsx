@@ -14,8 +14,8 @@ export default function Home() {
             <p className={styles.title}>Create New Password</p>
             <p className={styles.subTitle}>Create new password for your account.</p>
         </div>
-        <TextField text="Password" icon="fa fa-lock icon" />
-        <TextField text="Confirm New Password" icon="fa fa-lock icon" />
+        {/* <TextField text="Password" icon="fa fa-lock icon" />
+        <TextField text="Confirm New Password" icon="fa fa-lock icon" /> */}
 
         <div>
         </div>

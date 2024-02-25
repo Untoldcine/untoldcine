@@ -44,7 +44,7 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
   //   fetchComments();
   // }, [activeTab, id]);
 
-  const handleTabChange = (tab) => {
+  const handleTabChange = (tab:string) => {
     setActiveTab(tab);
   };
 
@@ -75,7 +75,7 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
     return (
       <>  
         <NavBarNotSignedIn />
-        <HeroSpecificSection seriesId={parseInt(id, 10)} onTabChange={handleTabChange} activeTab={activeTab} />
+        <HeroSpecificSection seriesId={id} onTabChange={handleTabChange} activeTab={activeTab} />
         <div >
           <div className={`${styles.tabContent} ${activeTab === 'episodes' ? styles.active : ''}`}>
             <Carousel items={contentData} title="" />

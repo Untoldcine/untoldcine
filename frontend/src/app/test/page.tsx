@@ -9,6 +9,7 @@ import HeroSection from '../../components/hero/herosection.js';
 import axios from 'axios';
 import PodcastCarousel from "@/components/podcastCarousel/podcastCarousel"
 
+
 export default function Test() {
     const [seriesData, setSeriesData] = useState([]);
     const [movieData, setMovieData] = useState([]);
@@ -17,7 +18,7 @@ export default function Test() {
         async function fetchSeries() {
             const seriesRes = await axios.get('http://localhost:3001/api/series/seriesSummary/');
             // Transform series data to include a 'type' property
-            const transformedSeriesData = seriesRes.data.map(item => ({
+            const transformedSeriesData = seriesRes.data.map((item:any) => ({
                 ...item,
                 type: 'series',
                 id: item.series_id,
@@ -29,7 +30,7 @@ export default function Test() {
 
         async function fetchMovies() {
             const moviesRes = await axios.get('http://localhost:3001/api/movies/movieSummary');
-            const transformedMovieData = moviesRes.data.map(item => ({
+            const transformedMovieData = moviesRes.data.map((item:any) => ({
                 ...item,
                 type: 'movies', 
                 id: item.movie_id,
@@ -41,7 +42,7 @@ export default function Test() {
 
         async function fetchPodcast() {
             const podcastRes = await axios.get('http://localhost:3001/api/podcast/podcastSummary/');
-            const transformedPodcastData = podcastRes.data.map(item => ({
+            const transformedPodcastData = podcastRes.data.map((item:any) => ({
                 ...item,
                 type: 'podcast',
                 id: item.podcast_id,

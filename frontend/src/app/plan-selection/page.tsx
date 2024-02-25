@@ -33,10 +33,10 @@ export default function Home() {
       <Image src={UntoldLogo} alt="Logo" width={140} height={82} />
       <div className={styles.logoContainer}>
       <Link href="/sign-in" passHref>
-            <PrimaryButton as="a" className={styles.customPrimaryButton}>Login</PrimaryButton>
+            <PrimaryButton className={styles.customPrimaryButton}>Login</PrimaryButton>
           </Link>
         <Link href="/sign-up" passHref>
-            <SecondaryButton as="a" className={styles.customSecondaryButton}>Sign Up</SecondaryButton>
+            <SecondaryButton className={styles.customSecondaryButton}>Sign Up</SecondaryButton>
           </Link>
 
       </div>
@@ -61,8 +61,8 @@ export default function Home() {
                   <li key={featureIndex}>{feature}</li>
                 ))}
               </ul>
-              {isAnnual && <div className={styles.saveContainer}><PlayNowButton title="Save 16%" /></div>}
-              <PlayNowButton title="Get Free Trial" />
+              {isAnnual && <div className={styles.saveContainer}><PlayNowButton title="Save 16%" onClick = {console.log('hello')}/></div>}
+              <PlayNowButton title="Get Free Trial" onClick = {console.log('hello')} />
             </div>
           </div>
         ))}
