@@ -1,45 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './heroSpecific.module.css';
+import styles from './heroSpecificPodcast.module.css';
 import PlayNowButton from '../PlayNow/PlayNow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp as farThumbsUp, faThumbsDown as farThumbsDown, faPlus, faInfo } from '@fortawesome/free-solid-svg-icons';
 
 
-const HeroSpecificSection = ({ seriesId, onTabChange, activeTab  }) => {
-  const [seriesData, setSeriesData] = useState(null);
+const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab  }) => {
+  const [podcastData, setPodcastData] = useState(null);
 
   useEffect(() => { 
     async function fetchData() {
       try {
-        const res = await axios.get(`http://localhost:3001/api/series/seriesSummary/`);
-        const series = res.data.find(s => s.series_id === seriesId);
-        if (series) {
-          setSeriesData(series);
+        const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary/`);
+        const podcast = res.data.find(s => s.podcast_id === podcastId);
+        if (podcast) {
+          setPodcastData(podcast);
         } else {
-          console.log('Series not found');
+          console.log('podcast not found');
         }
       } catch (error) {
         console.error('Fetching data failed', error);
       }
     }
-    if (seriesId) {
+    if (podcastId) {
       fetchData(); 
     }
-  }, [seriesId]);
+  }, [podcastId]);
 
-  if (!seriesData) {
+  if (!podcastData) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className={styles.hero} style={{ backgroundImage: `url(${seriesData.series_thumbnail})` }}>
+    <div className={styles.hero} style={{ backgroundImage: `url(${podcastData.podcast_thumbnail})` }}>
       <div className={styles.overlay}>
         <div className={styles.titleContainer}>
-          <h2 className={styles.title}>{seriesData.series_name}</h2>
+          <h2 className={styles.title}>{podcastData.podcast_name}</h2>
           <div className={styles.metaContainer}>
             <PlayNowButton title="Season 1" className={styles.seasonButton} />
-            <p className={styles.summaryContainer}>{seriesData.series_main}</p>
+            <p className={styles.summaryContainer}>{podcastData.podcast_main}</p>
             <div className={styles.ratings}>
               <FontAwesomeIcon icon={farThumbsUp} /> <span className={styles.rating}>85%</span>
               <FontAwesomeIcon icon={farThumbsDown} /> <span className={styles.userRating}>15%</span>
@@ -47,9 +47,9 @@ const HeroSpecificSection = ({ seriesId, onTabChange, activeTab  }) => {
             <div className={styles.info}>
               <span className={styles.year}>2023</span>
               <span className={styles.separator}>|</span>
-              <span className={styles.genres}>
-                {seriesData.genres.join(', ')}
-              </span>
+              {/* <span className={styles.genres}>
+                {podcastData.genres.join(', ')}
+              </span> */}
               <span className={styles.separator}>|</span>
               <span className={styles.duration}>1 h 28 min</span>
             </div>
@@ -72,4 +72,4 @@ const HeroSpecificSection = ({ seriesId, onTabChange, activeTab  }) => {
   );
 };
 
-export default HeroSpecificSection;
+export default HeroSpecificPodcast;

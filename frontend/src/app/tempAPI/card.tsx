@@ -53,7 +53,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
       
     }
   }
-
+ 
   const getSpecificBTSContent = async (flag: string, content: string, id: number) => {
     try {
       if (flag === 'series') {
