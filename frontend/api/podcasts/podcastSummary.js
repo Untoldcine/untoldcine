@@ -1,3 +1,17 @@
+const {PrismaClient} = require('@prisma/client')
+const prisma = new PrismaClient();
+const jwt = require("jsonwebtoken");
+require('dotenv').config();
+const cfsign = require('aws-cloudfront-sign');
+
+const signingParams = {
+    keypairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+    privateKeyString: process.env.CLOUDFRONT_PRIVATE_KEY,
+    expireTime: new Date(Date.now() + 1000 * 60 * 60 * 24)
+}
+const distributionURL = 'https://d3t2pr7vhgu8da.cloudfront.net'
+
+
 exports.getPodcastSummary = async (req, res) => {
     const token = req.cookies.token
     if (!token) {

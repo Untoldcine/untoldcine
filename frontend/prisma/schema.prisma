@@ -1,0 +1,376 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("RDS_DATABASE_URL")
+}
+
+model User {
+  user_id             Int @id @default(autoincrement())
+  user_nickname       String
+  user_email          String @unique
+  user_password       String
+  created_at          DateTime @default(now())
+  user_level          Int @default(1)
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  free_tier           Boolean @default(false)
+  free_tier_expiry    DateTime?
+  bills               Bills[]
+  pw_reset_token      String?
+  reset_token_expiry  DateTime?
+
+  series_comments     Series_Comments[]
+  movie_comments      Movie_Comments[]
+  podcast_comments    Podcast_Comments[]
+  feedback            Feedback[]
+  watchlist           Watchlist[]
+
+  @@map("users")
+}
+
+model Bills {
+  bill_id             Int @id @default(autoincrement())
+  user_id             Int
+  user_card           String?
+  date_created        DateTime @default(now())
+  bill_amount         Float?
+  bill_duedate        DateTime?
+  bill_paid           Boolean @default(false)
+  bill_paiddate       DateTime?
+  user                User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+
+  @@map("bills")
+}
+
+model Genres {
+  genre_id            Int @id @default(autoincrement())
+  genre_name          String
+  series              Series_Genres[]
+  movies              Movie_Genres[]
+
+  @@map("genres")
+}
+
+enum ContentStatus {
+  pre
+  prod
+  post
+}
+
+enum PodcastTypes {
+  highlight
+  review
+  interview
+}
+
+model Series {
+  series_id           Int @id @default(autoincrement())
+  series_name         String
+  series_status       ContentStatus
+  date_created        DateTime @default(now())
+  series_upvotes      Int
+  series_downvotes    Int
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  completed           Boolean @default(false)
+  series_main         String?
+  series_directors    String?
+  series_producers    String?
+  series_thumbnail    String?
+  genres              Series_Genres[]
+  videos              Videos[]
+  bts_series          BTS_Series[]
+  series_comments     Series_Comments[]
+  series_country      Series_Countries[]
+
+  @@map("series")
+}
+
+model Series_Genres {
+  series_id           Int
+  genre_id            Int
+  series              Series @relation(fields:[series_id], references:[series_id], onDelete: Cascade)
+  genre               Genres @relation(fields:[genre_id], references:[genre_id], onDelete: Cascade)
+
+  @@id([series_id, genre_id])
+  @@map("series_genres")
+}
+
+model Videos {
+  video_id            Int @id @default(autoincrement())
+  video_name          String
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  parent_series_id    Int
+  video_length        Int
+  video_main          String?
+  video_url           String?
+  video_thumbnail     String?
+  video_season        Int
+  video_episode       Int
+  series              Series @relation(fields:[parent_series_id], references:[series_id], onDelete: Cascade)
+
+  @@map("videos")
+}
+
+model Movies {
+  movie_id            Int @id @default(autoincrement())
+  movie_name          String
+  movie_status        ContentStatus
+  movie_upvotes       Int
+  movie_downvotes     Int
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  movie_length        Int
+  movie_main          String?
+  movie_starring      String?
+  movie_directors     String?
+  movie_producers     String?
+  movie_url           String?
+  movie_thumbnail     String?
+  genres              Movie_Genres[]
+  bts_movies          BTS_Movies[]
+  movie_comments      Movie_Comments[]
+  movie_country       Movie_Countries[]
+
+  @@map("movies")        
+}
+
+model Movie_Genres {
+  movie_id            Int
+  genre_id            Int
+  movies              Movies @relation(fields:[movie_id], references:[movie_id], onDelete: Cascade)
+  genre               Genres @relation(fields:[genre_id], references:[genre_id], onDelete: Cascade)
+
+  @@id([movie_id, genre_id])
+  @@map("movie_genres")
+}
+
+model Podcasts {
+  podcast_id          Int @id @default(autoincrement())
+  podcast_name        String
+  podcast_type        PodcastTypes
+  podcast_upvotes     Int
+  podcast_downvotes   Int
+  date_created        DateTime @default(now())
+  deleted             Boolean @default(false)
+  deleted_at          DateTime?
+  podcast_main        String?
+  podcast_starring    String?
+  podcast_directors   String?
+  podcast_producers   String?
+  podcast_url         String?
+  podcast_thumbnail   String?
+  podcast_episode     Int?
+  podcast_comments    Podcast_Comments[]
+  podcast_country     Podcast_Countries[]
+
+  @@map("podcasts")
+}
+
+model BTS_Series {
+  bts_series_id          Int @id @default(autoincrement())
+  bts_series_name        String
+  parent_series_id       Int
+  bts_series_episode     Int
+  bts_series_main        String
+  date_created           DateTime @default(now())
+  deleted                Boolean @default(false)
+  deleted_at             DateTime?
+  bts_series_length      Int
+  bts_series_url         String?
+  bts_series_thumbnail   String?
+  series                 Series @relation(fields:[parent_series_id], references:[series_id], onDelete: Cascade)
+
+  @@map("bts_series")
+}
+
+model BTS_Movies {
+  bts_movies_id          Int @id @default(autoincrement())
+  bts_movies_name        String
+  parent_movie_id        Int
+  bts_movies_episode     Int
+  bts_movies_main        String
+  date_created           DateTime @default(now())
+  deleted                Boolean @default(false)
+  deleted_at             DateTime?
+  bts_movies_length      Int
+  bts_movies_url         String?
+  bts_movies_thumbnail   String?
+  movies                 Movies @relation(fields:[parent_movie_id], references:[movie_id], onDelete: Cascade)
+
+  @@map("bts_movies")
+}
+
+model Series_Comments {
+  series_comments_id            Int @id @default(autoincrement())
+  user_id                       Int
+  series_comments_content       String
+  series_comments_upvotes       Int @default(0)
+  series_comments_downvotes     Int @default(0)
+  date_created                  DateTime @default(now())
+  deleted                       Boolean @default(false)
+  deleted_at                    DateTime?
+  edited                        Boolean @default(false)
+  parent_series_id              Int
+  parent_comment_id             Int?
+  user                          User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+  series                        Series @relation(fields:[parent_series_id], references:[series_id], onDelete: Cascade)
+  children                      Series_Comments[] @relation("ParentChild")
+  parent                        Series_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [series_comments_id], onDelete: Cascade)
+
+  @@map("series_comments")
+}
+
+model Movie_Comments {
+  movie_comments_id             Int @id @default(autoincrement())
+  user_id                       Int
+  movie_comments_content        String
+  movie_comments_upvotes        Int @default(0)
+  movie_comments_downvotes      Int @default(0)   
+  date_created                  DateTime @default(now())
+  deleted                       Boolean @default(false)
+  deleted_at                    DateTime?
+  edited                        Boolean @default(false)
+  parent_movie_id               Int
+  parent_comment_id             Int?
+  user                          User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+  movie                         Movies @relation(fields:[parent_movie_id], references:[movie_id], onDelete: Cascade)
+  children                      Movie_Comments[] @relation("ParentChild")
+  parent                        Movie_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [movie_comments_id], onDelete: Cascade)
+
+  @@map("movie_comments")
+}
+
+model Podcast_Comments {
+  podcast_comments_id           Int @id @default(autoincrement())
+  user_id                       Int
+  podcast_comments_content      String
+  podcast_comments_upvotes      Int @default(0)
+  podcast_comments_downvotes    Int @default(0)   
+  date_created                  DateTime @default(now())
+  deleted                       Boolean @default(false)
+  deleted_at                    DateTime?
+  edited                        Boolean @default(false)
+  parent_podcast_id             Int
+  parent_comment_id             Int?
+  user                          User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+  podcast                       Podcasts @relation(fields:[parent_podcast_id], references:[podcast_id], onDelete: Cascade)
+  children                      Podcast_Comments[] @relation("ParentChild")
+  parent                        Podcast_Comments? @relation("ParentChild", fields: [parent_comment_id], references: [podcast_comments_id], onDelete: Cascade)
+
+  @@map("podcast_comments")
+}
+
+enum ContentTypes {
+  Movies
+  Series
+  Video
+  Podcasts
+  BTS_Series
+  BTS_Movies
+  Series_Comments
+  Movie_Comments
+  Podcast_Comments
+  BTS_Series_Comments
+  BTS_Movies_Comments
+  Blog
+  User
+}
+
+
+model Deleted_Content {
+  id                Int @id @default(autoincrement())
+  content_type      ContentTypes
+  content_id        Int
+  deleted_at        DateTime @default(now())
+
+  @@map("deleted_content")
+} 
+
+enum Rating {
+  up
+  down
+}
+
+model Feedback {
+  feedback_id       Int @id @default(autoincrement())
+  user_id           Int
+  table_name        ContentTypes
+  item_id           Int
+  feedback_rating   Rating
+  date_created      DateTime @default(now())
+  user              User @relation(fields:[user_id], references:[user_id], onDelete: Cascade)
+
+  @@map("feedback")
+}
+
+model Countries {
+  country_id        Int @id @default(autoincrement())
+  country_name      String
+  country_code      String
+
+  series            Series_Countries[]
+  movie             Movie_Countries[]
+  podcast           Podcast_Countries[]
+
+
+  @@map("countries")
+}
+
+model Series_Countries {
+  series_id           Int
+  country_id          Int
+  series              Series @relation(fields:[series_id], references:[series_id], onDelete: Cascade)
+  country             Countries @relation(fields:[country_id], references:[country_id], onDelete: Cascade)
+
+  @@id([series_id, country_id])
+  @@map("series_countries")
+}
+
+model Movie_Countries {
+  movie_id            Int
+  country_id          Int
+  movies              Movies @relation(fields:[movie_id], references:[movie_id], onDelete: Cascade)
+  country             Countries @relation(fields:[country_id], references:[country_id], onDelete: Cascade)
+
+  @@id([movie_id, country_id])
+  @@map("movie_countries")
+}
+
+model Podcast_Countries {
+  podcast_id          Int
+  country_id          Int
+  podcast             Podcasts @relation(fields:[podcast_id], references:[podcast_id], onDelete: Cascade)
+  country             Countries @relation(fields:[country_id], references:[country_id], onDelete: Cascade)
+
+  @@id([podcast_id, country_id])
+  @@map("podcast_countries")
+}
+
+enum WatchlistTypes {
+  Video
+  Movie
+  Podcast
+  BTS_Series
+  BTS_Movie
+}
+
+model Watchlist {
+  watchlist_id          Int @id @default(autoincrement())
+  user_id               Int
+  content_type          WatchlistTypes
+  content_id            Int
+  date_added            DateTime @default(now())
+  user                  User @relation(fields:[user_id], references:[user_id])
+
+  @@map("watchlist")
+}
