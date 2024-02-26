@@ -1,4 +1,4 @@
-const {PrismaClient} = require('@prisma/client')
+const {PrismaClient} = require('@prisma/client/edge')
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
@@ -11,8 +11,7 @@ const signingParams = {
 }
 const distributionURL = 'https://d3t2pr7vhgu8da.cloudfront.net'
 
-
-exports.getPodcastSummary = async (req, res) => {
+module.exports = async (req, res) => {
     const token = req.cookies.token
     if (!token) {
         try {
