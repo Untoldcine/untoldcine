@@ -32,7 +32,7 @@ const Page = () => {
 
     return (
         <div>
-            <button onClick={() => getSpecificContent('podcast', 5)}>Get first podcast ep</button>
+            <button onClick={() => getSpecificContent('podcasts', 5)}>Get first podcast ep</button>
             {dataLoaded && dataLoaded.podcast_signed ? (
                 <video controls style = {{width: '100%'}}>
                     <source src={dataLoaded.podcast_signed} type="video/mp4"/>
