@@ -30,13 +30,22 @@ exports.getPodcastSummary = async (req, res) => {
                     }
                 }
             })
-            const processedData = data.map(podcast => ({
-                ...podcast,
-                country_name: podcast.podcast_country[0].country.country_name
-
-            }))
-            res.status(200).json(processedData)
-        }
+            const processedData = data.map(podcast => {
+                const urlString = getURLNameFromDB(podcast.podcast_name);
+                const contentThumbnail = cfsign.getSignedUrl(
+                    `${distributionURL}/podcasts/thumbnails/${urlString}.jpg`,
+                    signingParams
+                );
+            
+                return {
+                    ...podcast,
+                    country_name: podcast.podcast_country[0].country.country_name,
+                    podcast_thumbnail: contentThumbnail
+                };
+            });
+            
+            res.status(200).json(processedData);
+        }            
         catch(err) {
             console.error(err + 'Problem querying DB to retrieve summary of all podcasts');
             return res.status(500).json({"message" : "Internal server error"});
@@ -66,12 +75,22 @@ exports.getPodcastSummary = async (req, res) => {
                     }
                 })
             ])
+            
             const reviewedPodcastIds = new Set(feedbackData.map(feedback => feedback.item_id));
-            const processedData = podcastData.map((podcast) => ({
+
+            const processedData = podcastData.map((podcast) => {
+                const urlString = getURLNameFromDB(podcastData.podcast_name)
+                const contentThumbnail = cfsign.getSignedUrl(
+                    `${distributionURL}/podcasts/thumbnails/${urlString}.jpg`,
+                    signingParams
+                )
+            return {
                 ...podcast,
                 reviewed: reviewedPodcastIds.has(podcast.podcast_id) ,
-                country_name: podcast.podcast_country[0].country.country_name
-            }))
+                country_name: podcast.podcast_country[0].country.country_name,
+                podcast_thumbnail: contentThumbnail
+
+        }})
             res.status(200).json(processedData)
         } catch (err) {
             console.error('Token verification error:', err);
@@ -92,13 +111,13 @@ exports.getSpecificPodcast = async (req, res) => {
         })
         if (data) {
             const urlString = getURLNameFromDB(data.podcast_name)
-            const signedUrl = cfsign.getSignedUrl(
+            const signedUrlContent = cfsign.getSignedUrl(
                 `${distributionURL}/podcasts/content/${urlString}/${urlString}${data.podcast_episode}.mp4`, 
                 signingParams
               );
              const processedData = {
                 ...data,
-                podcast_signed: signedUrl
+                podcast_signed: signedUrlContent,
             }
             res.status(200).json(processedData)
         }
