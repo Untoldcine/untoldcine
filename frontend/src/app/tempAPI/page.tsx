@@ -40,7 +40,8 @@ const Page = () => {
 
     const getPodcastData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`, {withCredentials: true})
+            // const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`, {withCredentials: true})
+            const res = await axios.get(`/api/podcasts/podcastSummary`, {withCredentials: true})
             console.log(res.data);
             setPodcastData(res.data)
         }
