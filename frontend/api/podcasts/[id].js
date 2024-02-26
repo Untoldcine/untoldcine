@@ -13,6 +13,7 @@ const distributionURL = 'https://d3t2pr7vhgu8da.cloudfront.net'
 
 module.exports = async (req, res) => {
     const { id } = req.query
+    console.log(id)
 
     try {
         const data = await prisma.podcasts.findFirst({

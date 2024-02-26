@@ -24,7 +24,7 @@ const Page = () => {
             console.log(res.data);
             
         } catch (err) {
-            console.error('Error attempting to GET detailed content data');
+            console.error(err+ 'Error attempting to GET detailed content data');
         }
     };
 
