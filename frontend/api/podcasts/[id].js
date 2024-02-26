@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
     try {
         const data = await prisma.podcasts.findFirst({
             where: {
-                podcast_id: id
+                podcast_id: parseInt(id)
             }
         })
         if (data) {
