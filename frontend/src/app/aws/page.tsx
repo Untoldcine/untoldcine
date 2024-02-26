@@ -17,11 +17,13 @@ const Page = () => {
     const [dataLoaded, setDataLoaded] = useState<Podcast | null>(null);
 
     const getSpecificContent = async (content: string, id: number) => {
+        console.log('id: ' + id);
+        
         try {
             // const res = await axios.get(`http://localhost:3001/api/${content}/specific/${id}`);
             const res = await axios.get(`/api/${content}/specific/${id}}`)
             setDataLoaded(res.data); 
-            // console.log(res.data);
+            console.log(res.data);
             
         } catch (err) {
             console.error('Error attempting to GET detailed content data');
