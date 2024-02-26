@@ -16,12 +16,10 @@ type Podcast = {
 const Page = () => {
     const [dataLoaded, setDataLoaded] = useState<Podcast | null>(null);
 
-    const getSpecificContent = async (content: string, id: number) => {
-        console.log('id: ' + id);
-        
+    const getSpecificContent = async (content: string, id: number) => {        
         try {
             // const res = await axios.get(`http://localhost:3001/api/${content}/specific/${id}`);
-            const res = await axios.get(`/api/${content}/specific/${id}`)
+            const res = await axios.get(`/api/${content}/${id}`)
             setDataLoaded(res.data); 
             console.log(res.data);
             

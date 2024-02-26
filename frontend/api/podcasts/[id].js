@@ -12,7 +12,7 @@ const signingParams = {
 const distributionURL = 'https://d3t2pr7vhgu8da.cloudfront.net'
 
 module.exports = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.query
 
     try {
         const data = await prisma.podcasts.findFirst({
