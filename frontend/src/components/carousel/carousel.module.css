@@ -48,3 +48,9 @@
 .carouselButtonRight {
   right: 0;
 }
+
+@media (max-width: 492px) {
+  .carouselContainer {
+    margin-bottom: 1rem;
+  }
+}

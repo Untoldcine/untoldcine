@@ -20,7 +20,7 @@
   bottom: 0;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 15%,
     rgba(0, 0, 0, 0) 100%
   );
   color: white;
@@ -41,6 +41,7 @@
 
 .title {
   margin: 0rem !important;
+  font-size: clamp(20px, 38px, 9rem);
 }
 
 /* .metaContainer {
@@ -215,6 +216,23 @@
 
   .sliderBarContainer {
     display: none;
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
   }
 }
 
@@ -532,4 +550,40 @@
 
 .vjs-control-text {
   display: none;
+}
+@media screen and (max-width: 768px) {
+  .sliderBarContainer {
+    display: block;
+    padding: 0;
+    text-align: center;
+  }
+
+  .sliderBar {
+    display: inline-block; /* Makes the tabs flow in a vertical line */
+    padding: 8px 10px; /* Smaller padding for space efficiency */
+    font-size: 14px; /* Slightly smaller text to fit on mobile screens */
+    margin-bottom: 5px; /* Adds space between tabs */
+    width: calc(
+      100% / 5 - 10px
+    ); /* Divide the container width by the number of tabs, minus margin */
+    box-sizing: border-box; /* Ensures that padding and border are included in the width */
+  }
+
+  .underlineTab {
+    border-bottom: 2px solid #fff; /* Visible underline for the active tab */
+    padding-bottom: 6px; /* Adjust padding to accommodate the border */
+  }
+}
+@media screen and (max-width: 768px) {
+  .sliderBar[data-tab-name="BTS"] {
+    font-size: 0;
+  }
+
+  /* Add the 'BTS' text as a pseudo-element */
+  .sliderBar[data-tab-name="BTS"]::after {
+    content: attr(data-tab-name);
+    font-size: 14px; /* Set the font size for the mobile viewport */
+    color: inherit; /* Inherit the color from the parent */
+    display: block; /* Display block to fill the parent's width */
+  }
 }

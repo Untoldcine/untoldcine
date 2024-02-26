@@ -7,6 +7,8 @@ import Carousel from "@/components/carousel/carousel";
 import HeroSpecificSection from "@/components/hero-specific/heroSpecific";
 import { Footer } from "@/components/Footer/Footer";
 import { NavBarNotSignedIn } from "@/components/NavBarNotSignedIn/NavBarNotSignedIn";
+import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn.js';
+
 import { formatDistanceToNow } from 'date-fns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faReply } from '@fortawesome/free-solid-svg-icons';
@@ -20,12 +22,26 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
   const [newComment, setNewComment] = useState('');
   const [activeTab, setActiveTab] = useState('episodes');
   const [replyToCommentId, setReplyToCommentId] = useState(null);
+  const [isUserSignedIn, setIsUserSignedIn] = useState(false);
+  useEffect(() => {
+    const handleStorageChange = () => {
+        const token = localStorage.getItem('token');
+        setIsUserSignedIn(!!token);
+    };
 
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+}, []);
   useEffect(() => {
     async function fetchData() {
       const res = await axios.get('http://localhost:3001/api/series/seriesSummary/');
       setContentData(res.data);
     }
+    const token = localStorage.getItem('token'); 
+    setIsUserSignedIn(!!token);
     fetchData();
   }, []);
 
@@ -74,7 +90,7 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
   // };
     return (
       <>  
-        <NavBarNotSignedIn />
+            {isUserSignedIn ? <NavBarSignedIn /> : <NavBarNotSignedIn />}
         <HeroSpecificSection seriesId={parseInt(id, 10)} onTabChange={handleTabChange} activeTab={activeTab} />
         <div >
           <div className={`${styles.tabContent} ${activeTab === 'episodes' ? styles.active : ''}`}>

@@ -377,3 +377,60 @@
 .loadMoreButton:hover {
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .discussionTabContainer,
+  .bottomContainer,
+  .newCommentForm,
+  .commentContainer,
+  .voteAndCommentContainer,
+  .replySection,
+  .commentSection {
+    width: 100%; /* Full width */
+    padding: 1rem; /* Smaller padding */
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .newCommentTextarea,
+  .newCommentTextareaReply {
+    width: calc(100% - 2rem); /* Adjust width to account for padding */
+    margin-top: 0.5rem;
+  }
+
+  .newCommentButton {
+    width: auto; /* Auto width to fit content */
+    padding: 0.5rem 1rem;
+  }
+
+  .commentHeader,
+  .commentFooter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .userIcon,
+  .voteButton,
+  .replyButton {
+    font-size: 1rem; /* Larger icons for easier interaction */
+  }
+
+  .commentAuthor,
+  .commentContent,
+  .commentDate {
+    font-size: 0.875rem; /* Slightly larger text for readability */
+  }
+
+  .voteButtonsContainer {
+    margin-right: 0.5rem;
+  }
+
+  .voteCount {
+    font-size: 0.875rem;
+  }
+
+  .replyButton,
+  .newCommentButton {
+    font-size: 0.875rem;
+  }
+}

@@ -5,6 +5,7 @@ import Carousel from '../../components/carousel/carousel.js';
 import { Footer } from '@/components/Footer/Footer.js';
 import styles from './page.module.css';
 import { NavBarNotSignedIn } from '@/components/NavBarNotSignedIn/NavBarNotSignedIn.js';
+import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn.js';
 import HeroSection from '../../components/hero/herosection.js';
 import axios from 'axios';
 import PodcastCarousel from "@/components/podcastCarousel/podcastCarousel"
@@ -13,6 +14,19 @@ export default function Test() {
     const [seriesData, setSeriesData] = useState([]);
     const [movieData, setMovieData] = useState([]);
     const [podcastData, setPodcastData] = useState([])
+    const [isUserSignedIn, setIsUserSignedIn] = useState(false);
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const token = localStorage.getItem('token');
+            setIsUserSignedIn(!!token);
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
     useEffect(() => {
         async function fetchSeries() {
             const seriesRes = await axios.get('http://localhost:3001/api/series/seriesSummary/');
@@ -24,9 +38,11 @@ export default function Test() {
                 imageUrl: item.series_thumbnail,
                 title: item.series_name
             }));
+            const token = localStorage.getItem('token'); 
+            setIsUserSignedIn(!!token);
             setSeriesData(transformedSeriesData);
         }
-
+        
         async function fetchMovies() {
             const moviesRes = await axios.get('http://localhost:3001/api/movies/movieSummary');
             const transformedMovieData = moviesRes.data.map(item => ({
@@ -57,7 +73,7 @@ export default function Test() {
 
     return (
         <>
-            <NavBarNotSignedIn />
+            {isUserSignedIn ? <NavBarSignedIn /> : <NavBarNotSignedIn />}
             <main className={styles.carouselBody}>
                 <HeroSection />
                 <div>

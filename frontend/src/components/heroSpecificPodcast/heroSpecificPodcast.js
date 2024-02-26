@@ -4,6 +4,8 @@ import styles from './heroSpecificPodcast.module.css';
 import PlayNowButton from '../PlayNow/PlayNow';
 import videojs from 'video.js';
 import VideoPlayer from '../videoPlayer/videoPlayer'; 
+import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn.js';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
  import {
     faThumbsUp as farThumbsUp,
@@ -145,7 +147,7 @@ const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab }) => {
         } else {
           console.log('Podcast not found');
         }
-      } catch (error) {
+      } catch (error) { 
         console.error('Fetching data failed', error);
       }
     }
@@ -206,7 +208,7 @@ const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab }) => {
         <p className={`${styles.sliderBar} ${activeTab === 'episodes' ? styles.underlineTab : ''}`} onClick={() => onTabChange('episodes')}>Episodes</p>
         <p className={`${styles.sliderBar} ${activeTab === 'related' ? styles.underlineTab : ''}`} onClick={() => onTabChange('related')}>Related</p>
         <p className={`${styles.sliderBar} ${activeTab === 'discussions' ? styles.underlineTab : ''}`} onClick={() => onTabChange('discussions')}>Discussions</p>
-        <p className={`${styles.sliderBar} ${activeTab === 'behindTheScenes' ? styles.underlineTab : ''}`} onClick={() => onTabChange('behindTheScenes')}>Behind the Scenes</p>
+        <p className={`${styles.sliderBar} ${activeTab === 'behindTheScenes' ? styles.underlineTab : ''}`} data-tab-name="BTS" onClick={() => onTabChange('behindTheScenes')}>Behind the Scenes</p>
         <p className={`${styles.sliderBar} ${activeTab === 'details' ? styles.underlineTab : ''}`} onClick={() => onTabChange('details')}>Details</p>
       </div>
       {isVideoModalOpen && (

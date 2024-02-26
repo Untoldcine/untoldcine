@@ -36,7 +36,7 @@ h1 {
 h2 {
   color: white;
   font-family: "CircularStd-Bold", Helvetica;
-  font-size: 60px;
+  font-size: clamp(20px, 38px, 9rem);
   font-style: normal;
   font-weight: 700;
   letter-spacing: 0px;
