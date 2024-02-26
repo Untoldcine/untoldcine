@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     try {
         const data = await prisma.podcasts.findFirst({
             where: {
-                podcast_id: id
+                id: id
             }
         })
         if (data) {
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
     }
 
     catch(err) {
-        console.error(err + `Problem querying DB to detailed information of podcast at id ${podcastID}`);
+        console.error(err + `Problem querying DB to detailed information of podcast at id ${id}`);
         return res.status(500).json({"message" : "Internal server error"});
      }
 }
