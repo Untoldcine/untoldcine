@@ -11,8 +11,6 @@ const signingParams = {
 }
 const distributionURL = 'https://d3t2pr7vhgu8da.cloudfront.net'
 
-console.log(process.env.RDS_DATABASE_URL);
-
 module.exports = async (req, res) => {
     const token = req.cookies.token
     if (!token) {
@@ -97,4 +95,9 @@ module.exports = async (req, res) => {
             return res.status(401).json({"message": "Invalid or expired token"});
         }
     }
+}
+
+const getURLNameFromDB = (name) => {
+    //replace all spaces
+    return name.toLowerCase().replace(/\s+/g, "_")
 }
