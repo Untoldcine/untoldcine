@@ -21,7 +21,7 @@ const Page = () => {
         
         try {
             // const res = await axios.get(`http://localhost:3001/api/${content}/specific/${id}`);
-            const res = await axios.get(`/api/${content}/specific/${id}}`)
+            const res = await axios.get(`/api/${content}/specific/${id}`)
             setDataLoaded(res.data); 
             console.log(res.data);
             
