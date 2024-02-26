@@ -11,6 +11,8 @@ const signingParams = {
 }
 const distributionURL = 'https://d3t2pr7vhgu8da.cloudfront.net'
 
+console.log(process.env.RDS_DATABASE_URL);
+
 module.exports = async (req, res) => {
     const token = req.cookies.token
     if (!token) {
