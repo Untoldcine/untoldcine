@@ -5,14 +5,14 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "UntoldCine",
+  title: "UntoldCine | Untold Universes",
   description: "A platform for actors, producers, writers, and cinephiles to tell and share their stories.",
   icons: {
-    icon: '../favicon.ico',
+    icon: '/favicon.ico',
   },
   openGraph: {
     title: 'UntoldCine',
-    description: 'Software Engineer Portfolio for Michael Deng',
+    description: 'A platform for actors, producers, writers, and cinephiles to tell and share their stories.',
     images: [
       {
         url:'https://www.untoldcine.com/untold.svg',
