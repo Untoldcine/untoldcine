@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Active from "./Active"
 
 const Master = ({ content }) => {
-  console.log(content);
+  // console.log(content);
 
   const logOut = () => {
     sessionStorage.clear("adminAccess");
@@ -11,8 +12,9 @@ const Master = ({ content }) => {
   };
 
   const [activePanel, setActivePanel] = useState("");
+  const [activePanelOn, setActivePanelOn] = useState(false)
   const [inputValue, setInputValue] = useState("");
-  const [selectedContentType, setSelectedContentType] = useState("None");
+  const [selectedContentType, setSelectedContentType] = useState("none");
   const [filteredContent, setFilteredContent] = useState([]);
 
   useEffect(() => {
@@ -29,6 +31,12 @@ const Master = ({ content }) => {
 
     setFilteredContent(filtered);
   };
+
+  const handleChoice = (item) => {
+    setActivePanel(item)
+    setActivePanelOn(true)
+    // setSelectedContentType('none')
+  }
 
   return (
     <div className="admin-wrapper">
@@ -65,11 +73,12 @@ const Master = ({ content }) => {
                 <p>Series Name: {item.series.series_name}</p>
               ) : null}
             </div>
-            <button className="search-button">View</button>
+            <button className="search-button" onClick ={() => handleChoice(item)}>View</button>
           </div>
         ))}
       </div>
       {/* <button onClick = {() => logOut()}>Log Out</button> */}
+      {activePanelOn ? <Active type = {selectedContentType} details = {activePanel}/> : null}
     </div>
   );
 };

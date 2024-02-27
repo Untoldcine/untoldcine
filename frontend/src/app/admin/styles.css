@@ -159,3 +159,70 @@
     background-color: #1462a3;
     transition: all 0.3s;
   }
+
+
+
+  .active-wrapper {
+    width: 90%;
+    min-height: 700px;
+    background-color: #1a1a1a;
+    border: 1px solid white;
+    margin-top: 1rem;
+    padding: 1.5rem;
+  }
+
+  .active-description {
+    color: rgb(150, 150, 150);
+    font-size: 1.2rem;
+  }
+
+  .active-primary {
+    color: white;
+    font-size: 1.3rem;
+  }
+
+  .active-edit {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: white;
+    background-color: rgb(48, 48, 202);
+    border: none;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+  }
+
+  .active-save {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: white;
+    background-color: rgb(42, 174, 77);
+    border: none;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+  }
+
+  .editing_input {
+    width: 100%; /* Adjust as needed */
+    height: auto; /* Adjust as needed */
+    min-height: 50px; /* Minimum height before user starts typing */
+    font-family: inherit; /* To keep the font consistent with the rest of your form */
+    font-size: 16px; /* Adjust as needed */
+    margin-bottom: 10px; /* Space below the textarea */
+    padding: 8px; /* Padding inside the textarea */
+    box-sizing: border-box; /* To include padding and border in the total width and height */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 4px; /* Rounded corners */
+    resize: vertical;
+    word-wrap: normal;
+  }
+
+  .editing_input-small {
+    width: auto; /* Adjust as needed */
+    height: auto; /* Adjust as needed */
+    font-family: inherit; /* To keep the font consistent with the rest of your form */
+    font-size: 16px; /* Adjust as needed */
+    padding: 4px; /* Padding inside the textarea */
+    box-sizing: border-box; /* To include padding and border in the total width and height */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 4px; /* Rounded corners */
+  }
