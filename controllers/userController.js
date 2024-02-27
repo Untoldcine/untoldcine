@@ -282,3 +282,33 @@ exports.removeUser = async (req, res) => {
     });
 };
 
+exports.adminLogIn = async(req, res) => {
+    const {email, password} = req.body
+    if (!email || !password) {
+        return res.status(400).json({"message" : "Missing email or password"})
+    }
+    if (email !== process.env.ADMIN_USER || password !== process.env.ADMIN_PASSWORD) {
+        return res.status(400).json({"message" : "Incorrect credentials"})
+    }
+    return res.status(200).json({"message" : "Welcome Malcolm"})
+}
+
+exports.adminGetAll = async(req, res) => {
+    const [seriesData, videoData, movieData, podcastData, btsSeriesData, btsMoviesData] = await Promise.all([
+        prisma.series.findMany(),
+        prisma.videos.findMany({
+            include: {
+                series: {
+                    select: {
+                        series_name: true
+                    }
+                }
+            }
+        }),
+        prisma.movies.findMany(),
+        prisma.podcasts.findMany(),
+        prisma.bTS_Series.findMany(),
+        prisma.bTS_Movies.findMany()
+    ])
+    res.status(200).json({series:seriesData, video: videoData, movie: movieData, podcasts: podcastData, bts_series: btsSeriesData, bts_movies: btsMoviesData})
+}
