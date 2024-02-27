@@ -52,7 +52,7 @@ const PodcastCommentsSection = ({ contentId }) => {
         parent_comment_id: parseInt(parentCommentId),
         comment: newComment,
         table: 'podcast', 
-        parent_content_id: contentId,
+        parent_content_id: parseInt(contentId),
       },
       { withCredentials: true });
       console.log(res.data);

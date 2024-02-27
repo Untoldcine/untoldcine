@@ -5,33 +5,79 @@ import PlayNowButton from '../PlayNow/PlayNow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp as farThumbsUp, faThumbsDown as farThumbsDown, faPlus, faInfo } from '@fortawesome/free-solid-svg-icons';
 
-
-const HeroSpecificSection = ({ seriesId, onTabChange, activeTab  }) => {
+const HeroSpecificSection = ({ seriesId, onTabChange, activeTab }) => {
   const [seriesData, setSeriesData] = useState(null);
+  // Initialize userVote state from localStorage
+  const [userVote, setUserVote] = useState(localStorage.getItem(`vote_${seriesId}`));
 
-  useEffect(() => { 
-    async function fetchData() {
+  useEffect(() => {
+    // Fetch series details including votes
+    const fetchSeriesDetails = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/api/series/seriesSummary/`);
-        const series = res.data.find(s => s.series_id === seriesId);
-        if (series) {
-          setSeriesData(series);
-        } else {
-          console.log('Series not found');
-        }
+        const response = await axios.get(`http://localhost:3001/api/series/specific/${seriesId}`);
+        setSeriesData(response.data);
       } catch (error) {
-        console.error('Fetching data failed', error);
+        console.error('Error fetching series details:', error);
       }
-    }
-    if (seriesId) {
-      fetchData(); 
-    }
+    };
+    fetchSeriesDetails();
   }, [seriesId]);
+
+  const handleVote = async (voteType) => {
+    const userProfile = localStorage.getItem('userProfile');
+  
+    if (!userProfile) {
+      alert('You must be logged in to vote.');
+      return;
+    }
+  
+    let newVoteType = voteType === userVote ? null : voteType;
+  
+    // Update UI optimistically
+    setUserVote(newVoteType);
+    // Persist vote to localStorage
+    localStorage.setItem(`vote_${seriesId}`, newVoteType || '');
+  
+    try {
+      const response = await axios.post(
+        `http://localhost:3001/api/user/mediaRating/${voteType}`, // Ensure this URL is correct
+        {
+          table_name: 'series',
+          content_id: seriesId,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', // Ensure server expects JSON
+          },
+          withCredentials: true,
+        }
+      );
+  
+      // Handle response if needed
+    } catch (error) {
+      console.error(`Failed to submit vote:`, error);
+      alert('Failed to record your vote. Please try again.');
+    }
+  };
+  
 
   if (!seriesData) {
     return <div>Loading...</div>;
   }
 
+  const totalVotes = seriesData.series_upvotes + seriesData.series_downvotes;
+  const upvotePercentage = totalVotes > 0 ? (seriesData.series_upvotes / totalVotes * 100).toFixed(0) : 0;
+  const downvotePercentage = totalVotes > 0 ? (seriesData.series_downvotes / totalVotes * 100).toFixed(0) : 0;
+
+  // Determine icon colors based on userVote
+  const upvoteColor = userVote === 'up' ? 'blue' : 'white'; 
+  const downvoteColor = userVote === 'down' ? 'blue' : 'white';
+  const iconStyle = (voteType) => ({
+    color: userVote === voteType ? 'blue' : 'white',
+    // Increase the size by 25% if the user has voted in this direction
+    transform: userVote === voteType ? 'scale(1.25)' : 'scale(1)',
+    transition: 'transform 0.3s ease', // Smooth transition for scaling
+  });
   return (
     <div className={styles.hero} style={{ backgroundImage: `url(${seriesData.series_thumbnail})` }}>
       <div className={styles.overlay}>
@@ -41,14 +87,17 @@ const HeroSpecificSection = ({ seriesId, onTabChange, activeTab  }) => {
             <PlayNowButton title="Season 1" className={styles.seasonButton} />
             <p className={styles.summaryContainer}>{seriesData.series_main}</p>
             <div className={styles.ratings}>
-              <FontAwesomeIcon icon={farThumbsUp} /> <span className={styles.rating}>85%</span>
-              <FontAwesomeIcon icon={farThumbsDown} /> <span className={styles.userRating}>15%</span>
+            <FontAwesomeIcon icon={farThumbsUp} style={iconStyle('up')} onClick={() => handleVote('up')} />
+            <span className={styles.rating}>{upvotePercentage}%</span>
+            <FontAwesomeIcon icon={farThumbsDown} style={iconStyle('down')} onClick={() => handleVote('down')} />
+            <span className={styles.userRating}>{downvotePercentage}%</span>
+              <span className={styles.totalVotes}>({totalVotes} votes)</span> 
             </div>
             <div className={styles.info}>
               <span className={styles.year}>2023</span>
               <span className={styles.separator}>|</span>
               <span className={styles.genres}>
-                {seriesData.genres.join(', ')}
+                {/* {seriesData.genres.join(', ')} */}
               </span>
               <span className={styles.separator}>|</span>
               <span className={styles.duration}>1 h 28 min</span>

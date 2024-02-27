@@ -52,7 +52,7 @@ const MovieCommentsSection = ({ contentId }) => {
         parent_comment_id: parseInt(parentCommentId),
         comment: newComment,
         table: 'movie', 
-        parent_content_id: contentId,
+        parent_content_id: parseInt(contentId),
       },
       { withCredentials: true });
       console.log(res.data);

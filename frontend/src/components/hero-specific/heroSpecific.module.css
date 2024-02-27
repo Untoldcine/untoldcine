@@ -113,6 +113,16 @@
   background-color: rgb(255, 255, 255, 0.1);
 }
 
+.totalVotes {
+  margin-left: 0.5rem;
+}
+.userRating {
+  margin-left: 0.25rem;
+}
+
+.rating {
+  margin-left: 0.25rem;
+}
 .sliderBarContainer {
   display: flex;
   flex-direction: row;

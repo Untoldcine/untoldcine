@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import axios from 'axios'; 
 import React from "react";
 import styles from './page.module.css';
 import Carousel from "@/components/carousel/carousel";
