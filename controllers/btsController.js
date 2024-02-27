@@ -168,39 +168,39 @@ async function getMovies () {
 }
 
 exports.getSpecificSeriesBTS = async (req, res) => {
-    const { bts_series_id } = req.params
-    const id = Number(bts_series_id)
+    const { series_id } = req.params
+    const id = Number(series_id)
 
     try {
-        const data = await prisma.BTS_Series.findFirst({
+        const data = await prisma.BTS_Series.findMany({
             where: {
-                bts_series_id: id
+                parent_series_id: id
             }
         })
         res.status(200).json(data)
     }
 
     catch(err) {
-        console.error(err + `Problem querying DB to detailed information of BTS Series at id ${bts_series_id}`);
+        console.error(err + `Problem querying DB to detailed information of BTS Series at id ${series_id}`);
         return res.status(500).json({"message" : "Internal server error"});
      }
 }
 
 exports.getSpecificMoviesBTS = async (req, res) => {
-    const { bts_movies_id } = req.params
-    const id = Number(bts_movies_id)
+    const { movies_id } = req.params
+    const id = Number(movies_id)
 
     try {
-        const data = await prisma.BTS_Movies.findFirst({
+        const data = await prisma.BTS_Movies.findMany({
             where: {
-                bts_movies_id: id
+                parent_movie_id: id
             }
         })
         res.status(200).json(data)
     }
 
     catch(err) {
-        console.error(err + `Problem querying DB to detailed information of BTS Movies at id ${bts_movies_id}`);
+        console.error(err + `Problem querying DB to detailed information of BTS Movies at id ${movies_id}`);
         return res.status(500).json({"message" : "Internal server error"});
      }
 }

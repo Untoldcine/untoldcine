@@ -181,7 +181,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <img className="summary-img" src={testImg.src} />
         <p>{series_name}</p>
         <p>Currently in {status}</p>
-        <button onClick = {() => getSpecificBTSContent('series', 'bts', bts_series_id)}>Get more info</button>
+        <button onClick = {() => getSpecificBTSContent('series', 'bts', series_id)}>Get more info</button>
       </div>
       </>
     )
@@ -205,7 +205,7 @@ const Card: React.FC<CardProps> = ({ content }) => {
         <img className="summary-img" src={testMovieImg.src} />
         <p>{movie_name}</p>
         <p>Currently in {status}</p>
-        <button onClick = {() => getSpecificBTSContent('movies', 'bts', bts_movies_id)}>Get more info</button>
+        <button onClick = {() => getSpecificBTSContent('movies', 'bts', movie_id)}>Get more info</button>
       </div>
     )
   }

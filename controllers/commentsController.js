@@ -448,6 +448,11 @@ exports.newComment = async (req, res) => {
             insertionID = 'parent_podcast_id'
             insertionText = 'podcast_comments_content'
             break;
+        case 'bts_series':
+            dataTable = 'Podcast_Comments'
+            insertionID = 'parent_podcast_id'
+            insertionText = 'podcast_comments_content'
+            break;
     }
 
     try {

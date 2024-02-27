@@ -41,8 +41,8 @@ export default function Test() {
         }
 
         async function fetchPodcast() {
-            // const podcastRes = await axios.get('http://localhost:3001/api/podcast/podcastSummary/');
-            const podcastRes = await axios.get(`/api/podcasts/podcastSummary`, {withCredentials: true})
+            const podcastRes = await axios.get('http://localhost:3001/api/podcast/podcastSummary/');
+            // const podcastRes = await axios.get(`/api/podcasts/podcastSummary`, {withCredentials: true})
             const transformedPodcastData = podcastRes.data.map((item:any) => ({
                 ...item,
                 type: 'podcast',

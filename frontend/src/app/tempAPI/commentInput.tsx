@@ -1,6 +1,6 @@
 'use client'
 import axios from "axios"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 interface CommentInputProps {
     table_name: string
