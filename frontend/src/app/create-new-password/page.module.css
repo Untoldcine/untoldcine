@@ -87,12 +87,10 @@
   display: none;
 }
 
-/* Show the checkmark when checked */
 .container input:checked ~ .checkmark:after {
   display: block;
 }
 
-/* Style the checkmark/indicator */
 .container .checkmark:after {
   left: 9px;
   top: 5px;
@@ -109,14 +107,6 @@
   margin: auto;
   text-align: center;
 }
-
-/*  
-    ADDED BY AUSTIN
-    */
-
-/* .test {
-      color: red;
-    } */
 
 .primary {
   margin: auto;

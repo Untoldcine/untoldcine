@@ -56,8 +56,7 @@ useEffect(() => {
       console.error('Error fetching podcast details:', error);
     }
   }
-  const token = localStorage.getItem('token'); 
-  setIsUserSignedIn(!!token);
+
   fetchPodcastDetails();
 }, [id]);
 

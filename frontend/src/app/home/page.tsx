@@ -9,10 +9,31 @@ import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn.js';
 import HeroSection from '../../components/hero/herosection.js';
 import axios from 'axios';
 import PodcastCarousel from "@/components/podcastCarousel/podcastCarousel"
+import MovieCarousel from '@/components/movieCarousel/movieCarousel.js';
+import BtsCarousel from '@/components/btsCarousel/btsCarousel.js'
+
+export interface BTSSeriesSummary {
+    series_id: number
+    bts_series_id: number
+    series_name: string
+    series_status: string
+    series_thumbnail: string | null
+}
+export interface BTSMoviesSummary {
+    movie_id: number
+    bts_movies_id: number
+    movie_name: string
+    movie_status: string
+    movie_thumbnail: string | null
+}
+
+
 
 export default function Test() {
     const [seriesData, setSeriesData] = useState([]);
     const [movieData, setMovieData] = useState([]);
+    const [BTSData, setBTSData] = useState([]);
+
     const [podcastData, setPodcastData] = useState([])
     const [isUserSignedIn, setIsUserSignedIn] = useState(false);
     useEffect(() => {
@@ -55,6 +76,22 @@ export default function Test() {
             setMovieData(transformedMovieData);
         }
 
+        async function fetchBTS() {
+            const btsRes = await axios.get('http://localhost:3001/api/bts/summaryBTSall');
+            const allBTSData = [...btsRes.data.pre, ...btsRes.data.prod, ...btsRes.data.post].map(item => {
+                const isSeries = item.hasOwnProperty('series_id');
+                return {
+                    ...item,
+                    type: isSeries ? 'series' : 'movies', 
+                    id: isSeries ? item.series_id : item.movie_id,
+                    imageUrl: isSeries ? item.series_thumbnail : item.movie_thumbnail,
+                    title: isSeries ? item.series_name : item.movie_name
+                };
+            });
+            setBTSData(allBTSData);
+        }
+        
+
         async function fetchPodcast() {
             const podcastRes = await axios.get('http://localhost:3001/api/podcast/podcastSummary/');
             const transformedPodcastData = podcastRes.data.map(item => ({
@@ -69,6 +106,7 @@ export default function Test() {
         fetchPodcast();
         fetchSeries();
         fetchMovies();
+        fetchBTS()
     }, []);
 
     return (
@@ -77,16 +115,16 @@ export default function Test() {
             <main className={styles.carouselBody}>
                 <HeroSection />
                 <div>
-                    <Carousel items={seriesData} title="Original Content " />
+                    <Carousel items={seriesData} title="Series " />
                 </div>
                 <div>
-                    <Carousel items={movieData} title="Movies " />
+                    <MovieCarousel items={movieData} title="Movies " />
                 </div>
                   <div>
                   <PodcastCarousel items={podcastData} title="Podcasts " />
                 </div>
                 <div>
-                    <Carousel items={[]} title="Behind The Scenes " />
+                    <BtsCarousel items={BTSData} title="Behind The Scenes " />
                 </div>
             </main>
             <Footer />
