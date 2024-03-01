@@ -22,7 +22,21 @@ const handleChangedData = async (e, type, inputs) => {
         if (err.response) {
           console.error(err.response.data.message); 
         }
-        console.error(err + ': Error attempting to log in');
+        console.error(err + ': Error attempting to edit content data by an Admin');
+      }
+}
+
+const handleDeleteData = async (e, type, id) => {
+    e.preventDefault()
+    try {
+        const res = await axios.post(`http://localhost:3001/api/user/adminDelete/${type}/${id}`)
+        console.log(res.data);
+    }
+    catch (err) {
+        if (err.response) {
+          console.error(err.response.data.message); 
+        }
+        console.error(err + ': Error attempting to delete data by an Admin');
       }
 }
 
@@ -238,8 +252,8 @@ const Active = ({type, details, countries}) => {
                     <p>Are you sure?</p>
                     <button type = "button" onClick = {() => setToggleDelete(false)} className='active-finish'>Go Back</button>
                     <br/>
-                    <button className='active-delete' type = "button" >Delete Content</button>
-                    </div>:<button className='active-delete' type = "button" onClick = {() => setToggleDelete(true)}>Delete Content</button>}
+                    <button className='active-delete' type = "button" onClick = {(e) => handleDeleteData(e, type, details.series_id)} >Delete Content</button>
+                    </div>:<button className='active-delete' type = "button" onClick = {() => setToggleDelete(true)}>Toggle Delete</button>}
                     </div>
                     
             </form>

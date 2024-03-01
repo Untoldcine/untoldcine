@@ -296,6 +296,9 @@ exports.adminLogIn = async(req, res) => {
 exports.adminGetAll = async(req, res) => {
     const [seriesData, videoData, movieData, podcastData, btsSeriesData, btsMoviesData, countries] = await Promise.all([
         prisma.series.findMany({
+            where: {
+                deleted: false
+            },
             include: {
                 series_country: {
                     select: {
@@ -311,6 +314,9 @@ exports.adminGetAll = async(req, res) => {
             }
         }),
         prisma.videos.findMany({
+            where: {
+                deleted: false
+            },
             include: {
                 series: {
                     select: {
@@ -319,9 +325,20 @@ exports.adminGetAll = async(req, res) => {
                 }
             }
         }),
-        prisma.movies.findMany(),
-        prisma.podcasts.findMany(),
+        prisma.movies.findMany({
+            where: {
+                deleted: false
+            },
+        }),
+        prisma.podcasts.findMany({
+            where: {
+                deleted: false
+            },
+        }),
         prisma.bTS_Series.findMany({
+            where: {
+                deleted: false
+            },
             include: {
                 series: {
                     select: {
@@ -331,6 +348,9 @@ exports.adminGetAll = async(req, res) => {
             }
         }),
         prisma.bTS_Movies.findMany({
+            where: {
+                deleted: false
+            },
             include: {
                 movies: {
                     select: {
@@ -507,4 +527,58 @@ function convertToISOString(inputDate) {
     const isoString = date.toISOString();
 
     return isoString;
+}
+
+exports.adminDelete = async (req, res) => {
+    const {table, id} = req.params
+
+    let insertionTable
+    let insertionID 
+    let deleteTableEntry
+
+    switch(table) {
+        case 'series':
+            insertionTable = 'Series'
+            insertionID = 'series_id'
+            deleteTableEntry = 'Series'
+            break;
+        case 'movie':
+            insertionTable = 'Movies'
+            insertionID = 'movie_id'
+            deleteTableEntry = 'Movie'
+            break;
+        case 'podcast':
+            insertionTable = 'Podcasts'
+            insertionID = 'podcast_id'
+            deleteTableEntry = 'Podcast'
+            break;
+        case 'bts_series':
+            insertionTable = 'BTS_Series'
+            insertionID = 'bts_series_id'
+            deleteTableEntry = 'BTS_Series'
+            break;
+        case 'bts_movies':
+            insertionTable = 'BTS_Movies'
+            insertionID = 'bts_movies_id'
+            deleteTableEntry = 'BTS_Movie'
+            break;
+    }
+    const flagForDeletion = await prisma[insertionTable].update({
+        where: {
+            [insertionID]: parseInt(id)
+        },
+        data: {
+            deleted: true,
+            deleted_at: new Date()
+        }
+    }) 
+    const newDeleteEntry = await prisma.deleted_Content.create({
+        data: {
+            content_type: deleteTableEntry,
+            content_id: parseInt(id)
+        }
+    })
+    if (flagForDeletion && newDeleteEntry) {
+        res.status(200).json({"message": "Deletion successful"})
+    }
 }
