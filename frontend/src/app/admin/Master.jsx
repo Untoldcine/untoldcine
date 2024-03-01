@@ -35,7 +35,6 @@ const Master = ({ content }) => {
   const handleChoice = (item) => {
     setActivePanel(item)
     setActivePanelOn(true)
-    // setSelectedContentType('none')
   }
 
   return (
@@ -81,7 +80,7 @@ const Master = ({ content }) => {
         ))}
       </div>
       {/* <button onClick = {() => logOut()}>Log Out</button> */}
-      {activePanelOn ? <Active type = {selectedContentType} details = {activePanel} countries = {content.countries}/> : null}
+      {activePanelOn ? <Active type = {selectedContentType} details = {activePanel} countries = {content.countries} toggle = {setSelectedContentType}/> : null}
     </div>
   );
 };

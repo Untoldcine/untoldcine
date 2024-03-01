@@ -350,44 +350,155 @@ exports.adminUpdate = async (req, res) => {
     // console.log(table);
     // console.log(req.body);
 
-    let insertionTable, id, name, status, upvote, downvote, main, director, producer, starring, thumbnail, date
-
-    switch(table) {
-        case ('series'):
-            insertionTable = 'Series'
-            id = 'series_id'
-            name = 'series_name'
-            status = 'series_status'
-            upvote = 'series_upvotes'
-            downvote = 'series_downvotes'
-            main = 'series_main'
-            director = 'series_directors'
-            producer = 'series_producers'
-            starring = 'series_starring'
-            thumbnail = 'series_thumbnail'
-            date = 'date_created'
+    if (table === 'series') {
+        const updated = updateSeries(req.body)
+        res.status(200).json(updated)
     }
-    //insertion may be strange at first, the [] is for dynamic values for Prisma
-    const updateField = await prisma[insertionTable].update({
+    if (table === 'video') {
+        const updated = updateVideos(req.body)
+        res.status(200).json(updated)
+    }
+    if (table === 'movie') {
+        const updated = updateMovies(req.body)
+        res.status(200).json(updated)
+    }
+    if (table === 'podcast') {
+        const updated = updatePodcast(req.body)
+        res.status(200).json(updated)
+    }
+    if (table === 'bts_series') {
+        const updated = updateBTSSeries(req.body)
+        res.status(200).json(updated)
+    }
+    if (table === 'bts_movies') {
+        const updated = updateBTSMovies(req.body)
+        res.status(200).json(updated)
+    }
+ 
+}
+
+async function updateSeries(obj) {
+    const updateField = await prisma.series.update({
         where: {
-            [id]: req.body[id]
+            series_id: obj.series_id
         },
         data: {
-            [name]: req.body[name],
-            [status]: req.body[status],
-            [upvote] : req.body[upvote] || 0,
-            [downvote]: req.body[downvote] || 0,
-            [main] : req.body[main] || null,
-            [director]: req.body[director] || null,
-            [producer]: req.body[producer] || null,
-            [starring]: req.body[starring] || null,
-            [thumbnail]: req.body[thumbnail] || null,
-            date_created: convertToISOString(req.body.date_created),
-            completed: req.body.completed === 'true'
+            series_name: obj.series_name,
+            series_status: obj.series_status,
+            series_upvotes : parseInt(obj.series_upvotes) || 0,
+            series_downvotes : parseInt(obj.series_downvotes) || 0,
+            series_main : obj.series_main || null,
+            series_directors : obj.series_director || null,
+            series_producers : obj.series_producer || null,
+            series_starring: obj.series_starring || null,
+            series_thumbnail : obj.series_thumbnail || null,
+            date_created : convertToISOString(obj.date_created),
+            completed: obj.completed === 'true'
         }
     })
-    console.log(updateField);
+    // console.log(updateField);
+    return updateField
 
+}
+
+async function updateVideos(obj) {
+    const updateField = await prisma.videos.update({
+        where: {
+            video_id: obj.video_id
+        },
+        data: {
+            video_name: obj.video_name,
+            video_main : obj.video_main || null,
+            video_length: parseInt(obj.video_length) || 0,
+            video_season: parseInt(obj.video_season) || 1,
+            video_episode: parseInt(obj.video_episode) || 1,
+            video_thumbnail : obj.video_thumbnail || null,
+            date_created : convertToISOString(obj.date_created),
+        }
+    })
+    // console.log(updateField);
+    return updateField
+
+}
+
+async function updateMovies(obj) {
+    const updateField = await prisma.movies.update({
+        where: {
+            movie_id: obj.movie_id
+        },
+        data: {
+            movie_name: obj.movie_name,
+            movie_status: obj.movie_status,
+            movie_main : obj.movie_main || null,
+            movie_length: parseInt(obj.movie_length) || 0,
+            movie_directors : obj.movie_directors || null,
+            movie_producers : obj.movie_producers || null,
+            movie_starring: obj.movie_starring || null,
+            movie_thumbnail : obj.movie_thumbnail || null,
+            movie_upvotes : parseInt(obj.movie_upvotes) || 0,
+            movie_downvotes : parseInt(obj.movie_downvotes) || 0,
+            date_created : convertToISOString(obj.date_created),
+        }
+    })
+    // console.log(updateField);
+    return updateField
+}
+
+async function updatePodcast(obj) {
+    const updateField = await prisma.podcasts.update({
+        where: {
+            podcast_id: obj.podcast_id
+        },
+        data: {
+            podcast_name: obj.podcast_name,
+            podcast_status: obj.podcast_status,
+            podcast_type: obj.podcast_type,
+            podcast_main : obj.podcast_main || null,
+            podcast_episode: parseInt(obj.podcast_episode) || 1,
+            podcast_directors : obj.podcast_directors || null,
+            podcast_producers : obj.podcast_producers || null,
+            podcast_starring: obj.podcast_starring || null,
+            podcast_thumbnail : obj.podcast_thumbnail || null,
+            podcast_upvotes : parseInt(obj.podcast_upvotes) || 0,
+            podcast_downvotes : parseInt(obj.podcast_downvotes) || 0,
+            date_created : convertToISOString(obj.date_created),
+        }
+    })
+    // console.log(updateField);
+    return updateField
+}
+
+async function updateBTSSeries(obj) {
+    const updateField = await prisma.bTS_Series.update({
+        where: {
+            bts_series_id: obj.bts_series_id
+        },
+        data: {
+            bts_series_name: obj.bts_series_name,
+            bts_series_main : obj.bts_series_main || null,
+            bts_series_length: parseInt(obj.bts_series_length) || 0,
+            bts_series_thumbnail: obj.bts_series_thumbnail || null,
+            date_created : convertToISOString(obj.date_created),
+        }
+    })
+    // console.log(updateField);
+    return updateField
+}
+async function updateBTSMovies(obj) {
+    const updateField = await prisma.bTS_Movies.update({
+        where: {
+            bts_movies_id: obj.bts_movies_id
+        },
+        data: {
+            bts_movies_name: obj.bts_movies_name,
+            bts_movies_main : obj.bts_movies_main || null,
+            bts_movies_length: parseInt(obj.bts_movies_length) || 0,
+            bts_movies_thumbnail: obj.bts_movies_thumbnail || null,
+            date_created : convertToISOString(obj.date_created),
+        }
+    })
+    // console.log(updateField);
+    return updateField
 }
 
 

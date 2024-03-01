@@ -40,7 +40,7 @@ const Admin = () => {
     }
   }
 
-  const testGet = async () => {
+  const retrieveAll = async () => {
     const data = await axios.get('http://localhost:3001/api/user/adminGetAll')
     setAllContentData(data.data)
     
@@ -49,7 +49,7 @@ const Admin = () => {
   useEffect(() => {
     if (sessionStorage.getItem('adminAccess')) {
       setAdminState(true)
-      testGet()
+      retrieveAll()
     }
   }, [adminToggle])
 
