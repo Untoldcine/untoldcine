@@ -343,3 +343,57 @@ exports.adminGetAll = async(req, res) => {
     ])
     res.status(200).json({series:seriesData, video: videoData, movie: movieData, podcasts: podcastData, bts_series: btsSeriesData, bts_movies: btsMoviesData, countries: countries})
 }
+
+exports.adminUpdate = async (req, res) => {
+    //may need to capitalize the table params due to prisma schema shit
+    const {table} = req.params
+    // console.log(table);
+    // console.log(req.body);
+
+    let insertionTable, id, name, status, upvote, downvote, main, director, producer, starring, thumbnail, date
+
+    switch(table) {
+        case ('series'):
+            insertionTable = 'Series'
+            id = 'series_id'
+            name = 'series_name'
+            status = 'series_status'
+            upvote = 'series_upvotes'
+            downvote = 'series_downvotes'
+            main = 'series_main'
+            director = 'series_directors'
+            producer = 'series_producers'
+            starring = 'series_starring'
+            thumbnail = 'series_thumbnail'
+            date = 'date_created'
+    }
+    //insertion may be strange at first, the [] is for dynamic values for Prisma
+    const updateField = await prisma[insertionTable].update({
+        where: {
+            [id]: req.body[id]
+        },
+        data: {
+            [name]: req.body[name],
+            [status]: req.body[status],
+            [upvote] : req.body[upvote] || 0,
+            [downvote]: req.body[downvote] || 0,
+            [main] : req.body[main] || null,
+            [director]: req.body[director] || null,
+            [producer]: req.body[producer] || null,
+            [starring]: req.body[starring] || null,
+            [thumbnail]: req.body[thumbnail] || null,
+            date_created: convertToISOString(req.body.date_created),
+            completed: req.body.completed === 'true'
+        }
+    })
+    console.log(updateField);
+
+}
+
+
+function convertToISOString(inputDate) {
+    const date = new Date(inputDate);
+    const isoString = date.toISOString();
+
+    return isoString;
+}

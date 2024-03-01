@@ -81,6 +81,7 @@ model Series {
   completed           Boolean @default(false)
   series_main         String?
   series_directors    String?
+  series_starring     String?
   series_producers    String?
   series_thumbnail    String?
   genres              Series_Genres[]

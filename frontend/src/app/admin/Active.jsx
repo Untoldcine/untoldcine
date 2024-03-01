@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react'
+import axios from "axios";
 
 const convertDate = (dateStr) => {
     const dateObj = new Date(dateStr);
@@ -38,13 +39,27 @@ const Active = ({type, details, countries}) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
 
+        const handleChangedData = async (e) => {
+            e.preventDefault()
+            // console.log(inputValues);
+            try {
+                const res = await axios.post(`http://localhost:3001/api/user/adminUpdate/${type}`, inputValues)
+            }
+            catch (err) {
+                if (err.response) {
+                  console.error(err.response.data.message); 
+                }
+                console.error(err + ': Error attempting to log in');
+              }
+        }
+
         // const handleCountryChange = (e) => {
         //     console.log(inputValues);
         //     setInputValues({...inputValues, series_country: [{country_id:e.target.value}]})
         // }
 
         return (
-            <div className='active-wrapper'>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e)}>
                 <p className='active-description'>(Cannot Change) Series ID: <span className='active-primary'>{series_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Series Name: {isEditing.series_name ? (
@@ -55,12 +70,12 @@ const Active = ({type, details, countries}) => {
                                 onChange={(e) => handleChange(e, 'series_name')}
                                 className='editing_input-small'
                             />
-                            <button className='active-save' onClick={() => handleSave('series_name')}>Save</button>
+                            <button className='active-save' type = "button" onClick={() => handleSave('series_name')}>Save</button>
                         </>
                     ) : (
                         <>
                             <span className='active-primary'>{inputValues.series_name}</span>
-                            <button className='active-edit' onClick={() => handleEdit('series_name')}>Edit</button>
+                            <button className='active-edit' type = "button" onClick={() => handleEdit('series_name')}>Edit</button>
                         </>
                     )}</p>
                 {/* Status */}
@@ -70,6 +85,12 @@ const Active = ({type, details, countries}) => {
                         <option value = 'post'>Production</option>
                         <option value = 'prod'>Post-Production</option>
                     </select>
+                {/* Completed? */}
+                <p className='active-description'>Is Series Completed?: </p> 
+                    <select value = {inputValues.completed} onChange = {(e) => handleChange(e, 'completed')}>
+                        <option value = 'true'>Yes</option>
+                        <option value = 'false'>No</option>
+                    </select>
                 {/* Date */}
                 <p className='active-description'>Date Created: {isEditing.date_created ? (
                     <>
@@ -78,14 +99,14 @@ const Active = ({type, details, countries}) => {
                             value={inputValues.date_created.split('T')[0]} //takes iso stirng into more readable format
                             onChange={(e) => handleChange(e, 'date_created')} 
                         />
-                         <button className='active-save' onClick={() => handleSave('date_created')}>Save</button>
+                         <button className='active-save' type = "button" onClick={() => handleSave('date_created')}>Save</button>
                     </>
                     )
                     :
                     (
                     <>
                       <span className='active-primary'>{convertDate(inputValues.date_created)}</span>
-                      <button className='active-edit' onClick={() => handleEdit('date_created')}>Edit</button>
+                      <button className='active-edit' type = "button" onClick={() => handleEdit('date_created')}>Edit</button>
                     </>
                     )}</p>
                 {/* Country of Origin */}
@@ -114,12 +135,12 @@ const Active = ({type, details, countries}) => {
                                 onChange={(e) => handleChange(e, 'series_main')}
                                 className='editing_input'
                             />
-                            <button className='active-save' onClick={() => handleSave('series_main')}>Save</button>
+                            <button className='active-save' type = "button" onClick={() => handleSave('series_main')}>Save</button>
                         </>
                     ) : (
                         <>
                             <span className='active-primary'>{inputValues.series_main}</span>
-                            <button className='active-edit' onClick={() => handleEdit('series_main')}>Edit</button>
+                            <button className='active-edit' type = "button" onClick={() => handleEdit('series_main')}>Edit</button>
                         </>
                     )}</p>
                     {/* Directors */}
@@ -131,12 +152,12 @@ const Active = ({type, details, countries}) => {
                                 onChange={(e) => handleChange(e, 'series_directors')}
                                 className='editing_input-small'
                             />
-                            <button className='active-save' onClick={() => handleSave('series_directors')}>Save</button>
+                            <button className='active-save' type = "button" onClick={() => handleSave('series_directors')}>Save</button>
                         </>
                     ) : (
                         <>
                             <span className='active-primary'>{inputValues.series_directors}</span>
-                            <button className='active-edit' onClick={() => handleEdit('series_directors')}>Edit</button>
+                            <button className='active-edit' type = "button" onClick={() => handleEdit('series_directors')}>Edit</button>
                         </>
                     )}</p>
                     {/* Starring */}
@@ -148,12 +169,12 @@ const Active = ({type, details, countries}) => {
                                 onChange={(e) => handleChange(e, 'series_starring')}
                                 className='editing_input-small'
                             />
-                            <button className='active-save' onClick={() => handleSave('series_starring')}>Save</button>
+                            <button className='active-save' type = "button" onClick={() => handleSave('series_starring')}>Save</button>
                         </>
                     ) : (
                         <>
                             <span className='active-primary'>{inputValues.series_starring}</span>
-                            <button className='active-edit' onClick={() => handleEdit('series_starring')}>Edit</button>
+                            <button className='active-edit' type = "button" onClick={() => handleEdit('series_starring')}>Edit</button>
                         </>
                     )}</p>
                     {/* Producers */}
@@ -165,12 +186,12 @@ const Active = ({type, details, countries}) => {
                                 onChange={(e) => handleChange(e, 'series_producers')}
                                 className='editing_input-small'
                             />
-                            <button className='active-save' onClick={() => handleSave('series_producers')}>Save</button>
+                            <button className='active-save' type = "button" onClick={() => handleSave('series_producers')}>Save</button>
                         </>
                     ) : (
                         <>
                             <span className='active-primary'>{inputValues.series_producers}</span>
-                            <button className='active-edit' onClick={() => handleEdit('series_producers')}>Edit</button>
+                            <button className='active-edit' type = "button" onClick={() => handleEdit('series_producers')}>Edit</button>
                         </>
                     )}</p>
                     {/* Upvotes */}
@@ -182,12 +203,12 @@ const Active = ({type, details, countries}) => {
                                 onChange={(e) => handleChange(e, 'series_upvotes')}
                                 className='editing_input-small'
                             />
-                            <button className='active-save' onClick={() => handleSave('series_upvotes')}>Save</button>
+                            <button className='active-save' type = "button" onClick={() => handleSave('series_upvotes')}>Save</button>
                         </>
                     ) : (
                         <>
                             <span className='active-primary'>{inputValues.series_upvotes}</span>
-                            <button className='active-edit' onClick={() => handleEdit('series_upvotes')}>Edit</button>
+                            <button className='active-edit' type = "button" onClick={() => handleEdit('series_upvotes')}>Edit</button>
                         </>
                     )}</p>
                     {/* Downvotes */}
@@ -199,28 +220,27 @@ const Active = ({type, details, countries}) => {
                                 onChange={(e) => handleChange(e, 'series_downvotes')}
                                 className='editing_input-small'
                             />
-                            <button className='active-save' onClick={() => handleSave('series_downvotes')}>Save</button>
+                            <button className='active-save' type = "button" onClick={() => handleSave('series_downvotes')}>Save</button>
                         </>
                     ) : (
                         <>
                             <span className='active-primary'>{inputValues.series_downvotes}</span>
-                            <button className='active-edit' onClick={() => handleEdit('series_downvotes')}>Edit</button>
+                            <button className='active-edit' type = "button" onClick={() => handleEdit('series_downvotes')}>Edit</button>
                         </>
                     )}</p>
                     <div className='active-bottom'>
-                    <button className='active-finish'>Save Changes</button>
+                    <button className='active-finish' type = "submit">Save Changes</button>
                     {toggleDelete ? <div>
                     <p>Are you sure?</p>
-                    <button onClick = {() => setToggleDelete(false)} className='active-finish'>Go Back</button>
+                    <button type = "button" onClick = {() => setToggleDelete(false)} className='active-finish'>Go Back</button>
                     <br/>
                     <button className='active-delete'>Delete Content</button>
-                    </div>:<button className='active-delete' onClick = {() => setToggleDelete(true)}>Delete Content</button>}
+                    </div>:<button className='active-delete' type = "button" onClick = {() => setToggleDelete(true)}>Delete Content</button>}
                     </div>
                     
-            </div>
+            </form>
         )
     }
-
     if (type === 'video') {
 
         const {video_id} = details
@@ -366,7 +386,6 @@ const Active = ({type, details, countries}) => {
             </div>
         )
     }
-
     if (type === 'movie') {
 
         const {movie_id} = details
@@ -568,7 +587,6 @@ const Active = ({type, details, countries}) => {
             </div>
         )
     }
-
     if (type === 'podcast') {
 
         const {podcast_id} = details
@@ -770,7 +788,6 @@ const Active = ({type, details, countries}) => {
             </div>
         )
     }
-
     if (type === 'bts_series') {
 
         const {bts_series_id} = details
@@ -1023,12 +1040,6 @@ const Active = ({type, details, countries}) => {
             </div>
         )
     }
-
-
-  return (
-    <div className=''>
-    </div>
-  )
 }
 
 export default Active

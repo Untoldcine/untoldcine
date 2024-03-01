@@ -10,5 +10,6 @@ router.route('/delete/:userID').post(userController.removeUser)
 
 router.route('/adminLogin').post(userController.adminLogIn)
 router.route('/adminGetAll').get(userController.adminGetAll)
+router.route('/adminUpdate/:table').post(userController.adminUpdate)
 
 module.exports = router;
