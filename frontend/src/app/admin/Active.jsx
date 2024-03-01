@@ -12,10 +12,11 @@ const Active = ({type, details}) => {
 
     if (type === 'series') {
 
-        const {series_id, date_created} = details
+        const {series_id} = details
 
         const [inputValues, setInputValues] = useState(details);
         const [isEditing, setIsEditing] = useState({ series_name: false });
+        const [toggleDelete, setToggleDelete] = useState(false)
 
         useEffect(() => {
             setInputValues(details);
@@ -26,7 +27,6 @@ const Active = ({type, details}) => {
         };
 
         const handleChange = (e, field) => {
-            console.log(e.target.value);
             setInputValues({ ...inputValues, [field]: e.target.value });
         };
 
@@ -61,8 +61,26 @@ const Active = ({type, details}) => {
                         <option value = 'post'>Production</option>
                         <option value = 'prod'>Post-Production</option>
                     </select>
-                    
-                <p className='active-description'>Date Created: <span className='active-primary'>{convertDate(date_created)}</span></p>
+                {/* Date */}
+                <p className='active-description'>Date Created: {isEditing.date_created ? (
+                    <>
+                        <input 
+                            type="date" 
+                            value={inputValues.date_created.split('T')[0]} //takes iso stirng into more readable format
+                            onChange={(e) => handleChange(e, 'date_created')} 
+                        />
+                         <button className='active-save' onClick={() => handleSave('date_created')}>Save</button>
+                    </>
+                    )
+                    :
+                    (
+                    <>
+                      <span className='active-primary'>{convertDate(inputValues.date_created)}</span>
+                      <button className='active-edit' onClick={() => handleEdit('date_created')}>Edit</button>
+                    </>
+                    )}</p>
+                
+                
                 {/* Main Description */}
                 <p className='active-description'>Description: {isEditing.series_main ? (
                         <>
@@ -165,6 +183,16 @@ const Active = ({type, details}) => {
                             <button className='active-edit' onClick={() => handleEdit('series_downvotes')}>Edit</button>
                         </>
                     )}</p>
+                    <div className='active-bottom'>
+                    <button className='active-finish'>Save Changes</button>
+                    {toggleDelete ? <div>
+                    <p>Are you sure?</p>
+                    <button onClick = {() => setToggleDelete(false)} className='active-finish'>Go Back</button>
+                    <br/>
+                    <button className='active-delete'>Delete Content</button>
+                    </div>:<button className='active-delete' onClick = {() => setToggleDelete(true)}>Delete Content</button>}
+                    </div>
+                    
             </div>
         )
     }

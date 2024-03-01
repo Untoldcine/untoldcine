@@ -51,7 +51,7 @@ const Admin = () => {
       setAdminState(true)
       testGet()
     }
-  }, [sessionStorage.getItem('adminAccess'), adminToggle])
+  }, [adminToggle])
 
 
   if (adminState) {

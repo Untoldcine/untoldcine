@@ -164,7 +164,6 @@
 
   .active-wrapper {
     width: 90%;
-    min-height: 700px;
     background-color: #1a1a1a;
     border: 1px solid white;
     margin-top: 1rem;
@@ -199,6 +198,39 @@
     border: none;
     border-radius: 4px;
     margin-left: 0.5rem;
+  }
+
+  .active-bottom {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .active-finish {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
+    color: black;
+    background-color: rgb(64, 210, 255);
+    border: none;
+    border-radius: 4px;
+    margin-top: 1.5rem;
+  }
+
+  .active-delete {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
+    color: white;
+    background-color: rgb(213, 37, 37);
+    border: none;
+    border-radius: 4px;
+    margin-top: 1.5rem;
+  }
+
+  .active-delete, .active-primary, .active-edit, .active-finish, .active-save:hover {
+    cursor: pointer;
   }
 
   .editing_input {
