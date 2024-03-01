@@ -72,6 +72,9 @@ const Master = ({ content }) => {
               {item.series ? (
                 <p>Series Name: {item.series.series_name}</p>
               ) : null}
+              {item.movies ? (
+                <p>Movie Name: {item.movies.movie_name}</p>
+              ) : null}
             </div>
             <button className="search-button" onClick ={() => handleChoice(item)}>View</button>
           </div>

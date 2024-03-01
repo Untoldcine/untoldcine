@@ -321,8 +321,24 @@ exports.adminGetAll = async(req, res) => {
         }),
         prisma.movies.findMany(),
         prisma.podcasts.findMany(),
-        prisma.bTS_Series.findMany(),
-        prisma.bTS_Movies.findMany(),
+        prisma.bTS_Series.findMany({
+            include: {
+                series: {
+                    select: {
+                        series_name: true
+                    }
+                }
+            }
+        }),
+        prisma.bTS_Movies.findMany({
+            include: {
+                movies: {
+                    select: {
+                        movie_name: true
+                    }
+                }
+            }
+        }),
         prisma.countries.findMany()
     ])
     res.status(200).json({series:seriesData, video: videoData, movie: movieData, podcasts: podcastData, bts_series: btsSeriesData, bts_movies: btsMoviesData, countries: countries})

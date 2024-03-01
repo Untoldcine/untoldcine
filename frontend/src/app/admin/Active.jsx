@@ -771,6 +771,260 @@ const Active = ({type, details, countries}) => {
         )
     }
 
+    if (type === 'bts_series') {
+
+        const {bts_series_id} = details
+
+        const [inputValues, setInputValues] = useState(details);
+        const [isEditing, setIsEditing] = useState({ });
+        const [toggleDelete, setToggleDelete] = useState(false)
+
+        useEffect(() => {
+            setInputValues(details);
+        }, [details]);
+
+        const handleEdit = (field) => {
+            setIsEditing({ ...isEditing, [field]: true });
+        };
+
+        const handleChange = (e, field) => {
+            setInputValues({ ...inputValues, [field]: e.target.value });
+        };
+
+        const handleSave = (field) => {
+            setIsEditing({ ...isEditing, [field]: false });
+        };
+
+        return (
+            <div className='active-wrapper'>
+                <p className='active-description'>(Cannot Change) BTS Series ID: <span className='active-primary'>{bts_series_id}</span></p>
+                {/* Name */}
+                <p className='active-description'>BTS Series Name: {isEditing.bts_series_name ? (
+                        <>
+                            <input 
+                                type="text" 
+                                value={inputValues.bts_series_name}
+                                onChange={(e) => handleChange(e, 'bts_series_name')}
+                                className='editing_input-small'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_series_name')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_series_name}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_series_name')}>Edit</button>
+                        </>
+                    )}</p>
+                {/* Date */}
+                <p className='active-description'>Date Created: {isEditing.date_created ? (
+                    <>
+                        <input 
+                            type="date" 
+                            value={inputValues.date_created.split('T')[0]} //takes iso stirng into more readable format
+                            onChange={(e) => handleChange(e, 'date_created')} 
+                        />
+                         <button className='active-save' onClick={() => handleSave('date_created')}>Save</button>
+                    </>
+                    )
+                    :
+                    (
+                    <>
+                      <span className='active-primary'>{convertDate(inputValues.date_created)}</span>
+                      <button className='active-edit' onClick={() => handleEdit('date_created')}>Edit</button>
+                    </>
+                    )}</p>
+                 {/* BTS Episode */}
+                 <p className='active-description'>Episode: {isEditing.bts_series_episode ? (
+                        <>
+                            <input 
+                                type="text" 
+                                value={inputValues.bts_series_episode}
+                                onChange={(e) => handleChange(e, 'bts_series_episode')}
+                                className='editing_input-small'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_series_episode')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_series_episode}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_series_episode')}>Edit</button>
+                        </>
+                    )}</p>
+                    {/* Length of Video */}
+                    <p className='active-description'>Length (in minutes): {isEditing.bts_series_length ? (
+                        <>
+                            <input 
+                                type="text" 
+                                value={inputValues.bts_series_length}
+                                onChange={(e) => handleChange(e, 'bts_series_length')}
+                                className='editing_input-small'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_series_length')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_series_length}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_series_length')}>Edit</button>
+                        </>
+                    )}</p>
+                {/* Main Description */}
+                <p className='active-description'>Description: {isEditing.bts_series_main ? (
+                        <>
+                            <input 
+                                type="textarea" 
+                                value={inputValues.bts_series_main}
+                                onChange={(e) => handleChange(e, 'bts_series_main')}
+                                className='editing_input'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_series_main')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_series_main}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_series_main')}>Edit</button>
+                        </>
+                    )}</p>
+                    <div className='active-bottom'>
+                    <button className='active-finish'>Save Changes</button>
+                    {toggleDelete ? <div>
+                    <p>Are you sure?</p>
+                    <button onClick = {() => setToggleDelete(false)} className='active-finish'>Go Back</button>
+                    <br/>
+                    <button className='active-delete'>Delete Content</button>
+                    </div>:<button className='active-delete' onClick = {() => setToggleDelete(true)}>Delete Content</button>}
+                    </div>
+                    
+            </div>
+        )
+    }
+    if (type === 'bts_movies') {
+
+        const {bts_movies_id} = details
+
+        const [inputValues, setInputValues] = useState(details);
+        const [isEditing, setIsEditing] = useState({ });
+        const [toggleDelete, setToggleDelete] = useState(false)
+
+        useEffect(() => {
+            setInputValues(details);
+        }, [details]);
+
+        const handleEdit = (field) => {
+            setIsEditing({ ...isEditing, [field]: true });
+        };
+
+        const handleChange = (e, field) => {
+            setInputValues({ ...inputValues, [field]: e.target.value });
+        };
+
+        const handleSave = (field) => {
+            setIsEditing({ ...isEditing, [field]: false });
+        };
+
+        return (
+            <div className='active-wrapper'>
+                <p className='active-description'>(Cannot Change) BTS Series ID: <span className='active-primary'>{bts_movies_id}</span></p>
+                {/* Name */}
+                <p className='active-description'>BTS Series Name: {isEditing.bts_movies_name ? (
+                        <>
+                            <input 
+                                type="text" 
+                                value={inputValues.bts_movies_name}
+                                onChange={(e) => handleChange(e, 'bts_movies_name')}
+                                className='editing_input-small'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_movies_name')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_movies_name}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_movies_name')}>Edit</button>
+                        </>
+                    )}</p>
+                {/* Date */}
+                <p className='active-description'>Date Created: {isEditing.date_created ? (
+                    <>
+                        <input 
+                            type="date" 
+                            value={inputValues.date_created.split('T')[0]} //takes iso stirng into more readable format
+                            onChange={(e) => handleChange(e, 'date_created')} 
+                        />
+                         <button className='active-save' onClick={() => handleSave('date_created')}>Save</button>
+                    </>
+                    )
+                    :
+                    (
+                    <>
+                      <span className='active-primary'>{convertDate(inputValues.date_created)}</span>
+                      <button className='active-edit' onClick={() => handleEdit('date_created')}>Edit</button>
+                    </>
+                    )}</p>
+                 {/* BTS Episode */}
+                 <p className='active-description'>Episode: {isEditing.bts_movies_episode ? (
+                        <>
+                            <input 
+                                type="text" 
+                                value={inputValues.bts_movies_episode}
+                                onChange={(e) => handleChange(e, 'bts_movies_episode')}
+                                className='editing_input-small'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_movies_episode')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_movies_episode}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_movies_episode')}>Edit</button>
+                        </>
+                    )}</p>
+                    {/* Length of Video */}
+                    <p className='active-description'>Length (in minutes): {isEditing.bts_movies_length ? (
+                        <>
+                            <input 
+                                type="text" 
+                                value={inputValues.bts_movies_length}
+                                onChange={(e) => handleChange(e, 'bts_movies_length')}
+                                className='editing_input-small'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_movies_length')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_movies_length}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_movies_length')}>Edit</button>
+                        </>
+                    )}</p>
+                {/* Main Description */}
+                <p className='active-description'>Description: {isEditing.bts_movies_main ? (
+                        <>
+                            <input 
+                                type="textarea" 
+                                value={inputValues.bts_movies_main}
+                                onChange={(e) => handleChange(e, 'bts_movies_main')}
+                                className='editing_input'
+                            />
+                            <button className='active-save' onClick={() => handleSave('bts_movies_main')}>Save</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className='active-primary'>{inputValues.bts_movies_main}</span>
+                            <button className='active-edit' onClick={() => handleEdit('bts_movies_main')}>Edit</button>
+                        </>
+                    )}</p>
+                    <div className='active-bottom'>
+                    <button className='active-finish'>Save Changes</button>
+                    {toggleDelete ? <div>
+                    <p>Are you sure?</p>
+                    <button onClick = {() => setToggleDelete(false)} className='active-finish'>Go Back</button>
+                    <br/>
+                    <button className='active-delete'>Delete Content</button>
+                    </div>:<button className='active-delete' onClick = {() => setToggleDelete(true)}>Delete Content</button>}
+                    </div>
+                    
+            </div>
+        )
+    }
+
+
   return (
     <div className=''>
     </div>
