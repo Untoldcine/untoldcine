@@ -294,8 +294,22 @@ exports.adminLogIn = async(req, res) => {
 }
 
 exports.adminGetAll = async(req, res) => {
-    const [seriesData, videoData, movieData, podcastData, btsSeriesData, btsMoviesData] = await Promise.all([
-        prisma.series.findMany(),
+    const [seriesData, videoData, movieData, podcastData, btsSeriesData, btsMoviesData, countries] = await Promise.all([
+        prisma.series.findMany({
+            include: {
+                series_country: {
+                    select: {
+                        country_id: true,
+                        country: { 
+                            select: {
+                                country_id: true, 
+                                country_name: true 
+                            }
+                        }
+                    }
+                }
+            }
+        }),
         prisma.videos.findMany({
             include: {
                 series: {
@@ -308,7 +322,8 @@ exports.adminGetAll = async(req, res) => {
         prisma.movies.findMany(),
         prisma.podcasts.findMany(),
         prisma.bTS_Series.findMany(),
-        prisma.bTS_Movies.findMany()
+        prisma.bTS_Movies.findMany(),
+        prisma.countries.findMany()
     ])
-    res.status(200).json({series:seriesData, video: videoData, movie: movieData, podcasts: podcastData, bts_series: btsSeriesData, bts_movies: btsMoviesData})
+    res.status(200).json({series:seriesData, video: videoData, movie: movieData, podcasts: podcastData, bts_series: btsSeriesData, bts_movies: btsMoviesData, countries: countries})
 }

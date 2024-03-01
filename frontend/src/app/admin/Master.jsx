@@ -78,7 +78,7 @@ const Master = ({ content }) => {
         ))}
       </div>
       {/* <button onClick = {() => logOut()}>Log Out</button> */}
-      {activePanelOn ? <Active type = {selectedContentType} details = {activePanel}/> : null}
+      {activePanelOn ? <Active type = {selectedContentType} details = {activePanel} countries = {content.countries}/> : null}
     </div>
   );
 };
