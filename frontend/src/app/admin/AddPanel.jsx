@@ -1,7 +1,8 @@
 import {useState, useEffect} from 'react'
+import axios from "axios"
 
 const AddPanel = ({allContent}) => {
-    console.log(allContent);
+    // console.log(allContent);
 
     const [type, setType] = useState('none')
     const [inputValues, setInputValues] = useState({name: '', status: 'pre', podcast_type: 'highlight', date: '', main: '', directors: '', starring: '', producers: '', length: '', season: '', episode: ''})
@@ -15,14 +16,14 @@ const AddPanel = ({allContent}) => {
 
     //prevents duplication of genres
     const handleGenreChange = (e) => {
-        const selectedGenre = e.target.value;
-        if (!genres.includes(selectedGenre) && selectedGenre !== "placeholderValue") {
-            setGenres([...genres, selectedGenre]);
+        const genreId = e.target.value;
+        const genreToAdd = allContent.genres.find(genre => genre.genre_id.toString() === genreId);
+        if (genreToAdd && !genres.some(genre => genre.genre_id === genreToAdd.genre_id)) {
+            setGenres([...genres, genreToAdd]);
         }
     };
-
-    const handleRemoveGenre = (genreToRemove) => {
-        setGenres(genres.filter(genre => genre !== genreToRemove));
+    const handleRemoveGenre = (genreIdToRemove) => {
+        setGenres(genres.filter(genre => genre.genre_id.toString() !== genreIdToRemove.toString()));
     };
 
     useEffect(() => {
@@ -30,9 +31,29 @@ const AddPanel = ({allContent}) => {
             setParentID(allContent.series[0].series_id);
         }
     }, [type, allContent.series]);
+
+    const postNewContent = async (e) => {
+        e.preventDefault()
+        const genreIDs = genres.map(genre => genre.genre_id);
+
+        const postObject = {
+            ...inputValues,
+            country: countryID,
+            genreIDs,
+            table: type
+        }
+        try {
+            const res = await axios.post('http://localhost:3001/api/user/adminAdd/', postObject)
+        }
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+    }
     
-    // console.log('parentID' + parentID);
-    console.log(genres);
+   
 
   return (
     <div className='active-wrapper'>
@@ -48,12 +69,14 @@ const AddPanel = ({allContent}) => {
             <option value ="bts_movies">BTS Movie</option>
         </select>
         {type !== 'none' ?
-        <form>
-            {/* Name */}
+        <form onSubmit = {(e) => postNewContent(e)}>
+
+        {/* Name */}
             <p>Content Name</p>
             <input className='editing_input-small' value = {inputValues.name} onChange = {(e) => handleChange(e, 'name')}></input>
         {type !== 'video' && type !== 'bts_series' && type !== 'bts_movies' && type !== 'podcast' ?
          <>
+
          {/* Status */}
              <p>Production Status</p>
              <select value={inputValues.status} onChange={(e) => handleChange(e, 'status')}>
@@ -63,6 +86,7 @@ const AddPanel = ({allContent}) => {
              </select>            
          </>
         : null}
+
         {/* Podcast Type */}
         {type === 'podcast' ? 
         <>
@@ -75,6 +99,7 @@ const AddPanel = ({allContent}) => {
         </>
         :
         null}
+
         {/* Date */}
         <p>Date Created</p>
         <input 
@@ -82,9 +107,11 @@ const AddPanel = ({allContent}) => {
             value={inputValues.date} 
             onChange={(e) => handleChange(e, 'date')} 
          />
+
          {/* Description */}
          <p>Description</p>
          <input className='editing_input-small' value = {inputValues.main} onChange = {(e) => handleChange(e, 'main')}></input>
+
          { /* Directors, Starring, Producers */}
          {type !== 'video' && type !== 'bts_series' && type !== 'bts_movies' ?
          <>
@@ -96,23 +123,36 @@ const AddPanel = ({allContent}) => {
          <input className='editing_input-small' value = {inputValues.producers} onChange = {(e) => handleChange(e, 'producers')}></input>
          </>
          : null}
+
          {/* Country */}
+         {type === 'series' || type === 'movie' || type === 'podcast' ? 
+         <>
          <p>Country of Origin</p>
          <select value = {countryID} onChange = {(e) => setCountryID(e.target.value)}>
             {allContent.countries.map((country) => <option key = {country.country_id} value = {country.country_id}>{country.country_name}</option>)}
          </select>
-         {/* Genres */}
+         </>
+         :
+         null}
+        
+        {/* Genres */}
+        {type === 'series' || type === 'movie' || type === 'podcast' ? 
+        <>
          <p>Genre(s)</p>
          <select value = "placeholderValue" onChange = {handleGenreChange}>
             <option disabled value = "placeholderValue">Select Genres</option>
-            {allContent.genres.map((genre) => <option key = {genre.genre_id} value = {genre.genre_name}>{genre.genre_name}</option>)}
+            {allContent.genres.map((genre) => <option key={genre.genre_id} value={genre.genre_id}>{genre.genre_name}</option>)}
          </select>
          {/* Rendering of Selected Genres */}
          <p>Selected Genres</p>
          {genres.length === 0 ? <p>None</p> : null}
          <div className='genres'>
-            {genres.map((genre) => <p key = {genre} onClick={() => handleRemoveGenre(genre)} style = {{cursor: 'pointer'}}>{genre}</p>)}
+            {genres.map((genre) => <p key = {genre.genre_id} onClick={() => handleRemoveGenre(genre.genre_id.toString())} style = {{cursor: 'pointer'}}>{genre.genre_name}</p>)}
          </div>
+         </>
+         : 
+         null}
+
          {/* Parent Series (for video & bts series) */}
          {type === 'video' || type === 'bts_series' ? 
          <>
@@ -123,6 +163,7 @@ const AddPanel = ({allContent}) => {
          </>
          :
         null}
+
         {/* Parent Series (for bts movies) */}
         {type === 'bts_movies' ? 
          <>
@@ -133,6 +174,7 @@ const AddPanel = ({allContent}) => {
          </>
          :
         null}
+
         {/* Season */}
         {type === 'video' ? 
          <>
@@ -141,6 +183,7 @@ const AddPanel = ({allContent}) => {
          </>
          :
         null}
+
         {/* Episode */}
         {type === 'video' && type === 'podcast' ? 
          <>
@@ -149,6 +192,7 @@ const AddPanel = ({allContent}) => {
          </>
          :
         null}
+
         {/* Length */}
         {type !== 'series' ? 
          <>
@@ -157,7 +201,8 @@ const AddPanel = ({allContent}) => {
          </>
          :
         null}
-        
+        <br/>
+         <button className='active-finish' type = "submit">Create Media</button>
         </form>
         : 
         null}

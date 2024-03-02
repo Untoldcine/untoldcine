@@ -582,3 +582,50 @@ exports.adminDelete = async (req, res) => {
         res.status(200).json({"message": "Deletion successful"})
     }
 }
+
+exports.adminAdd = async (req, res) => {
+    // const {name, status, podcast_type, date, main, directors, starring, producers, length, season, episode, country, genres, table} = req.body
+    const {table} = req.body
+
+    if (table === 'series') {
+        addSeries(req.body)
+    }
+}
+
+async function addSeries(obj) {
+    const {name, status, date, main, directors, starring, producers, country, genreIDs} = obj
+    const newSeries = await prisma.series.create({
+        data: {
+            series_name: name,
+            series_status: status,
+            date_created: new Date(date),
+            series_main: main,
+            series_directors: directors,
+            series_producers: producers,
+            series_starring: starring,
+            series_upvotes: 0,
+            series_downvotes: 0,
+            completed: false,
+            deleted: false,
+            deleted_at: null
+        }
+    })
+    const countryPromise = prisma.series_Countries.create({
+        data: {
+            series_id: newSeries.series_id,
+            country_id: parseInt(country)
+        }
+    });
+
+    const genrePromises = genreIDs.map(genreId => prisma.series_Genres.create({
+        data: {
+            series_id: newSeries.series_id,
+            genre_id: parseInt(genreId)
+        }
+    }));
+
+    await Promise.all([countryPromise, ...genrePromises]);
+
+}
+
+//TO FIX: NOT UPDATING THE SERIES_GENRES AND COUNTRIES
