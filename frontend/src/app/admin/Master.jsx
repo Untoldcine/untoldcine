@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Active from "./Active"
+import AddPanel from "./AddPanel"
 
 const Master = ({ content }) => {
   // console.log(content);
@@ -13,6 +14,7 @@ const Master = ({ content }) => {
 
   const [activePanel, setActivePanel] = useState("");
   const [activePanelOn, setActivePanelOn] = useState(false)
+  const [addPanel, setAddPanel] = useState(false)
   const [inputValue, setInputValue] = useState("");
   const [selectedContentType, setSelectedContentType] = useState("none");
   const [filteredContent, setFilteredContent] = useState([]);
@@ -32,15 +34,23 @@ const Master = ({ content }) => {
     setFilteredContent(filtered);
   };
 
+  //invoked whenever a new Edit choice is selected
   const handleChoice = (item) => {
     setActivePanel(item)
     setActivePanelOn(true)
+    setAddPanel(false)
+  }
+
+  //invoked when adding content, toggles the edited panel off
+  const handleToggleAdd = () => {
+    setAddPanel(true)
+    setActivePanelOn(false)
   }
 
   return (
     <div className="admin-wrapper">
       <div className="admin-choices">
-        <button className="search-button">Add New Content</button>
+        <button className="search-button" onClick = {() => handleToggleAdd()}>Add New Content</button>
         <div className="admin-choices-right">
           <label style={{ color: "white" }}>Search for Content</label>
           <select
@@ -81,6 +91,7 @@ const Master = ({ content }) => {
       </div>
       {/* <button onClick = {() => logOut()}>Log Out</button> */}
       {activePanelOn ? <Active type = {selectedContentType} details = {activePanel} countries = {content.countries} toggle = {setSelectedContentType}/> : null}
+      {addPanel ? <AddPanel allContent = {content}/> : null }
     </div>
   );
 };

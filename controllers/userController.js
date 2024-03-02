@@ -521,7 +521,6 @@ async function updateBTSMovies(obj) {
     return updateField
 }
 
-
 function convertToISOString(inputDate) {
     const date = new Date(inputDate);
     const isoString = date.toISOString();

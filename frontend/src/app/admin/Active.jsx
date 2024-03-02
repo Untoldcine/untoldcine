@@ -43,10 +43,7 @@ const handleDeleteData = async (e, type, id) => {
 //There are several IF statement blocks that have similar markup. They exist as conditional rendering depending on the type of properties being passed.
 //In this case, the type of content that ADMIN is editing (i.e. Series, Videos, Movies, Podcasts, BTS)
 
-const Active = ({type, details, countries}) => {
-    // console.log(details);
-    // console.log(countries);
-
+const Active = ({type, details}) => {
     if (type === 'series') {
 
         const {series_id} = details
