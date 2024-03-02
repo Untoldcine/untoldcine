@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/Starfodders/untoldcine#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.525.0",
+    "@aws-sdk/s3-request-presigner": "^3.525.0",
     "@prisma/client": "^5.10.2",
     "aws-cloudfront-sign": "^3.0.2",
     "bcrypt": "^5.1.1",

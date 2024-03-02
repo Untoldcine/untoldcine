@@ -6,6 +6,7 @@ const AddPanel = ({allContent}) => {
 
     const [type, setType] = useState('none')
     const [inputValues, setInputValues] = useState({name: '', status: 'pre', podcast_type: 'highlight', date: '', main: '', directors: '', starring: '', producers: '', length: '', season: '', episode: ''})
+    const [uploadURLs, setUploadURLs] = useState({thumbnail: '', hero: '', content: ''})
     const [parentID, setParentID] = useState()
     const [countryID, setCountryID] = useState(1)
     const [genres, setGenres] = useState([])
@@ -33,6 +34,24 @@ const AddPanel = ({allContent}) => {
         setCountryID(1)
         setGenres([])
     }, [type]);
+
+    const retrieveS3URL = async (e) => {
+        const file = e.target.files[0]
+            if (!file) {
+                return
+            }
+        try {
+            const res = await axios.get('http://localhost:3001/api/user/getUploadSignedURL', file)
+            console.log(res.data);
+            //Now with signed URL, make API call to the signedURL and it should upload it.
+        }   
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+    }
 
     const postNewContent = async (e) => {
         e.preventDefault()
@@ -106,6 +125,17 @@ const AddPanel = ({allContent}) => {
         </>
         :
         null}
+
+        {/* Thumbnail and Hero */}
+        <div className='active-wrapper'>
+        <p>Choose thumbnail (webp) - 250x150</p>
+            <input type = 'file' className = "img-upload" accept = "image/webp" onChange = {(e) => retrieveS3URL(e)}></input>
+        <p>Choose hero image (webp)</p>
+            <input type = 'file' className = "img-upload" accept = "image/webp" onChange = {(e) => retrieveS3URL(e)}></input>
+        {/* Content Source */}
+        <p>Choose content to upload - mp4</p>
+            <input type = 'file' className='img-upload' accept = "video/mp4" onChange = {(e) => retrieveS3URL(e)}></input>
+        </div>
 
         {/* Date */}
         <p>Date Created</p>

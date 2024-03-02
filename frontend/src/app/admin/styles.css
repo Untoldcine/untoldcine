@@ -259,6 +259,10 @@
     border-radius: 4px; /* Rounded corners */
   }
 
+  .img-upload {
+    color: white;
+  }
+
   .genres {
     display: flex;
     gap: 0.5rem;
