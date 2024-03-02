@@ -258,3 +258,16 @@
     border: 1px solid #ccc; /* Border color */
     border-radius: 4px; /* Rounded corners */
   }
+
+  .genres {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .genres > p {
+    font-size: 0.8rem;
+    color: white;
+    background: #1462a3;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }

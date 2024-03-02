@@ -294,7 +294,7 @@ exports.adminLogIn = async(req, res) => {
 }
 
 exports.adminGetAll = async(req, res) => {
-    const [seriesData, videoData, movieData, podcastData, btsSeriesData, btsMoviesData, countries] = await Promise.all([
+    const [seriesData, videoData, movieData, podcastData, btsSeriesData, btsMoviesData, countries, genres] = await Promise.all([
         prisma.series.findMany({
             where: {
                 deleted: false
@@ -359,9 +359,10 @@ exports.adminGetAll = async(req, res) => {
                 }
             }
         }),
-        prisma.countries.findMany()
+        prisma.countries.findMany(),
+        prisma.genres.findMany()
     ])
-    res.status(200).json({series:seriesData, video: videoData, movie: movieData, podcasts: podcastData, bts_series: btsSeriesData, bts_movies: btsMoviesData, countries: countries})
+    res.status(200).json({series:seriesData, video: videoData, movie: movieData, podcasts: podcastData, bts_series: btsSeriesData, bts_movies: btsMoviesData, countries: countries, genres: genres})
 }
 
 exports.adminUpdate = async (req, res) => {

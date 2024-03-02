@@ -7,9 +7,22 @@ const AddPanel = ({allContent}) => {
     const [inputValues, setInputValues] = useState({name: '', status: 'pre', podcast_type: 'highlight', date: '', main: '', directors: '', starring: '', producers: '', length: '', season: '', episode: ''})
     const [parentID, setParentID] = useState()
     const [countryID, setCountryID] = useState(1)
+    const [genres, setGenres] = useState([])
     
     const handleChange = (e, field) => {
         setInputValues({ ...inputValues, [field]: e.target.value });
+    };
+
+    //prevents duplication of genres
+    const handleGenreChange = (e) => {
+        const selectedGenre = e.target.value;
+        if (!genres.includes(selectedGenre) && selectedGenre !== "placeholderValue") {
+            setGenres([...genres, selectedGenre]);
+        }
+    };
+
+    const handleRemoveGenre = (genreToRemove) => {
+        setGenres(genres.filter(genre => genre !== genreToRemove));
     };
 
     useEffect(() => {
@@ -19,6 +32,7 @@ const AddPanel = ({allContent}) => {
     }, [type, allContent.series]);
     
     // console.log('parentID' + parentID);
+    console.log(genres);
 
   return (
     <div className='active-wrapper'>
@@ -87,6 +101,18 @@ const AddPanel = ({allContent}) => {
          <select value = {countryID} onChange = {(e) => setCountryID(e.target.value)}>
             {allContent.countries.map((country) => <option key = {country.country_id} value = {country.country_id}>{country.country_name}</option>)}
          </select>
+         {/* Genres */}
+         <p>Genre(s)</p>
+         <select value = "placeholderValue" onChange = {handleGenreChange}>
+            <option disabled value = "placeholderValue">Select Genres</option>
+            {allContent.genres.map((genre) => <option key = {genre.genre_id} value = {genre.genre_name}>{genre.genre_name}</option>)}
+         </select>
+         {/* Rendering of Selected Genres */}
+         <p>Selected Genres</p>
+         {genres.length === 0 ? <p>None</p> : null}
+         <div className='genres'>
+            {genres.map((genre) => <p key = {genre} onClick={() => handleRemoveGenre(genre)} style = {{cursor: 'pointer'}}>{genre}</p>)}
+         </div>
          {/* Parent Series (for video & bts series) */}
          {type === 'video' || type === 'bts_series' ? 
          <>
