@@ -588,7 +588,41 @@ exports.adminAdd = async (req, res) => {
     const {table} = req.body
 
     if (table === 'series') {
-        addSeries(req.body)
+        const post = addSeries(req.body)
+        if (post) {
+            res.status(200).json({"message": "Success"})
+        }
+        
+    }
+    if (table === 'video') {
+        const post = addVideo(req.body)
+        if (post) {
+            res.status(200).json({"message": "Success"})
+        }
+    }
+    if (table === 'movie') {
+        const post = addMovie(req.body)
+        if (post) {
+            res.status(200).json({"message": "Success"})
+        }
+    }
+    if (table === 'podcast') {
+        const post = addPodcast(req.body)
+        if (post) {
+            res.status(200).json({"message": "Success"})
+        }
+    }
+    if (table === 'bts_series') {
+        const post = addBTSSeries(req.body)
+        if (post) {
+            res.status(200).json({"message": "Success"})
+        }
+    }
+    if (table === 'bts_movies') {
+        const post = addBTSMovies(req.body)
+        if (post) {
+            res.status(200).json({"message": "Success"})
+        }
     }
 }
 
@@ -625,7 +659,118 @@ async function addSeries(obj) {
     }));
 
     await Promise.all([countryPromise, ...genrePromises]);
+    return newSeries
 
 }
 
-//TO FIX: NOT UPDATING THE SERIES_GENRES AND COUNTRIES
+async function addVideo(obj) {
+    const {name, date, main, parentID, length, season, episode } = obj
+    const newVideo = await prisma.videos.create({
+        data: {
+            video_name: name,
+            video_main: main,
+            date_created: new Date(date),
+            video_length: parseInt(length),
+            video_season: parseInt(season),
+            video_episode: parseInt(episode),
+            parent_series_id: parseInt(parentID),
+            deleted: false,
+            deleted_at: null
+        }
+    })
+    return newVideo;
+}
+
+async function addMovie(obj) {
+    const {name, status, date, main, directors, starring, producers, country, genreIDs, length} = obj
+    const newMovie = await prisma.movies.create({
+        data: {
+            movie_name: name,
+            movie_status: status,
+            date_created: new Date(date),
+            movie_length: parseInt(length),
+            movie_main: main,
+            movie_directors: directors,
+            movie_producers: producers,
+            movie_starring: starring,
+            movie_upvotes: 0,
+            movie_downvotes: 0,
+            deleted: false,
+            deleted_at: null
+        }
+    })
+    const countryPromise = prisma.movie_Countries.create({
+        data: {
+            movie_id: newMovie.movie_id,
+            country_id: parseInt(country)
+        }
+    });
+
+    const genrePromises = genreIDs.map(genreId => prisma.movie_Genres.create({
+        data: {
+            movie_id: newMovie.movie_id,
+            genre_id: parseInt(genreId)
+        }
+    }));
+
+    await Promise.all([countryPromise, ...genrePromises]);
+    return newMovie
+}
+
+async function addPodcast(obj) {
+    const {name, podcast_type, date, main, directors, starring, producers, country, episode} = obj
+    const newPodcast = await prisma.podcasts.create({
+        data: {
+            podcast_name: name,
+            podcast_type: podcast_type,
+            podcast_main: main,
+            podcast_directors: directors,
+            podcast_producers: producers,
+            podcast_starring: starring,
+            podcast_upvotes: 0,
+            podcast_downvotes: 0,
+            podcast_episode: parseInt(episode),
+            date_created: new Date(date),
+            deleted: false,
+            deleted_at: null
+        }
+    })
+    await prisma.podcast_Countries.create({
+        data: {
+            podcast_id: newPodcast.podcast_id,
+            country_id: parseInt(country)
+        }
+    });
+
+    return newPodcast
+}
+
+async function addBTSSeries(obj) {
+    const {name, date, main, parentID, length, episode} = obj
+    const newBTSSeries = await prisma.bTS_Series.create({
+        data: {
+            bts_series_name: name,
+            bts_series_main: main,
+            date_created: new Date(date),
+            bts_series_length: parseInt(length),
+            bts_series_episode: parseInt(episode),
+            parent_series_id: parseInt(parentID)
+        }
+    })
+    return newBTSSeries
+}
+
+async function addBTSMovies(obj) {
+    const {name, date, main, parentID, length, episode} = obj
+    const newBTSMovie = await prisma.bTS_Movies.create({
+        data: {
+            bts_movies_name: name,
+            bts_movies_main: main,
+            date_created: new Date(date),
+            bts_movies_length: parseInt(length),
+            bts_movies_episode: parseInt(episode),
+            parent_movie_id: parseInt(parentID)
+        }
+    })
+    return newBTSMovie
+}

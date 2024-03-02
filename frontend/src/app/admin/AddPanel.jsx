@@ -22,15 +22,17 @@ const AddPanel = ({allContent}) => {
             setGenres([...genres, genreToAdd]);
         }
     };
+    //removes genre on clicking the array elements
     const handleRemoveGenre = (genreIdToRemove) => {
         setGenres(genres.filter(genre => genre.genre_id.toString() !== genreIdToRemove.toString()));
     };
 
+    //resets the input values to base state if the type of added content is being changed
     useEffect(() => {
-        if (type === 'video' && allContent.series && allContent.series.length > 0) {
-            setParentID(allContent.series[0].series_id);
-        }
-    }, [type, allContent.series]);
+        setInputValues({name: '', status: 'pre', podcast_type: 'highlight', date: '', main: '', directors: '', starring: '', producers: '', length: '', season: '', episode: ''})
+        setCountryID(1)
+        setGenres([])
+    }, [type]);
 
     const postNewContent = async (e) => {
         e.preventDefault()
@@ -39,11 +41,16 @@ const AddPanel = ({allContent}) => {
         const postObject = {
             ...inputValues,
             country: countryID,
+            parentID,
             genreIDs,
             table: type
         }
         try {
             const res = await axios.post('http://localhost:3001/api/user/adminAdd/', postObject)
+            if (res.status === 200) {
+                alert('Success!')
+                setType('none')
+            }
         }
         catch (err) {
             if (err.response) {
@@ -68,9 +75,9 @@ const AddPanel = ({allContent}) => {
             <option value ="bts_series">BTS Series</option>
             <option value ="bts_movies">BTS Movie</option>
         </select>
+        
         {type !== 'none' ?
         <form onSubmit = {(e) => postNewContent(e)}>
-
         {/* Name */}
             <p>Content Name</p>
             <input className='editing_input-small' value = {inputValues.name} onChange = {(e) => handleChange(e, 'name')}></input>
@@ -136,7 +143,7 @@ const AddPanel = ({allContent}) => {
          null}
         
         {/* Genres */}
-        {type === 'series' || type === 'movie' || type === 'podcast' ? 
+        {type === 'series' || type === 'movie' ? 
         <>
          <p>Genre(s)</p>
          <select value = "placeholderValue" onChange = {handleGenreChange}>
@@ -157,7 +164,8 @@ const AddPanel = ({allContent}) => {
          {type === 'video' || type === 'bts_series' ? 
          <>
             <p>Belongs to which Series?</p>
-            <select value = {parentID} onChange = {(e) => setParentID(e.target.value)}>
+            <select value = {parentID || "placeholderValue"} onChange = {(e) => setParentID(e.target.value)}>
+                <option disabled value = "placeholderValue">Select Parent Series</option>
                 {allContent.series.map((series) => <option key = {series.series_id} value = {series.series_id}>{series.series_name}</option>)}
             </select>
          </>
@@ -185,7 +193,7 @@ const AddPanel = ({allContent}) => {
         null}
 
         {/* Episode */}
-        {type === 'video' && type === 'podcast' ? 
+        {type !== 'series' && type !== 'movie' ? 
          <>
             <p>Episode</p>
             <input className='editing_input-small' value = {inputValues.episode} onChange = {(e) => handleChange(e, 'episode')}></input>
