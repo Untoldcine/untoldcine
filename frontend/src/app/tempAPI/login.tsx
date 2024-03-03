@@ -53,7 +53,11 @@ const Login = () => {
     //Hard coded credentials but will switch out to stateful inputs in actual implementation
     const toggleLogIn = async () => {        
         try {
-            const res = await axios.post('http://localhost:3001/api/user/login', {
+            // const res = await axios.post('http://localhost:3001/api/user/login', {
+            //     email: inputFields.email,
+            //     password: inputFields.password
+            // })
+            const res = await axios.post('/api/users/login', {
                 email: inputFields.email,
                 password: inputFields.password
             })

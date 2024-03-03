@@ -19,6 +19,7 @@ const Page = () => {
     const getSeriesData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/series/seriesSummary`, {withCredentials: true})
+            // const res = await axios.get('/api/series/seriesSummary', {withCredentials: true})
             console.log(res.data);
             setSeriesData(res.data)
         }
@@ -30,6 +31,7 @@ const Page = () => {
     const getMoviesData = async () => {
         try {
             const res = await axios.get(`http://localhost:3001/api/movies/movieSummary`, {withCredentials: true})
+            // const res = await axios.get('/api/movies/movieSummary', {withCredentials: true})
             console.log(res.data);
             setMoviesData(res.data)
         }
@@ -40,8 +42,8 @@ const Page = () => {
 
     const getPodcastData = async () => {
         try {
-            // const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`, {withCredentials: true})
-            const res = await axios.get(`/api/podcasts/podcastSummary`, {withCredentials: true})
+            const res = await axios.get(`http://localhost:3001/api/podcast/podcastSummary`, {withCredentials: true})
+            // const res = await axios.get(`/api/podcasts/podcastSummary`, {withCredentials: true})
             console.log(res.data);
             setPodcastData(res.data)
         }

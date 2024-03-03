@@ -15,9 +15,18 @@ module.exports = async (req, res) => {
     const token = req.cookies.token
     if (!token) {
         try {
-            const data = await prisma.podcasts.findMany({
+            const data = await prisma.movies.findMany({
                 include: {
-                    podcast_country: {
+                    genres: {                       
+                        select: {
+                            genre: {
+                                select: {
+                                    genre_name: true
+                                }
+                            }
+                        }
+                    },
+                    movie_country: {
                         select: {
                             country: {
                                 select: {
@@ -28,34 +37,44 @@ module.exports = async (req, res) => {
                     }
                 }
             })
-            const processedData = data.map(podcast => {
-                const urlString = getURLNameFromDB(podcast.podcast_name);
+            const processedData = data.map(movie => {
+                const urlString = getURLNameFromDB(movie.movie_name);
                 const contentThumbnail = cfsign.getSignedUrl(
-                    `${distributionURL}/podcasts/thumbnails/${urlString}.webp`,
+                    `${distributionURL}/movies/thumbnails/${urlString}.webp`,
                     signingParams
                 );
             
                 return {
-                    ...podcast,
-                    country_name: podcast.podcast_country[0].country.country_name,
-                    podcast_thumbnail: contentThumbnail
+                    ...movie,
+                    genres: movie.genres.map(g => g.genre.genre_name),
+                    country_name: movie.movie_country[0].country.country_name,
+                    movie_thumbnail: contentThumbnail
                 };
             });
             
             res.status(200).json(processedData);
         }            
         catch(err) {
-            console.error(err + 'Problem querying DB to retrieve summary of all podcasts');
+            console.error(err + 'Problem querying DB to retrieve summary of all movies');
             return res.status(500).json({"message" : "Internal server error"});
          }
     }
     else {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            const [podcastData, feedbackData] = await Promise.all([
-                prisma.podcasts.findMany({
+            const [movieData, feedbackData] = await Promise.all([
+                prisma.movies.findMany({
                     include: {
-                        podcast_country: {
+                        genres: {                       
+                            select: {
+                                genre: {
+                                    select: {
+                                        genre_name: true
+                                    }
+                                }
+                            }
+                        },
+                        movie_country: {
                             select: {
                                 country: {
                                     select: {
@@ -69,24 +88,25 @@ module.exports = async (req, res) => {
                 prisma.feedback.findMany({
                     where: {
                         user_id: decoded.user_id,
-                        table_name: 'Podcasts'
+                        table_name: 'Movies'
                     }
                 })
             ])
             
-            const reviewedPodcastIds = new Set(feedbackData.map(feedback => feedback.item_id));
+            const reviewedMovieIds = new Set(feedbackData.map(feedback => feedback.item_id));
 
-            const processedData = podcastData.map((podcast) => {
-                const urlString = getURLNameFromDB(podcastData.podcast_name)
+            const processedData = movieData.map((movie) => {
+                const urlString = getURLNameFromDB(movieData.movie_name)
                 const contentThumbnail = cfsign.getSignedUrl(
-                    `${distributionURL}/podcasts/thumbnails/${urlString}.jpg`,
+                    `${distributionURL}/movies/thumbnails/${urlString}.jpg`,
                     signingParams
                 )
             return {
-                ...podcast,
-                reviewed: reviewedPodcastIds.has(podcast.podcast_id) ,
-                country_name: podcast.podcast_country[0].country.country_name,
-                podcast_thumbnail: contentThumbnail
+                ...movie,
+                genres: movie.genres.map(g => g.genre.genre_name),
+                reviewed: reviewedMovieIds.has(movie.movie_id) ,
+                country_name: movie.movie_country[0].country.country_name,
+                movie_thumbnail: contentThumbnail
 
         }})
             res.status(200).json(processedData)
