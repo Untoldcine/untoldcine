@@ -118,6 +118,7 @@ exports.submitCommentRating = async (req, res) => {
     try {
         const feedbackExists = await findFeedback(decoded.user_id, comment_id, insertionTable);
 
+        //TO DO: RESET THE FEEDBACK IF IT IS AT 0 AS IT DOESN'T ALLOW DUPLICATIONS, PERMA STUCK AT 0 OR WHATEVER - AUSTIN BUG
         // If feedback exists, check if the rating choice has changed
         if (feedbackExists) {
             if (feedbackExists.feedback_rating !== choice) {

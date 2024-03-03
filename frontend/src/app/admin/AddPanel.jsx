@@ -33,24 +33,12 @@ const AddPanel = ({allContent}) => {
         setInputValues({name: '', status: 'pre', podcast_type: 'highlight', date: '', main: '', directors: '', starring: '', producers: '', length: '', season: '', episode: ''})
         setCountryID(1)
         setGenres([])
+        setUploadURLs({thumbnail: '', hero: '', content: ''})
     }, [type]);
 
-    const retrieveS3URL = async (e, content_type, urlType) => {
+    const updateUploadFiles = (e, field) => {
         const file = e.target.files[0]
-            if (!file) {
-                return
-            }
-        try {
-            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.name}/${content_type}/${urlType}`)
-            console.log(res.data);
-            //Now with signed URL, make API call to the signedURL and it should upload it.
-        }   
-        catch (err) {
-            if (err.response) {
-              console.error(err.response.data.message); 
-            }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
+        setUploadURLs({...uploadURLs, [field]:file})
     }
 
     const postNewContent = async (e) => {
@@ -66,10 +54,20 @@ const AddPanel = ({allContent}) => {
         }
         try {
             const res = await axios.post('http://localhost:3001/api/user/adminAdd/', postObject)
-            if (res.status === 200) {
-                alert('Success!')
-                setType('none')
-            }
+            console.log(res.data);
+            res.data.forEach((url) => {
+                if (url.includes('thumbnails')) {
+                    axios.put(url, uploadURLs.thumbnail, { headers: { 'Content-Type': 'image/webp'} })
+                }
+                if (url.includes('heros')) {
+                    axios.put(url, uploadURLs.hero, { headers: { 'Content-Type': 'image/webp'} })
+                }
+                if (url.includes('content')) {
+                    axios.put(url, uploadURLs.content, { headers: { 'Content-Type': 'video/mp4'} })
+                }
+            })
+            alert('Post Success!')
+            location.reload();
         }
         catch (err) {
             if (err.response) {
@@ -113,6 +111,29 @@ const AddPanel = ({allContent}) => {
          </>
         : null}
 
+        {/* Parent Series (for video & bts series) */}
+        {type === 'video' || type === 'bts_series' ? 
+         <>
+            <p>Belongs to which Series?</p>
+            <select value = {parentID || "placeholderValue"} onChange = {(e) => setParentID(e.target.value)}>
+                <option disabled value = "placeholderValue">Select Parent Series</option>
+                {allContent.series.map((series) => <option key = {series.series_id} value = {series.series_id}>{series.series_name}</option>)}
+            </select>
+         </>
+         :
+        null}
+
+        {/* Parent Series (for bts movies) */}
+        {type === 'bts_movies' ? 
+         <>
+            <p>Belongs to which Movie?</p>
+            <select value = {parentID} onChange = {(e) => setParentID(e.target.value)}>
+                {allContent.movie.map((movie) => <option key = {movie.movie_id} value = {movie.movie_id}>{movie.movie_name}</option>)}
+            </select>
+         </>
+         :
+        null}
+
         {/* Podcast Type */}
         {type === 'podcast' ? 
         <>
@@ -125,17 +146,6 @@ const AddPanel = ({allContent}) => {
         </>
         :
         null}
-
-        {/* Thumbnail and Hero */}
-        <div className='active-wrapper'>
-        <p>Choose thumbnail (webp) - 250x150</p>
-            <input type = 'file' className = "img-upload" disabled = {inputValues.name ? false : true} accept = "image/webp" onChange = {(e) => retrieveS3URL(e,  type, 'thumbnails')}></input>
-        <p>Choose hero image (webp)</p>
-            <input type = 'file' className = "img-upload" disabled = {inputValues.name ? false : true} accept = "image/webp" onChange = {(e) => retrieveS3URL(e, type, 'heros')}></input>
-        {/* Content Source */}
-        <p>Choose content to upload - mp4</p>
-            <input type = 'file' className='img-upload' disabled = {inputValues.name ? false : true} accept = "video/mp4" onChange = {(e) => retrieveS3URL(e, type, 'content')}></input>
-        </div>
 
         {/* Date */}
         <p>Date Created</p>
@@ -190,29 +200,6 @@ const AddPanel = ({allContent}) => {
          : 
          null}
 
-         {/* Parent Series (for video & bts series) */}
-         {type === 'video' || type === 'bts_series' ? 
-         <>
-            <p>Belongs to which Series?</p>
-            <select value = {parentID || "placeholderValue"} onChange = {(e) => setParentID(e.target.value)}>
-                <option disabled value = "placeholderValue">Select Parent Series</option>
-                {allContent.series.map((series) => <option key = {series.series_id} value = {series.series_id}>{series.series_name}</option>)}
-            </select>
-         </>
-         :
-        null}
-
-        {/* Parent Series (for bts movies) */}
-        {type === 'bts_movies' ? 
-         <>
-            <p>Belongs to which Movie?</p>
-            <select value = {parentID} onChange = {(e) => setParentID(e.target.value)}>
-                {allContent.movie.map((movie) => <option key = {movie.movie_id} value = {movie.movie_id}>{movie.movie_name}</option>)}
-            </select>
-         </>
-         :
-        null}
-
         {/* Season */}
         {type === 'video' ? 
          <>
@@ -239,6 +226,28 @@ const AddPanel = ({allContent}) => {
          </>
          :
         null}
+        {/* Thumbnail and Hero */}
+        <div className='active-wrapper'>
+            <>
+            <p>Choose thumbnail (webp) - 250x150</p>
+            <input type = 'file' className = "img-upload" disabled = {inputValues.name ? false : true} accept = "image/webp" onChange = {(e) => updateUploadFiles(e, 'thumbnail')}></input>
+            </>
+        {type !== 'video' && type !== 'bts_series' && type !== 'bts_movies' ?
+            <>
+            <p>Choose hero image (webp)</p>
+            <input type = 'file' className = "img-upload" disabled = {inputValues.name ? false : true} accept = "image/webp" onChange = {(e) => updateUploadFiles(e, 'hero')}></input>
+        </>:null
+        } 
+        {/* Content Source. Can't add to Series because Series is a container for its video content. If a new series is made, a directory within the S3 is made under videos/content/series_name*/}
+        {type !== 'series' ? 
+            <>
+            <p>Choose content to upload - mp4</p>
+            <input type = 'file' className='img-upload' disabled = {inputValues.name ? false : true} accept = "video/mp4" 
+            onChange = {(e) => updateUploadFiles(e, 'content')}>
+            </input>
+            </>
+        :null}
+        </div>
         <br/>
          <button className='active-finish' type = "submit">Create Media</button>
         </form>

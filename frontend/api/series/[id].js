@@ -26,6 +26,23 @@ module.exports = async (req, res) => {
                 }
             })
         ])
+        const processedVideoData = videoData.map((video) => {
+            const urlString = getURLNameFromDB(video.video_name)
+            const thumbnail = cfsign.getSignedUrl(
+                `${distributionURL}/series/thumbnails/${urlString}.webp`,
+                signingParams
+            )
+            const videoSrc = cfsign.getSignedUrl(
+                `${distributionURL}/videos/content/${urlString}.webp`,
+
+            )
+            return {
+                ...video,
+                video_thumbnail: thumbnail
+            }
+        })
+        res.status(200).json({series: seriesData, videos: processedVideoData})
+        const firstVideoDBName = getURLNameFromDB(videoData[0].video_name)
         //TO DO: NEED TO GET SIGNED URL FOR FIRST VIDEO OF THE SERIES
         //TO DO: NEED TO GET THUMBNAIL SIGNED URLS FOR THE REST OF THE SERIES
         
