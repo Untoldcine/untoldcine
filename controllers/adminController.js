@@ -501,6 +501,23 @@ async function addBTSMovies(obj) {
 
 //hits this endpoint everytime attempting to upload
 exports.getSignedUrl = async (req, res) => {
+    const {content_name, content_type, asset} = req.params
+    //this is just because I fucked up the naming consistency in the S3 bucket
+    let modContent = content_type
+    if (content_type === 'video') {
+        modContent = 'videos'
+    }
+    if (content_type === 'podcast') {
+        modContent = 'podcasts'
+    }
+    if (content_type === 'movie') {
+        modContent = 'movies'
+    }
+    if (content_type === 'video') {
+        modContent = 'videos'
+    }
+    const insertionName = getURLNamePath(content_name)
+
     const s3Client = new S3Client({
         region: process.env.REGION,
         credentials: {
@@ -509,10 +526,14 @@ exports.getSignedUrl = async (req, res) => {
         },
     });
 
-    const command = new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: "hello", 
-    });
+    //for KEY to work the format needs to be exact. 1. Content Type 2. Asset Type 3. Name of Asset 4. File format
+    const fileExtension = asset === 'content' ? 'mp4' : 'webp';
+    const key = `${modContent}/${asset}/${insertionName}.${fileExtension}`;
+
+        const command = new PutObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: key, 
+        });
 
     try {
         const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
@@ -522,3 +543,8 @@ exports.getSignedUrl = async (req, res) => {
         return res.status(500).send('Could not generate pre-signed URL');
     }
 };
+
+const getURLNamePath = (name) => {
+    //replace all spaces
+    return name.toLowerCase().replace(/\s+/g, "_")
+}

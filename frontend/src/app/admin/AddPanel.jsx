@@ -35,13 +35,13 @@ const AddPanel = ({allContent}) => {
         setGenres([])
     }, [type]);
 
-    const retrieveS3URL = async (e) => {
+    const retrieveS3URL = async (e, content_type, urlType) => {
         const file = e.target.files[0]
             if (!file) {
                 return
             }
         try {
-            const res = await axios.get('http://localhost:3001/api/user/getUploadSignedURL', file)
+            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.name}/${content_type}/${urlType}`)
             console.log(res.data);
             //Now with signed URL, make API call to the signedURL and it should upload it.
         }   
@@ -129,12 +129,12 @@ const AddPanel = ({allContent}) => {
         {/* Thumbnail and Hero */}
         <div className='active-wrapper'>
         <p>Choose thumbnail (webp) - 250x150</p>
-            <input type = 'file' className = "img-upload" accept = "image/webp" onChange = {(e) => retrieveS3URL(e)}></input>
+            <input type = 'file' className = "img-upload" disabled = {inputValues.name ? false : true} accept = "image/webp" onChange = {(e) => retrieveS3URL(e,  type, 'thumbnails')}></input>
         <p>Choose hero image (webp)</p>
-            <input type = 'file' className = "img-upload" accept = "image/webp" onChange = {(e) => retrieveS3URL(e)}></input>
+            <input type = 'file' className = "img-upload" disabled = {inputValues.name ? false : true} accept = "image/webp" onChange = {(e) => retrieveS3URL(e, type, 'heros')}></input>
         {/* Content Source */}
         <p>Choose content to upload - mp4</p>
-            <input type = 'file' className='img-upload' accept = "video/mp4" onChange = {(e) => retrieveS3URL(e)}></input>
+            <input type = 'file' className='img-upload' disabled = {inputValues.name ? false : true} accept = "video/mp4" onChange = {(e) => retrieveS3URL(e, type, 'content')}></input>
         </div>
 
         {/* Date */}

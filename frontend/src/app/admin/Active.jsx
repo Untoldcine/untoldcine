@@ -44,6 +44,7 @@ const handleDeleteData = async (e, type, id) => {
 //In this case, the type of content that ADMIN is editing (i.e. Series, Videos, Movies, Podcasts, BTS)
 
 const Active = ({type, details}) => {
+    console.log(details);
     if (type === 'series') {
 
         const {series_id} = details
@@ -62,11 +63,30 @@ const Active = ({type, details}) => {
 
         const handleChange = (e, field) => {
             setInputValues({ ...inputValues, [field]: e.target.value });
+            console.log(inputValues);
         };
 
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
+
+        const handleImageChange = async (e, content_type, urlType) => {
+            const file = e.target.files[0]
+            if (!file) {
+                return
+            }
+        try {
+            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.series_name}/${content_type}/${urlType}`)
+            // console.log(res.data);
+            //Now with signed URL, make API call to the signedURL and it should upload it.
+        }   
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+        }
 
         // const handleCountryChange = (e) => {
         //     console.log(inputValues);
@@ -100,6 +120,15 @@ const Active = ({type, details}) => {
                         <option value = 'post'>Production</option>
                         <option value = 'prod'>Post-Production</option>
                     </select>
+                {/* Thumbnail/Heros */}
+                <div className='active-images-box'>
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.series_thumbnail} className='active-image'></img>
+                        <label>Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'series', 'thumbnails')} accept = "image/webp"></input>
+                    </div>
+                    
+                </div>
                 {/* Completed? */}
                 <p className='active-description'>Is Series Completed?: </p> 
                     <select value = {inputValues.completed} onChange = {(e) => handleChange(e, 'completed')}>
@@ -280,6 +309,23 @@ const Active = ({type, details}) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
 
+        const handleImageChange = async (e, content_type, urlType) => {
+            const file = e.target.files[0]
+            if (!file) {
+                return
+            }
+        try {
+            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.video_name}/${content_type}/${urlType}`)
+            console.log(res.data);
+        }   
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+        }
+
         return (
             <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
                 <p className='active-description'>(Cannot Change) Video ID: <span className='active-primary'>{video_id}</span></p>
@@ -318,7 +364,15 @@ const Active = ({type, details}) => {
                       <button className='active-edit' type = "button" onClick={() => handleEdit('date_created')}>Edit</button>
                     </>
                     )}</p>
-                
+                {/* Thumbnail/Heros */}
+                <div className='active-images-box'>
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
+                        <label>Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'videos', 'thumbnails')} accept = "image/webp"></input>
+                    </div>
+                    
+                </div>
                 
                 {/* Main Description */}
                 <p className='active-description'>Description: {isEditing.video_main ? (
@@ -425,6 +479,23 @@ const Active = ({type, details}) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
 
+        const handleImageChange = async (e, content_type, urlType) => {
+            const file = e.target.files[0]
+            if (!file) {
+                return
+            }
+        try {
+            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.movie_name}/${content_type}/${urlType}`)
+            console.log(res.data);
+        }   
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+        }
+
         return (
             <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
                 <p className='active-description'>(Cannot Change) Movie ID: <span className='active-primary'>{movie_id}</span></p>
@@ -470,6 +541,16 @@ const Active = ({type, details}) => {
                       <button className='active-edit' type = "button" onClick={() => handleEdit('date_created')}>Edit</button>
                     </>
                     )}</p>
+
+                    {/* Thumbnail/Heros */}
+                <div className='active-images-box'>
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
+                        <label>Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'movies', 'thumbnails')} accept = "image/webp"></input>
+                    </div>
+                    
+                </div>
                  {/* Length of Movie */}
                  <p className='active-description'>Length (in minutes): {isEditing.movie_length ? (
                         <>
@@ -625,6 +706,22 @@ const Active = ({type, details}) => {
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
+        const handleImageChange = async (e, content_type, urlType) => {
+            const file = e.target.files[0]
+            if (!file) {
+                return
+            }
+        try {
+            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.podcast_name}/${content_type}/${urlType}`)
+            console.log(res.data);
+        }   
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+        }
 
         return (
             <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
@@ -671,6 +768,17 @@ const Active = ({type, details}) => {
                       <button className='active-edit' type = "button" onClick={() => handleEdit('date_created')}>Edit</button>
                     </>
                     )}</p>
+
+                    {/* Thumbnail/Heros */}
+                <div className='active-images-box'>
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
+                        <label>Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'podcasts', 'thumbnails')} accept = "image/webp"></input>
+                    </div>
+                    
+                </div>
+
                  {/* Podcast Episode */}
                  <p className='active-description'>Episode: {isEditing.podcast_episode ? (
                         <>
@@ -826,6 +934,22 @@ const Active = ({type, details}) => {
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
+        const handleImageChange = async (e, content_type, urlType) => {
+            const file = e.target.files[0]
+            if (!file) {
+                return
+            }
+        try {
+            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.bts_series_name}/${content_type}/${urlType}`)
+            console.log(res.data);
+        }   
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+        }
 
         return (
             <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
@@ -865,6 +989,17 @@ const Active = ({type, details}) => {
                       <button className='active-edit' type = "button" onClick={() => handleEdit('date_created')}>Edit</button>
                     </>
                     )}</p>
+
+                    {/* Thumbnail/Heros */}
+                <div className='active-images-box'>
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
+                        <label>Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'podcasts', 'thumbnails')} accept = "image/webp"></input>
+                    </div>
+                    
+                </div>
+
                  {/* BTS Episode */}
                  <p className='active-description'>Episode: {isEditing.bts_series_episode ? (
                         <>
@@ -952,6 +1087,22 @@ const Active = ({type, details}) => {
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
+        const handleImageChange = async (e, content_type, urlType) => {
+            const file = e.target.files[0]
+            if (!file) {
+                return
+            }
+        try {
+            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.bts_movies_name}/${content_type}/${urlType}`)
+            console.log(res.data);
+        }   
+        catch (err) {
+            if (err.response) {
+              console.error(err.response.data.message); 
+            }
+            console.error(err + ': Error attempting to create new data by an Admin');
+          }
+        }
 
         return (
             <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
@@ -991,6 +1142,17 @@ const Active = ({type, details}) => {
                       <button className='active-edit' type = "button" onClick={() => handleEdit('date_created')}>Edit</button>
                     </>
                     )}</p>
+
+                    {/* Thumbnail/Heros */}
+                <div className='active-images-box'>
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
+                        <label>Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'podcasts', 'thumbnails')} accept = "image/webp"></input>
+                    </div>
+                    
+                </div>
+                
                  {/* BTS Episode */}
                  <p className='active-description'>Episode: {isEditing.bts_movies_episode ? (
                         <>

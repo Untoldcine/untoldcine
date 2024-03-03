@@ -168,6 +168,7 @@
     border: 1px solid white;
     margin-top: 1rem;
     padding: 1.5rem;
+    position: relative;
   }
 
   .active-description {
@@ -274,4 +275,20 @@
     background: #1462a3;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
+  }
+
+  .active-images-box {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    color: white;
+  }
+
+  .active-images-inner {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .active-image {
+    max-width: 10rem;
   }
