@@ -12,13 +12,14 @@ const Master = ({ content }) => {
     //SHOULD NAVIGATE AWAY
   };
 
-  const [activePanel, setActivePanel] = useState("");
+  const [activePanel, setActivePanel] = useState({});
   const [activePanelOn, setActivePanelOn] = useState(false)
   const [addPanel, setAddPanel] = useState(false)
   const [inputValue, setInputValue] = useState("");
   const [selectedContentType, setSelectedContentType] = useState("none");
   const [filteredContent, setFilteredContent] = useState([]);
 
+  //changes the rendered options for content selection
   useEffect(() => {
     filterContent();
   }, [inputValue, selectedContentType]);

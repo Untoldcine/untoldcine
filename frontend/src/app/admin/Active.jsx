@@ -8,15 +8,24 @@ const convertDate = (dateStr) => {
     return readableDate;
 }
 
-const handleChangedData = async (e, type, inputs) => {
+const handleChangedData = async (e, type, original, inputs, urls, links) => {
     e.preventDefault()
-    // console.log(inputs);
+    //post the new data, retrieve generated signed s3 links, if the asset was updated and therefore TRUE, then PUT to s3 bucket. Otherwise, move on
     try {
-        const res = await axios.post(`http://localhost:3001/api/user/adminUpdate/${type}`, inputs)
-        if (res.status === 200) {
+        const res = await axios.post(`http://localhost:3001/api/user/adminUpdate/${type}`, {inputs, original})
+        res.data.forEach((url) => {
+            if (url.includes('thumbnails') && urls.thumbnail) {
+                axios.put(url, links.thumbnail, { headers: { 'Content-Type': 'image/webp'} })
+            }
+            if (url.includes('heros') && urls.hero) {
+                axios.put(url, links.hero, { headers: { 'Content-Type': 'image/webp'} })
+            }
+            if (url.includes('content') && urls.content) {
+                axios.put(url, links.content, { headers: { 'Content-Type': 'video/mp4'} })
+            }
+        })
             alert('Success!')
-            window.location.reload()
-        }
+            // window.location.reload()
     }
     catch (err) {
         if (err.response) {
@@ -40,16 +49,18 @@ const handleDeleteData = async (e, type, id) => {
       }
 }
 
+
 //There are several IF statement blocks that have similar markup. They exist as conditional rendering depending on the type of properties being passed.
 //In this case, the type of content that ADMIN is editing (i.e. Series, Videos, Movies, Podcasts, BTS)
 
 const Active = ({type, details}) => {
-    console.log(details);
+    // console.log(details);
     if (type === 'series') {
-
         const {series_id} = details
 
         const [inputValues, setInputValues] = useState(details);
+        const [assetChange, setAssetChange] = useState({thumbnail: false, hero: false})
+        const [assetValue, setAssetValue] = useState({thumbnail: details.series_thumbnail, hero: details.series_hero})
         const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
 
@@ -63,29 +74,17 @@ const Active = ({type, details}) => {
 
         const handleChange = (e, field) => {
             setInputValues({ ...inputValues, [field]: e.target.value });
-            console.log(inputValues);
+            // console.log(inputValues);
         };
 
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
 
-        const handleImageChange = async (e, content_type, urlType) => {
+        const handleImageChange = async (e, field) => {
             const file = e.target.files[0]
-            if (!file) {
-                return
-            }
-        try {
-            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.series_name}/${content_type}/${urlType}`)
-            // console.log(res.data);
-            //Now with signed URL, make API call to the signedURL and it should upload it.
-        }   
-        catch (err) {
-            if (err.response) {
-              console.error(err.response.data.message); 
-            }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
+            setAssetChange({...assetChange, [field]:true})
+            setAssetValue({...assetValue, [field]: file})
         }
 
         // const handleCountryChange = (e) => {
@@ -94,7 +93,7 @@ const Active = ({type, details}) => {
         // }
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue)}>
                 <p className='active-description'>(Cannot Change) Series ID: <span className='active-primary'>{series_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Series Name: {isEditing.series_name ? (
@@ -123,11 +122,15 @@ const Active = ({type, details}) => {
                 {/* Thumbnail/Heros */}
                 <div className='active-images-box'>
                     <div className='active-images-inner'>
-                        <img src = {inputValues.series_thumbnail} className='active-image'></img>
-                        <label>Thumbnail</label>
-                        <input type = "file" onChange = {(e) => handleImageChange(e, 'series', 'thumbnails')} accept = "image/webp"></input>
+                        <img src = {inputValues.series_thumbnail} className='active-image' alt = "thumbnail"></img>
+                        <label>Current Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'thumbnail')} accept = "image/webp"></input>
                     </div>
-                    
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.series_hero} className='active-image' alt = "Hero Image"></img>
+                        <label>Current Hero</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'hero')} accept = "image/webp"></input>
+                    </div>
                 </div>
                 {/* Completed? */}
                 <p className='active-description'>Is Series Completed?: </p> 
@@ -290,7 +293,9 @@ const Active = ({type, details}) => {
         const {video_id} = details
 
         const [inputValues, setInputValues] = useState(details);
-        const [isEditing, setIsEditing] = useState({ });
+        const [assetChange, setAssetChange] = useState({thumbnail: false, hero: false, content: false})
+        const [assetValue, setAssetValue] = useState({thumbnail: details.video_thumbnail, content: details.video_url})
+        const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
 
         useEffect(() => {
@@ -309,25 +314,15 @@ const Active = ({type, details}) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
 
-        const handleImageChange = async (e, content_type, urlType) => {
+        const handleImageChange = async (e, field) => {
             const file = e.target.files[0]
-            if (!file) {
-                return
-            }
-        try {
-            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.video_name}/${content_type}/${urlType}`)
-            console.log(res.data);
-        }   
-        catch (err) {
-            if (err.response) {
-              console.error(err.response.data.message); 
-            }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
+            setAssetChange({...assetChange, [field]:true})
+            setAssetValue({...assetValue, [field]: file})
         }
+        
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue)}>
                 <p className='active-description'>(Cannot Change) Video ID: <span className='active-primary'>{video_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Video Name: {isEditing.video_name ? (
@@ -364,14 +359,19 @@ const Active = ({type, details}) => {
                       <button className='active-edit' type = "button" onClick={() => handleEdit('date_created')}>Edit</button>
                     </>
                     )}</p>
-                {/* Thumbnail/Heros */}
+                {/* Thumbnail/Heros/Content*/}
                 <div className='active-images-box'>
                     <div className='active-images-inner'>
-                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
-                        <label>Thumbnail</label>
-                        <input type = "file" onChange = {(e) => handleImageChange(e, 'videos', 'thumbnails')} accept = "image/webp"></input>
+                        <img src = {inputValues.video_thumbnail} className='active-image' alt = "thumbnail"></img>
+                        <label>Current Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'thumbnail')} accept = "image/webp"></input>
                     </div>
-                    
+                    <br/>
+                    <div className='active-images-inner'>
+                        <label>Change Video Source</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'content')} accept = "video/mp4"></input>
+                        <video controls style = {{width: '15rem'}}><source src= {inputValues.video_url}></source></video>
+                    </div>
                 </div>
                 
                 {/* Main Description */}
@@ -460,7 +460,9 @@ const Active = ({type, details}) => {
         const {movie_id} = details
 
         const [inputValues, setInputValues] = useState(details);
-        const [isEditing, setIsEditing] = useState({ });
+        const [assetChange, setAssetChange] = useState({thumbnail: false, hero: false, content: false})
+        const [assetValue, setAssetValue] = useState({thumbnail: details.movie_thumbnail, hero: details.movie_hero, content: details.movie_url})
+        const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
 
         useEffect(() => {
@@ -479,25 +481,14 @@ const Active = ({type, details}) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
 
-        const handleImageChange = async (e, content_type, urlType) => {
+        const handleImageChange = async (e, field) => {
             const file = e.target.files[0]
-            if (!file) {
-                return
-            }
-        try {
-            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.movie_name}/${content_type}/${urlType}`)
-            console.log(res.data);
-        }   
-        catch (err) {
-            if (err.response) {
-              console.error(err.response.data.message); 
-            }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
+            setAssetChange({...assetChange, [field]:true})
+            setAssetValue({...assetValue, [field]: file})
         }
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue)}>
                 <p className='active-description'>(Cannot Change) Movie ID: <span className='active-primary'>{movie_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Series Name: {isEditing.movie_name ? (
@@ -542,14 +533,24 @@ const Active = ({type, details}) => {
                     </>
                     )}</p>
 
-                    {/* Thumbnail/Heros */}
+                    {/* Thumbnail/Heros/Content*/}
                 <div className='active-images-box'>
                     <div className='active-images-inner'>
-                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
-                        <label>Thumbnail</label>
-                        <input type = "file" onChange = {(e) => handleImageChange(e, 'movies', 'thumbnails')} accept = "image/webp"></input>
+                        <img src = {inputValues.movie_thumbnail} className='active-image' alt = "thumbnail"></img>
+                        <label>Current Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'thumbnail')} accept = "image/webp"></input>
                     </div>
-                    
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.movie_hero} className='active-image' alt = "hero"></img>
+                        <label>Current Hero</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'hero')} accept = "image/webp"></input>
+                    </div>
+                    <br/>
+                    <div className='active-images-inner'>
+                        <label>Change Movie Source</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'content')} accept = "video/mp4"></input>
+                        <video controls style = {{width: '15rem'}}><source src= {inputValues.movie_url}></source></video>
+                    </div>
                 </div>
                  {/* Length of Movie */}
                  <p className='active-description'>Length (in minutes): {isEditing.movie_length ? (
