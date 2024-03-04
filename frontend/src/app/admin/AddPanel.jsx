@@ -10,6 +10,8 @@ const AddPanel = ({allContent}) => {
     const [parentID, setParentID] = useState()
     const [countryID, setCountryID] = useState(1)
     const [genres, setGenres] = useState([])
+    const [uploadProgress, setUploadProgress] = useState(0);
+
     
     const handleChange = (e, field) => {
         setInputValues({ ...inputValues, [field]: e.target.value });
@@ -42,39 +44,57 @@ const AddPanel = ({allContent}) => {
     }
 
     const postNewContent = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const genreIDs = genres.map(genre => genre.genre_id);
-
+    
         const postObject = {
             ...inputValues,
             country: countryID,
             parentID,
             genreIDs,
             table: type
-        }
+        };
+    
         try {
-            const res = await axios.post('http://localhost:3001/api/user/adminAdd/', postObject)
-            res.data.forEach((url) => {
+            const res = await axios.post('http://localhost:3001/api/user/adminAdd/', postObject);
+            await Promise.all(res.data.map(async (url) => {
+                let fileData = null;
+                let headers = {};
+                
                 if (url.includes('thumbnails')) {
-                    axios.put(url, uploadURLs.thumbnail, { headers: { 'Content-Type': 'image/webp'} })
+                    fileData = uploadURLs.thumbnail;
+                    headers['Content-Type'] = 'image/webp';
+                } else if (url.includes('heros')) {
+                    fileData = uploadURLs.hero;
+                    headers['Content-Type'] = 'image/webp';
+                } else if (url.includes('content')) {
+                    fileData = uploadURLs.content;
+                    headers['Content-Type'] = 'video/mp4';
+                } else {
+                    return; // Skip if URL doesn't match expected patterns
                 }
-                if (url.includes('heros')) {
-                    axios.put(url, uploadURLs.hero, { headers: { 'Content-Type': 'image/webp'} })
-                }
-                if (url.includes('content')) {
-                    axios.put(url, uploadURLs.content, { headers: { 'Content-Type': 'video/mp4'} })
-                }
-            })
-            // alert('Post Success!')
-            // location.reload();
-        }
-        catch (err) {
+    
+                return axios.put(url, fileData, {
+                    headers: headers,
+                    onUploadProgress: progressEvent => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        setUploadProgress(percentCompleted);
+                    }
+                });
+            }));
+            alert('Post Success!');
+            setUploadProgress(0);
+            // location.reload(); 
+        } catch (err) {
             if (err.response) {
-              console.error(err.response.data.message); 
+                console.error(err.response.data.message); 
             }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
-    }
+            console.error('Error attempting to create new data by an Admin: ', err);
+            setUploadProgress(0);
+        }
+    };
+    
+    
     
    
 
@@ -246,6 +266,19 @@ const AddPanel = ({allContent}) => {
             </input>
             </>
         :null}
+        {/* Progress Bar to indicate upload of media file */}
+        {type !== 'series' ? <>
+        <div className="progress">
+            <div
+                className="progress-bar"
+                role="progressbar"
+                style={{ width: `${uploadProgress}%` , color: 'white'}}
+                aria-valuenow={uploadProgress}
+                aria-valuemin="0"
+                aria-valuemax="100"
+            >{uploadProgress}%</div>
+        </div>
+        </>: null}
         </div>
         <br/>
          <button className='active-finish' type = "submit">Create Media</button>

@@ -8,24 +8,38 @@ const convertDate = (dateStr) => {
     return readableDate;
 }
 
-const handleChangedData = async (e, type, original, inputs, urls, links) => {
+
+
+const handleChangedData = async (e, type, original, inputs, urls, links, setUpload) => {
     e.preventDefault()
     //post the new data, retrieve generated signed s3 links, if the asset was updated and therefore TRUE, then PUT to s3 bucket. Otherwise, move on
     try {
         const res = await axios.post(`http://localhost:3001/api/user/adminUpdate/${type}`, {inputs, original})
-        res.data.forEach((url) => {
+        await Promise.all(res.data.map(async (url) => {
+            let fileData = null
+            let headers = {}
             if (url.includes('thumbnails') && urls.thumbnail) {
-                axios.put(url, links.thumbnail, { headers: { 'Content-Type': 'image/webp'} })
+                fileData = links.thumbnail;
+                headers['Content-Type'] = 'image/webp';
+            } else if (url.includes('heros') && urls.hero) {
+                fileData = links.hero;
+                headers['Content-Type'] = 'image/webp';
+            } else if (url.includes('content') && urls.content) {
+                fileData = links.content;
+                headers['Content-Type'] = 'video/mp4';
+            } else {
+                return; 
             }
-            if (url.includes('heros') && urls.hero) {
-                axios.put(url, links.hero, { headers: { 'Content-Type': 'image/webp'} })
-            }
-            if (url.includes('content') && urls.content) {
-                axios.put(url, links.content, { headers: { 'Content-Type': 'video/mp4'} })
-            }
-        })
-            alert('Success!')
-            // window.location.reload()
+            return axios.put(url, fileData, {
+                headers: headers,
+                onUploadProgress: progressEvent => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUpload(percentCompleted);
+                }
+            });
+        }));
+        alert('Update Success!');
+        setUpload(0);
     }
     catch (err) {
         if (err.response) {
@@ -63,6 +77,8 @@ const Active = ({type, details}) => {
         const [assetValue, setAssetValue] = useState({thumbnail: details.series_thumbnail, hero: details.series_hero})
         const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
+        const [uploadProgress, setUploadProgress] = useState(0);
+
 
         useEffect(() => {
             setInputValues(details);
@@ -93,7 +109,7 @@ const Active = ({type, details}) => {
         // }
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue, setUploadProgress)}>
                 <p className='active-description'>(Cannot Change) Series ID: <span className='active-primary'>{series_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Series Name: {isEditing.series_name ? (
@@ -130,6 +146,18 @@ const Active = ({type, details}) => {
                         <img src = {inputValues.series_hero} className='active-image' alt = "Hero Image"></img>
                         <label>Current Hero</label>
                         <input type = "file" onChange = {(e) => handleImageChange(e, 'hero')} accept = "image/webp"></input>
+                    </div>
+                    <div className='active-images-inner'>
+                        <div className="progress">
+                        <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: `${uploadProgress}%` , color: 'white'}}
+                            aria-valuenow={uploadProgress}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >{uploadProgress}%</div>
+                        </div>
                     </div>
                 </div>
                 {/* Completed? */}
@@ -297,6 +325,8 @@ const Active = ({type, details}) => {
         const [assetValue, setAssetValue] = useState({thumbnail: details.video_thumbnail, content: details.video_url})
         const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
+        const [uploadProgress, setUploadProgress] = useState(0);
+
 
         useEffect(() => {
             setInputValues(details);
@@ -322,7 +352,7 @@ const Active = ({type, details}) => {
         
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue, setUploadProgress)}>
                 <p className='active-description'>(Cannot Change) Video ID: <span className='active-primary'>{video_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Video Name: {isEditing.video_name ? (
@@ -371,6 +401,18 @@ const Active = ({type, details}) => {
                         <label>Change Video Source</label>
                         <input type = "file" onChange = {(e) => handleImageChange(e, 'content')} accept = "video/mp4"></input>
                         <video controls style = {{width: '15rem'}}><source src= {inputValues.video_url}></source></video>
+                    </div>
+                    <div className='active-images-inner'>
+                        <div className="progress">
+                        <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: `${uploadProgress}%` , color: 'white'}}
+                            aria-valuenow={uploadProgress}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >{uploadProgress}%</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -458,6 +500,7 @@ const Active = ({type, details}) => {
     if (type === 'movie') {
 
         const {movie_id} = details
+        const [uploadProgress, setUploadProgress] = useState(0);
 
         const [inputValues, setInputValues] = useState(details);
         const [assetChange, setAssetChange] = useState({thumbnail: false, hero: false, content: false})
@@ -488,7 +531,7 @@ const Active = ({type, details}) => {
         }
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue, setUploadProgress)}>
                 <p className='active-description'>(Cannot Change) Movie ID: <span className='active-primary'>{movie_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Series Name: {isEditing.movie_name ? (
@@ -550,6 +593,18 @@ const Active = ({type, details}) => {
                         <label>Change Movie Source</label>
                         <input type = "file" onChange = {(e) => handleImageChange(e, 'content')} accept = "video/mp4"></input>
                         <video controls style = {{width: '15rem'}}><source src= {inputValues.movie_url}></source></video>
+                    </div>
+                    <div className='active-images-inner'>
+                        <div className="progress">
+                        <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: `${uploadProgress}%` , color: 'white'}}
+                            aria-valuenow={uploadProgress}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >{uploadProgress}%</div>
+                        </div>
                     </div>
                 </div>
                  {/* Length of Movie */}
@@ -687,10 +742,14 @@ const Active = ({type, details}) => {
     if (type === 'podcast') {
 
         const {podcast_id} = details
+        const [uploadProgress, setUploadProgress] = useState(0);
 
         const [inputValues, setInputValues] = useState(details);
-        const [isEditing, setIsEditing] = useState({ });
+        const [assetChange, setAssetChange] = useState({thumbnail: false, hero: false, content: false})
+        const [assetValue, setAssetValue] = useState({thumbnail: details.podcast_thumbnail, hero: details.podcast_hero, content: details.podcast_url})
+        const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
+
 
         useEffect(() => {
             setInputValues(details);
@@ -707,25 +766,15 @@ const Active = ({type, details}) => {
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
-        const handleImageChange = async (e, content_type, urlType) => {
+
+        const handleImageChange = async (e, field) => {
             const file = e.target.files[0]
-            if (!file) {
-                return
-            }
-        try {
-            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.podcast_name}/${content_type}/${urlType}`)
-            console.log(res.data);
-        }   
-        catch (err) {
-            if (err.response) {
-              console.error(err.response.data.message); 
-            }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
+            setAssetChange({...assetChange, [field]:true})
+            setAssetValue({...assetValue, [field]: file})
         }
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue, setUploadProgress)}>
                 <p className='active-description'>(Cannot Change) Podcast ID: <span className='active-primary'>{podcast_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>Podcast Name: {isEditing.podcast_name ? (
@@ -770,14 +819,36 @@ const Active = ({type, details}) => {
                     </>
                     )}</p>
 
-                    {/* Thumbnail/Heros */}
+                    {/* Thumbnail/Heros/Content*/}
                 <div className='active-images-box'>
                     <div className='active-images-inner'>
-                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
-                        <label>Thumbnail</label>
-                        <input type = "file" onChange = {(e) => handleImageChange(e, 'podcasts', 'thumbnails')} accept = "image/webp"></input>
+                        <img src = {inputValues.podcast_thumbnail} className='active-image' alt = "thumbnail"></img>
+                        <label>Current Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'thumbnail')} accept = "image/webp"></input>
                     </div>
-                    
+                    <div className='active-images-inner'>
+                        <img src = {inputValues.podcast_hero} className='active-image' alt = "hero"></img>
+                        <label>Current Hero</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'hero')} accept = "image/webp"></input>
+                    </div>
+                    <br/>
+                    <div className='active-images-inner'>
+                        <label>Change Podcast Source</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'content')} accept = "video/mp4"></input>
+                        <video controls style = {{width: '15rem'}}><source src= {inputValues.podcast_url}></source></video>
+                    </div>
+                    <div className='active-images-inner'>
+                        <div className="progress">
+                        <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: `${uploadProgress}%` , color: 'white'}}
+                            aria-valuenow={uploadProgress}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >{uploadProgress}%</div>
+                        </div>
+                    </div>
                 </div>
 
                  {/* Podcast Episode */}
@@ -915,10 +986,14 @@ const Active = ({type, details}) => {
     if (type === 'bts_series') {
 
         const {bts_series_id} = details
+        const [uploadProgress, setUploadProgress] = useState(0);
 
         const [inputValues, setInputValues] = useState(details);
-        const [isEditing, setIsEditing] = useState({ });
+        const [assetChange, setAssetChange] = useState({thumbnail: false, hero: false, content: false})
+        const [assetValue, setAssetValue] = useState({thumbnail: details.bts_series_thumbnail, content: details.bts_series_url})
+        const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
+
 
         useEffect(() => {
             setInputValues(details);
@@ -935,25 +1010,16 @@ const Active = ({type, details}) => {
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
-        const handleImageChange = async (e, content_type, urlType) => {
+
+        const handleImageChange = async (e, field) => {
             const file = e.target.files[0]
-            if (!file) {
-                return
-            }
-        try {
-            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.bts_series_name}/${content_type}/${urlType}`)
-            console.log(res.data);
-        }   
-        catch (err) {
-            if (err.response) {
-              console.error(err.response.data.message); 
-            }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
+            setAssetChange({...assetChange, [field]:true})
+            setAssetValue({...assetValue, [field]: file})
         }
 
+
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue, setUploadProgress)}>
                 <p className='active-description'>(Cannot Change) BTS Series ID: <span className='active-primary'>{bts_series_id}</span></p>
                 {/* Name */}
                 <p className='active-description'>BTS Series Name: {isEditing.bts_series_name ? (
@@ -991,14 +1057,31 @@ const Active = ({type, details}) => {
                     </>
                     )}</p>
 
-                    {/* Thumbnail/Heros */}
+                    {/* Thumbnail/Heros/Content*/}
                 <div className='active-images-box'>
                     <div className='active-images-inner'>
-                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
-                        <label>Thumbnail</label>
-                        <input type = "file" onChange = {(e) => handleImageChange(e, 'podcasts', 'thumbnails')} accept = "image/webp"></input>
+                        <img src = {inputValues.bts_series_thumbnail} className='active-image' alt = "thumbnail"></img>
+                        <label>Current Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'thumbnail')} accept = "image/webp"></input>
                     </div>
-                    
+                    <br/>
+                    <div className='active-images-inner'>
+                        <label>Change BTS Series Source</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'content')} accept = "video/mp4"></input>
+                        <video controls style = {{width: '15rem'}}><source src= {inputValues.bts_series_url}></source></video>
+                    </div>
+                    <div className='active-images-inner'>
+                        <div className="progress">
+                        <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: `${uploadProgress}%` , color: 'white'}}
+                            aria-valuenow={uploadProgress}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >{uploadProgress}%</div>
+                        </div>
+                    </div>
                 </div>
 
                  {/* BTS Episode */}
@@ -1068,10 +1151,14 @@ const Active = ({type, details}) => {
     if (type === 'bts_movies') {
 
         const {bts_movies_id} = details
+        const [uploadProgress, setUploadProgress] = useState(0);
 
         const [inputValues, setInputValues] = useState(details);
-        const [isEditing, setIsEditing] = useState({ });
+        const [assetChange, setAssetChange] = useState({thumbnail: false, hero: false, content: false})
+        const [assetValue, setAssetValue] = useState({thumbnail: details.bts_movies_thumbnail, content: details.bts_movies_url})
+        const [isEditing, setIsEditing] = useState({});
         const [toggleDelete, setToggleDelete] = useState(false)
+
 
         useEffect(() => {
             setInputValues(details);
@@ -1088,28 +1175,18 @@ const Active = ({type, details}) => {
         const handleSave = (field) => {
             setIsEditing({ ...isEditing, [field]: false });
         };
-        const handleImageChange = async (e, content_type, urlType) => {
+
+        const handleImageChange = async (e, field) => {
             const file = e.target.files[0]
-            if (!file) {
-                return
-            }
-        try {
-            const res = await axios.get(`http://localhost:3001/api/user/getUploadSignedURL/${inputValues.bts_movies_name}/${content_type}/${urlType}`)
-            console.log(res.data);
-        }   
-        catch (err) {
-            if (err.response) {
-              console.error(err.response.data.message); 
-            }
-            console.error(err + ': Error attempting to create new data by an Admin');
-          }
+            setAssetChange({...assetChange, [field]:true})
+            setAssetValue({...assetValue, [field]: file})
         }
 
         return (
-            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, inputValues)}>
-                <p className='active-description'>(Cannot Change) BTS Series ID: <span className='active-primary'>{bts_movies_id}</span></p>
+            <form className='active-wrapper' onSubmit = {(e) => handleChangedData(e, type, details, inputValues, assetChange, assetValue, setUploadProgress)}>
+                <p className='active-description'>(Cannot Change) BTS Movies ID: <span className='active-primary'>{bts_movies_id}</span></p>
                 {/* Name */}
-                <p className='active-description'>BTS Series Name: {isEditing.bts_movies_name ? (
+                <p className='active-description'>BTS Movie Name: {isEditing.bts_movies_name ? (
                         <>
                             <input 
                                 type="text" 
@@ -1144,14 +1221,31 @@ const Active = ({type, details}) => {
                     </>
                     )}</p>
 
-                    {/* Thumbnail/Heros */}
+                    {/* Thumbnail/Heros/Content*/}
                 <div className='active-images-box'>
                     <div className='active-images-inner'>
-                        <img src = {inputValues.video_thumbnail} className='active-image'></img>
-                        <label>Thumbnail</label>
-                        <input type = "file" onChange = {(e) => handleImageChange(e, 'podcasts', 'thumbnails')} accept = "image/webp"></input>
+                        <img src = {inputValues.bts_movies_thumbnail} className='active-image' alt = "thumbnail"></img>
+                        <label>Current Thumbnail</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'thumbnail')} accept = "image/webp"></input>
                     </div>
-                    
+                    <br/>
+                    <div className='active-images-inner'>
+                        <label>Change BTS Movie Source</label>
+                        <input type = "file" onChange = {(e) => handleImageChange(e, 'content')} accept = "video/mp4"></input>
+                        <video controls style = {{width: '15rem'}}><source src= {inputValues.bts_movies_url}></source></video>
+                    </div>
+                    <div className='active-images-inner'>
+                        <div className="progress">
+                        <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: `${uploadProgress}%` , color: 'white'}}
+                            aria-valuenow={uploadProgress}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >{uploadProgress}%</div>
+                        </div>
+                    </div>
                 </div>
                 
                  {/* BTS Episode */}

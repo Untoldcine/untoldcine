@@ -107,7 +107,7 @@ exports.adminGetAll = async(req, res) => {
     const processedBTSSeries = await getBTSSeriesAssets(btsSeriesData)
     const processedBTSMovies = await getBTSMoviesAssets(btsMoviesData)
 
-    res.status(200).json({series:processedSeries, video: processedVideos, movie: processedMovies, podcasts: processedPodcasts, bts_series: processedBTSSeries, bts_movies: processedBTSMovies, countries: countries, genres: genres})
+    res.status(200).json({series:processedSeries, video: processedVideos, movie: processedMovies, podcast: processedPodcasts, bts_series: processedBTSSeries, bts_movies: processedBTSMovies, countries: countries, genres: genres})
 }
 
 //for getting CDN content
@@ -210,11 +210,11 @@ async function getBTSSeriesAssets(array) {
     const arr = array.map((bts_series) => {
         const urlString = getURLNamePath(bts_series.bts_series_name)
         const signedThumbnail = cfsign.getSignedUrl(
-            `${distributionURL}/bts_series/thumbnails/id${bts_series.bts_series_id}${urlString}.webp`, 
+            `${distributionURL}/bts_series/thumbnails/${urlString}/id${bts_series.bts_series_id}${urlString}.webp`, 
             signingParams
         );
         const signedContent = cfsign.getSignedUrl(
-            `${distributionURL}/bts_series/content/id${bts_series.bts_series_id}${urlString}.mp4`, 
+            `${distributionURL}/bts_series/content/${urlString}/id${bts_series.bts_series_id}${urlString}.mp4`, 
             signingParams 
         )
         return {
@@ -229,11 +229,11 @@ async function getBTSMoviesAssets(array) {
     const arr = array.map((bts_movie) => {
         const urlString = getURLNamePath(bts_movie.bts_movies_name)
         const signedThumbnail = cfsign.getSignedUrl(
-            `${distributionURL}/bts_movies/thumbnails/id${bts_movie.bts_movies_id}${urlString}.webp`, 
+            `${distributionURL}/bts_movies/thumbnails/${urlString}/id${bts_movie.bts_movies_id}${urlString}.webp`, 
             signingParams
         );
         const signedContent = cfsign.getSignedUrl(
-            `${distributionURL}/bts_movies/content/id${bts_movie.bts_movies_id}${urlString}.mp4`, 
+            `${distributionURL}/bts_movies/content/${urlString}/id${bts_movie.bts_movies_id}${urlString}.mp4`, 
             signingParams 
         )
         return {
@@ -244,7 +244,6 @@ async function getBTSMoviesAssets(array) {
     })
     return arr
 }
-
 
 exports.adminUpdate = async (req, res) => {
     const {table} = req.params
@@ -395,6 +394,119 @@ async function updateNewNamePath(updated, old, type){
             catch (err) {
                 console.error(err);
                 throw new Error('Error updating S3 asset paths for movies');
+            }
+    } 
+    if (type === 'podcast') {
+        const oldInsertionName = getURLNamePath(old.podcast_name)
+        const newInsertionName = getURLNamePath(updated.podcast_name)
+
+        const oldThumbnailKey = `podcasts/thumbnails/${oldInsertionName}/id${updated.podcast_id}${oldInsertionName}.webp`
+        const newThumbnailKey = `podcasts/thumbnails/${newInsertionName}/id${updated.podcast_id}${newInsertionName}.webp`
+        const oldHeroKey = `podcasts/heros/${oldInsertionName}/id${updated.podcast_id}${oldInsertionName}.webp`
+        const newHeroKey = `podcasts/heros/${newInsertionName}/id${updated.podcast_id}${newInsertionName}.webp`
+        const oldContentKey = `podcasts/content/${oldInsertionName}/id${updated.podcast_id}${oldInsertionName}.mp4`
+        const newContentKey = `podcasts/content/${newInsertionName}/id${updated.podcast_id}${newInsertionName}.mp4`
+
+        try {
+            await s3Client.send(new CopyObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                CopySource: `${process.env.S3_BUCKET_NAME}/${oldThumbnailKey}`,
+                Key: newThumbnailKey,
+            }));
+            await s3Client.send(new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldThumbnailKey,
+            }));
+            await s3Client.send(new CopyObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                CopySource: `${process.env.S3_BUCKET_NAME}/${oldHeroKey}`,
+                Key: newHeroKey,
+            }));
+            await s3Client.send(new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldHeroKey,
+            })); 
+            await s3Client.send(new CopyObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                CopySource: `${process.env.S3_BUCKET_NAME}/${oldContentKey}`,
+                Key: newContentKey,
+            }));
+            await s3Client.send(new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldContentKey,
+            }));    
+        }
+            catch (err) {
+                console.error(err);
+                throw new Error('Error updating S3 asset paths for podcasts');
+            }
+    } 
+    if (type === 'bts_series') {
+        const oldInsertionName = getURLNamePath(old.bts_series_name)
+        const newInsertionName = getURLNamePath(updated.bts_series_name)
+
+        const oldThumbnailKey = `bts_series/thumbnails/${oldInsertionName}/id${updated.bts_series_id}${oldInsertionName}.webp`
+        const newThumbnailKey = `bts_series/thumbnails/${newInsertionName}/id${updated.bts_series_id}${newInsertionName}.webp`
+        const oldContentKey = `bts_series/content/${oldInsertionName}/id${updated.bts_series_id}${oldInsertionName}.mp4`
+        const newContentKey = `bts_series/content/${newInsertionName}/id${updated.bts_series_id}${newInsertionName}.mp4`
+
+        try {
+            await s3Client.send(new CopyObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                CopySource: `${process.env.S3_BUCKET_NAME}/${oldThumbnailKey}`,
+                Key: newThumbnailKey,
+            }));
+            await s3Client.send(new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldThumbnailKey,
+            }));
+            await s3Client.send(new CopyObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                CopySource: `${process.env.S3_BUCKET_NAME}/${oldContentKey}`,
+                Key: newContentKey,
+            }));
+            await s3Client.send(new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldContentKey,
+            }));    
+        }
+            catch (err) {
+                console.error(err);
+                throw new Error('Error updating S3 asset paths for bts series');
+            }
+    } 
+    if (type === 'bts_movie') {
+        const oldInsertionName = getURLNamePath(old.bts_movies_name)
+        const newInsertionName = getURLNamePath(updated.bts_movies_name)
+
+        const oldThumbnailKey = `bts_movies/thumbnails/${oldInsertionName}/id${updated.bts_movies_id}${oldInsertionName}.webp`
+        const newThumbnailKey = `bts_movies/thumbnails/${newInsertionName}/id${updated.bts_movies_id}${newInsertionName}.webp`
+        const oldContentKey = `bts_movies/content/${oldInsertionName}/id${updated.bts_movies_id}${oldInsertionName}.mp4`
+        const newContentKey = `bts_movies/content/${newInsertionName}/id${updated.bts_movies_id}${newInsertionName}.mp4`
+
+        try {
+            await s3Client.send(new CopyObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                CopySource: `${process.env.S3_BUCKET_NAME}/${oldThumbnailKey}`,
+                Key: newThumbnailKey,
+            }));
+            await s3Client.send(new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldThumbnailKey,
+            }));
+            await s3Client.send(new CopyObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                CopySource: `${process.env.S3_BUCKET_NAME}/${oldContentKey}`,
+                Key: newContentKey,
+            }));
+            await s3Client.send(new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: oldContentKey,
+            }));    
+        }
+            catch (err) {
+                console.error(err);
+                throw new Error('Error updating S3 asset paths for bts movies');
             }
     } 
 
@@ -559,60 +671,154 @@ async function updateMovies(obj) {
 }
 
 async function updatePodcast(obj) {
+    const {inputs, original} = obj
+
     const updateField = await prisma.podcasts.update({
         where: {
-            podcast_id: obj.podcast_id
+            podcast_id: inputs.podcast_id
         },
         data: {
-            podcast_name: obj.podcast_name,
-            podcast_status: obj.podcast_status,
-            podcast_type: obj.podcast_type,
-            podcast_main : obj.podcast_main || null,
-            podcast_episode: parseInt(obj.podcast_episode) || 1,
-            podcast_directors : obj.podcast_directors || null,
-            podcast_producers : obj.podcast_producers || null,
-            podcast_starring: obj.podcast_starring || null,
-            podcast_thumbnail : obj.podcast_thumbnail || null,
-            podcast_upvotes : parseInt(obj.podcast_upvotes) || 0,
-            podcast_downvotes : parseInt(obj.podcast_downvotes) || 0,
-            date_created : convertToISOString(obj.date_created),
+            podcast_name: inputs.podcast_name,
+            podcast_status: inputs.podcast_status,
+            podcast_type: inputs.podcast_type,
+            podcast_main : inputs.podcast_main || null,
+            podcast_episode: parseInt(inputs.podcast_episode) || 1,
+            podcast_directors : inputs.podcast_directors || null,
+            podcast_producers : inputs.podcast_producers || null,
+            podcast_starring: inputs.podcast_starring || null,
+            podcast_thumbnail : inputs.podcast_thumbnail || null,
+            podcast_upvotes : parseInt(inputs.podcast_upvotes) || 0,
+            podcast_downvotes : parseInt(inputs.podcast_downvotes) || 0,
+            date_created : convertToISOString(inputs.date_created),
         }
     })
-    // console.log(updateField);
-    return updateField
-}
+    if (original.podcast_name !== inputs.podcast_name) {
+        updateNewNamePath(inputs, original, 'podcast')
+    }
+    const s3Client = new S3Client({
+        region: process.env.REGION,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY,
+            secretAccessKey: process.env.S3_SECRET_KEY,
+        },
+    }); 
+    const insertionName = getURLNamePath(updateField.podcast_name)
+    const commandThumbnail = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `podcasts/thumbnails/${insertionName}/id${inputs.podcast_id}${insertionName}.webp`, 
+    });
+    const commandHero= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `podcasts/heros/${insertionName}/id${inputs.podcast_id}${insertionName}.webp`, 
+    });
+    const commandContent= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `podcasts/content/${insertionName}/id${inputs.podcast_id}${insertionName}.mp4`, 
+    });
 
+    try {
+        const urlThumbnail = await getSignedUrl(s3Client, commandThumbnail, { expiresIn: 3600 });
+        const urlHero = await getSignedUrl(s3Client, commandHero, { expiresIn: 3600 });
+        const urlContent = await getSignedUrl(s3Client, commandContent, { expiresIn: 3600 });
+        return [urlThumbnail, urlHero, urlContent]
+
+    } catch (err) {
+        console.error(err);
+        throw new Error('Could not generate pre-signed URLs');
+    }
+
+}
 async function updateBTSSeries(obj) {
+    const {inputs, original} = obj
+
     const updateField = await prisma.bTS_Series.update({
         where: {
-            bts_series_id: obj.bts_series_id
+            bts_series_id: inputs.bts_series_id
         },
         data: {
-            bts_series_name: obj.bts_series_name,
-            bts_series_main : obj.bts_series_main || null,
-            bts_series_length: parseInt(obj.bts_series_length) || 0,
-            bts_series_thumbnail: obj.bts_series_thumbnail || null,
-            date_created : convertToISOString(obj.date_created),
+            bts_series_name: inputs.bts_series_name,
+            bts_series_main : inputs.bts_series_main || null,
+            bts_series_length: parseInt(inputs.bts_series_length) || 0,
+            bts_series_thumbnail: inputs.bts_series_thumbnail || null,
+            date_created : convertToISOString(inputs.date_created),
         }
     })
-    // console.log(updateField);
-    return updateField
+    if (original.bts_series_name !== inputs.bts_series_name) {
+        updateNewNamePath(inputs, original, 'bts_series')
+    }
+    const s3Client = new S3Client({
+        region: process.env.REGION,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY,
+            secretAccessKey: process.env.S3_SECRET_KEY,
+        },
+    }); 
+    const insertionName = getURLNamePath(updateField.bts_series_name)
+    const commandThumbnail = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_series/thumbnails/${insertionName}/id${inputs.bts_series_id}${insertionName}.webp`, 
+    });
+    const commandContent= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_series/content/${insertionName}/id${inputs.bts_series_id}${insertionName}.mp4`, 
+    });
+
+    try {
+        const urlThumbnail = await getSignedUrl(s3Client, commandThumbnail, { expiresIn: 3600 });
+        const urlContent = await getSignedUrl(s3Client, commandContent, { expiresIn: 3600 });
+        return [urlThumbnail, urlHero, urlContent]
+
+    } catch (err) {
+        console.error(err);
+        throw new Error('Could not generate pre-signed URLs');
+    }
+    
 }
 async function updateBTSMovies(obj) {
+    const {inputs, original} = obj
+
     const updateField = await prisma.bTS_Movies.update({
         where: {
-            bts_movies_id: obj.bts_movies_id
+            bts_movies_id: inputs.bts_movies_id
         },
         data: {
-            bts_movies_name: obj.bts_movies_name,
-            bts_movies_main : obj.bts_movies_main || null,
-            bts_movies_length: parseInt(obj.bts_movies_length) || 0,
-            bts_movies_thumbnail: obj.bts_movies_thumbnail || null,
-            date_created : convertToISOString(obj.date_created),
+            bts_movies_name: inputs.bts_movies_name,
+            bts_movies_main : inputs.bts_movies_main || null,
+            bts_movies_length: parseInt(inputs.bts_movies_length) || 0,
+            bts_movies_thumbnail: inputs.bts_movies_thumbnail || null,
+            date_created : convertToISOString(inputs.date_created),
         }
     })
-    // console.log(updateField);
-    return updateField
+    if (original.bts_movies_name !== inputs.bts_movies_name) {
+        updateNewNamePath(inputs, original, 'bts_movie')
+    }
+    const s3Client = new S3Client({
+        region: process.env.REGION,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY,
+            secretAccessKey: process.env.S3_SECRET_KEY,
+        },
+    }); 
+    const insertionName = getURLNamePath(updateField.bts_movies_name)
+    const commandThumbnail = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_movies/thumbnails/${insertionName}/id${inputs.bts_movies_id}${insertionName}.webp`, 
+    });
+    const commandContent= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_movies/content/${insertionName}/id${inputs.bts_movies_id}${insertionName}.mp4`, 
+    });
+
+    try {
+        const urlThumbnail = await getSignedUrl(s3Client, commandThumbnail, { expiresIn: 3600 });
+        const urlContent = await getSignedUrl(s3Client, commandContent, { expiresIn: 3600 });
+        return [urlThumbnail, urlContent]
+
+    } catch (err) {
+        console.error(err);
+        throw new Error('Could not generate pre-signed URLs');
+    }
+    
 }
 
 function convertToISOString(inputDate) {
@@ -718,7 +924,6 @@ exports.adminAdd = async (req, res) => {
 }
 
 async function addSeries(obj) {
-    console.log(obj);
     const {name, status, date, main, directors, starring, producers, country, genreIDs} = obj
     const newSeries = await prisma.series.create({
         data: {
