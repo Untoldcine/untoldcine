@@ -54,7 +54,6 @@ const AddPanel = ({allContent}) => {
         }
         try {
             const res = await axios.post('http://localhost:3001/api/user/adminAdd/', postObject)
-            console.log(res.data);
             res.data.forEach((url) => {
                 if (url.includes('thumbnails')) {
                     axios.put(url, uploadURLs.thumbnail, { headers: { 'Content-Type': 'image/webp'} })
@@ -66,8 +65,8 @@ const AddPanel = ({allContent}) => {
                     axios.put(url, uploadURLs.content, { headers: { 'Content-Type': 'video/mp4'} })
                 }
             })
-            alert('Post Success!')
-            location.reload();
+            // alert('Post Success!')
+            // location.reload();
         }
         catch (err) {
             if (err.response) {

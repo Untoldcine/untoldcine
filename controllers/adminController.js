@@ -315,7 +315,6 @@ exports.adminAdd = async (req, res) => {
         if (post) {
             res.status(200).json(post)
         }
-        
     }
     if (table === 'video') {
         const post = await addVideo(req.body)
@@ -324,27 +323,27 @@ exports.adminAdd = async (req, res) => {
         }
     }
     if (table === 'movie') {
-        const post = addMovie(req.body)
+        const post = await addMovie(req.body)
         if (post) {
-            res.status(200).json({"message": "Success"})
+            res.status(200).json(post)
         }
     }
     if (table === 'podcast') {
-        const post = addPodcast(req.body)
+        const post = await addPodcast(req.body)
         if (post) {
-            res.status(200).json({"message": "Success"})
+            res.status(200).json(post)
         }
     }
     if (table === 'bts_series') {
-        const post = addBTSSeries(req.body)
+        const post = await addBTSSeries(req.body)
         if (post) {
-            res.status(200).json({"message": "Success"})
+            res.status(200).json(post)
         }
     }
     if (table === 'bts_movies') {
-        const post = addBTSMovies(req.body)
+        const post = await addBTSMovies(req.body)
         if (post) {
-            res.status(200).json({"message": "Success"})
+            res.status(200).json(post)
         }
     }
 }
@@ -457,7 +456,6 @@ async function addVideo(obj) {
         return res.status(500).send('Could not generate pre-signed URLs');
     }
 
-    return newVideo;
 }
 
 async function addMovie(obj) {
@@ -493,7 +491,38 @@ async function addMovie(obj) {
     }));
 
     await Promise.all([countryPromise, ...genrePromises]);
-    return newMovie
+    const s3Client = new S3Client({
+        region: process.env.REGION,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY,
+            secretAccessKey: process.env.S3_SECRET_KEY,
+        },
+    });   
+    
+    const insertionName = getURLNamePath(newMovie.movie_name)
+    const commandThumbnail = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `movies/thumbnails/id?${newMovie.movie_id}${insertionName}.webp`, 
+    });
+    const commandHero= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `movies/heros/id?${newMovie.movie_id}${insertionName}.webp`, 
+    });
+    const commandContent= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `movies/content/id?${newMovie.movie_id}${insertionName}.mp4`, 
+    });
+
+    try {
+        const urlThumbnail = await getSignedUrl(s3Client, commandThumbnail, { expiresIn: 3600 });
+        const urlHero = await getSignedUrl(s3Client, commandHero, { expiresIn: 3600 });
+        const urlContent = await getSignedUrl(s3Client, commandContent, { expiresIn: 3600 });
+        return [urlThumbnail, urlHero, urlContent]
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('Could not generate pre-signed URLs');
+    }
 }
 
 async function addPodcast(obj) {
@@ -520,8 +549,38 @@ async function addPodcast(obj) {
             country_id: parseInt(country)
         }
     });
+    const s3Client = new S3Client({
+        region: process.env.REGION,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY,
+            secretAccessKey: process.env.S3_SECRET_KEY,
+        },
+    });   
+    
+    const insertionName = getURLNamePath(newPodcast.podcast_name)
+    const commandThumbnail = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `podcasts/thumbnails/${insertionName}/id?${newPodcast.podcast_id}${insertionName}.webp`, 
+    });
+    const commandHero= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `podcasts/heros/${insertionName}/id?${newPodcast.podcast_id}${insertionName}.webp`, 
+    });
+    const commandContent= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `podcasts/content/${insertionName}/id?${newPodcast.podcast_id}${insertionName}.mp4`, 
+    });
 
-    return newPodcast
+    try {
+        const urlThumbnail = await getSignedUrl(s3Client, commandThumbnail, { expiresIn: 3600 });
+        const urlHero = await getSignedUrl(s3Client, commandHero, { expiresIn: 3600 });
+        const urlContent = await getSignedUrl(s3Client, commandContent, { expiresIn: 3600 });
+        return [urlThumbnail, urlHero, urlContent]
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('Could not generate pre-signed URLs');
+    }
 }
 
 async function addBTSSeries(obj) {
@@ -536,7 +595,33 @@ async function addBTSSeries(obj) {
             parent_series_id: parseInt(parentID)
         }
     })
-    return newBTSSeries
+    const s3Client = new S3Client({
+        region: process.env.REGION,
+        credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY,
+            secretAccessKey: process.env.S3_SECRET_KEY,
+        },
+    });   
+    
+    const insertionName = getURLNamePath(newBTSSeries.bts_series_name)
+    const commandThumbnail = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_series/thumbnails/${insertionName}/id?${newBTSSeries.bts_series_id}${insertionName}.webp`, 
+    });
+    const commandContent= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_series/content/${insertionName}/id?${newBTSSeries.bts_series_id}${insertionName}.mp4`, 
+    });
+
+    try {
+        const urlThumbnail = await getSignedUrl(s3Client, commandThumbnail, { expiresIn: 3600 });
+        const urlContent = await getSignedUrl(s3Client, commandContent, { expiresIn: 3600 });
+        return [urlThumbnail, urlContent]
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('Could not generate pre-signed URLs');
+    }
 }
 
 async function addBTSMovies(obj) {
@@ -551,112 +636,34 @@ async function addBTSMovies(obj) {
             parent_movie_id: parseInt(parentID)
         }
     })
-    return newBTSMovie
-}
-
-//hits this endpoint everytime attempting to upload
-exports.getSignedUrl = async (req, res) => {
-    const {content_name, content_type, asset} = req.params
-    //this is just because I fucked up the naming consistency in the S3 bucket
-    let key;
-    const insertionName = getURLNamePath(content_name)
-
-    if (content_type === 'series') {
-        if (asset === 'thumbnails') {
-            key = `series/thumbnails/${insertionName}.webp`
-        }
-        if (asset === 'heros') {
-            key = `series/heros/${insertionName}.webp`
-        }
-    }
-    if (content_type === 'movie') {
-        if (asset === 'thumbnails') {
-            key = `movies/thumbnails/${insertionName}.webp`
-        }
-        if (asset === 'heros') {
-           key = `movies/heros/${insertionName}.webp`
-        }
-        if (asset === 'content') {
-            key = `movies/content/${insertionName}.mp4`
-        }
-    }
     const s3Client = new S3Client({
         region: process.env.REGION,
         credentials: {
             accessKeyId: process.env.S3_ACCESS_KEY,
             secretAccessKey: process.env.S3_SECRET_KEY,
         },
-    });
-
-    //for KEY to work the format needs to be exact. 1. Content Type 2. Asset Type 3. Name of Asset 4. File format
-        const command = new PutObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: key, 
-        });
-
-    try {
-        const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-        res.json({ url });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).send('Could not generate pre-signed URL');
-    }
-};
-
-exports.getSignedUrlVideo = async (req, res) => {
-    const {parentID, content, content_type, asset} = req.params
-    const {name, episode} = content
-    let key;
-    const insertionName = getURLNamePath(name)
-
-    if (content_type === 'video') {
-        if (asset === 'thumbnails') {
-            key = `videos/thumbnails/series${parentID}${insertionName}.webp`
-        }
-        if (asset === 'content') {
-            key = `series/content/series${parentID}${insertionName}.mp4`
-        }
-    }
-    if (content_type === 'podcast') {
-        if (asset === 'thumbnails') {
-            key = `podcasts/thumbnails/${insertionName}${episode}.webp`
-        }
-        if (asset === 'content') {
-            key = `podcasts/content/${insertionName}${episode}.mp4`
-        }
-    }
-    // if (content_type === 'bts_series') {
-    //     if (asset === 'thumbnails') {
-    //         key = `bts_series/thumbnails/${insertionName}${episode}.webp`
-    //     }
-    //     if (asset === 'content') {
-    //         key = `bts_series/content/${insertionName}${episode}.mp4`
-    //     }
-    // }
+    });   
     
-    const s3Client = new S3Client({
-        region: process.env.REGION,
-        credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY,
-            secretAccessKey: process.env.S3_SECRET_KEY,
-        },
+    const insertionName = getURLNamePath(newBTSMovie.bts_movies_name)
+    const commandThumbnail = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_movies/thumbnails/${insertionName}/id?${newBTSMovie.bts_movies_id}${insertionName}.webp`, 
+    });
+    const commandContent= new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `bts_movies/content/${insertionName}/id?${newBTSMovie.bts_movies_id}${insertionName}.mp4`, 
     });
 
-    //for KEY to work the format needs to be exact. 1. Content Type 2. Asset Type 3. Name of Asset 4. File format
-    const fileExtension = asset === 'content' ? 'mp4' : 'webp';
-        const command = new PutObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: key, 
-        });
-
     try {
-        const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-        res.json({ url });
+        const urlThumbnail = await getSignedUrl(s3Client, commandThumbnail, { expiresIn: 3600 });
+        const urlContent = await getSignedUrl(s3Client, commandContent, { expiresIn: 3600 });
+        return [urlThumbnail, urlContent]
+
     } catch (err) {
         console.error(err);
-        return res.status(500).send('Could not generate pre-signed URL');
+        return res.status(500).send('Could not generate pre-signed URLs');
     }
-};
+}
 
 const getURLNamePath = (name) => {
     //replace all spaces

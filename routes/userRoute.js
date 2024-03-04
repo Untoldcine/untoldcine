@@ -14,8 +14,5 @@ router.route('/adminGetAll').get(adminController.adminGetAll)
 router.route('/adminUpdate/:table').post(adminController.adminUpdate)
 router.route('/adminDelete/:table/:id').post(adminController.adminDelete)
 router.route('/adminAdd').post(adminController.adminAdd)
-router.route('/getUploadSignedURL/:content_name/:content_type/:asset').get(adminController.getSignedUrl)
-router.route('/getUploadSignedURLVideo/:parentID/:content/:content_type/:asset').get(adminController.getSignedUrlVideo)
-
 
 module.exports = router;
