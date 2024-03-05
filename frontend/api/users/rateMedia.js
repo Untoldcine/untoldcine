@@ -1,50 +1,47 @@
 const { PrismaClient} = require('@prisma/client')
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
-
 const prisma = new PrismaClient();
 
-// /api/users/rateComment
+// /api/users/rateMedia - body contains table_name, content_id, should also include the choice
+
 module.exports = async (req, res) => {
     const token = req.cookies.token
     if (!token) {
         return res.status(401).json({'Message' : 'Not logged in, cannot submit rating'})
     }
+    const {table_name, content_id} = req.body;
+    const { choice } = req.params //change this
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const {choice} = req.params //change this?
-    const {comment_id, table} = req.body;
-    if (!comment_id || !table) {
-        return res.status(400).json({'Message': 'Missing Data to fulfill user submitted rating of content'})
-    }
 
     let insertionTable
     let insertionID
     let ratingColumnUp
     let ratingColumnDown
 
-    switch(table) {
+    switch(table_name) {
         case 'series':
-            insertionTable = 'Series_Comments'
-            insertionID = 'series_comments_id'
-            ratingColumnUp = 'series_comments_upvotes'
-            ratingColumnDown = 'series_comments_downvotes'
+            insertionTable = 'Series'
+            insertionID = 'series_id'
+            ratingColumnUp = 'series_upvotes'
+            ratingColumnDown = 'series_downvotes'
             break;
-        case 'movie':
-            insertionTable = 'Movie_Comments'
-            insertionID = 'movie_comments_id'
-            ratingColumnUp = 'movie_comments_upvotes'
-            ratingColumnDown = 'movie_comments_downvotes'
+        case 'movies':
+            insertionTable = 'Movies'
+            insertionID = 'movie_id'
+            ratingColumnUp = 'movie_upvotes'
+            ratingColumnDown = 'movie_downvotes'
             break;
-        case 'podcast':
-            insertionTable = 'Podcast_Comments'
-            insertionID = 'podcast_comments_id'
-            ratingColumnUp = 'podcast_comments_upvotes'
-            ratingColumnDown = 'podcast_comments_downvotes'
+        case 'podcasts':
+            insertionTable = 'Podcasts'
+            insertionID = 'podcast_id'
+            ratingColumnUp = 'podcast_upvotes'
+            ratingColumnDown = 'podcast_downvotes'
             break;
     }
+    
     try {
-        const feedbackExists = await findFeedback(decoded.user_id, comment_id, insertionTable);
+        const feedbackExists = await findFeedback(decoded.user_id, content_id, insertionTable);
 
         if (feedbackExists && feedbackExists.feedback_rating === choice) {
             res.status(200).json({ 'Message': 'No change in rating' });
@@ -53,12 +50,12 @@ module.exports = async (req, res) => {
         if (feedbackExists && feedbackExists.feedback_rating !== choice) {
                 // Update the feedback entry and the content rating
                 await deleteFeedbackEntry(feedbackExists);
-                await updateOldContentRating(insertionTable, insertionID, comment_id, ratingColumnUp, ratingColumnDown, choice, feedbackExists.feedback_rating);
+                await updateOldContentRating(insertionTable, insertionID, content_id, ratingColumnUp, ratingColumnDown, choice, feedbackExists.feedback_rating);
                 res.status(200).json({"message": "Feedback updated accordingly"});
                 return
         } else {
             // If feedback doesn't exist, add new feedback and update the content rating
-            const insertNew = await newFeedback(decoded.user_id, insertionTable, comment_id, choice);
+            const insertNew = await newFeedback(decoded.user_id, insertionTable, content_id, choice);
             if (insertNew) {
                 await updateNewContentRating(insertionTable, insertionID, comment_id, ratingColumnUp, ratingColumnDown, choice);
                 res.status(200).json({"message": "New Feedback and rating added"})
@@ -67,8 +64,8 @@ module.exports = async (req, res) => {
             }
         }
     } catch (err) {
-        console.error(err + ': Unable to process rating submission');
-        return res.status(500).json({ 'Message': 'Unable to check if user submitted rating already exists' });
+        console.error('Token verification error:', err);
+        return res.status(401).json({"message": "Invalid or expired token"});
     }
 }
 
