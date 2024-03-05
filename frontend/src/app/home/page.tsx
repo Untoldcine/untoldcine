@@ -27,13 +27,13 @@ export interface BTSMoviesSummary {
     movie_thumbnail: string | null
 }
 
-
+type BTSData = BTSSeriesSummary & BTSMoviesSummary;
 
 
 export default function Test() {
     const [seriesData, setSeriesData] = useState([]);
     const [movieData, setMovieData] = useState([]);
-    const [BTSData, setBTSData] = useState([]);
+    const [BTSData, setBTSData] = useState<BTSData | []>([]);
 
     const [podcastData, setPodcastData] = useState([])
     const [isUserSignedIn, setIsUserSignedIn] = useState(false);
@@ -89,7 +89,10 @@ export default function Test() {
                     title: isSeries ? item.series_name : item.movie_name
                 };
             });
-            setBTSData(allBTSData);
+            console.log(btsRes.data);
+            
+            // setBTSData(allBTSData);
+            
         }
         
 
