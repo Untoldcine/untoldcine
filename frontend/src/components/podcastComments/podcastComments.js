@@ -11,57 +11,64 @@ const PodcastCommentsSection = ({ contentId }) => {
   const [newComment, setNewComment] = useState('');
   const [replyToCommentId, setReplyToCommentId] = useState(null);
   const [visibleComments, setVisibleComments] = useState(5); 
+  const [newReply, setNewReply] = useState('');
+
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/api/podcast/comments/${contentId}`);
+      setComments(response.data); // Assuming the response directly contains the array of comments
+      console.log("Comments fetched successfully:", response.data);
+    } catch (error) {
+      console.error('Failed to fetch comments:', error);
+    }
+  };
 
   useEffect(() => {
-    async function fetchComments() {
-      try {
-        const response = await axios.get(`http://localhost:3001/api/podcast/comments/${contentId}`);
-        setComments(response.data);
-      } catch (error) {
-        console.error('Failed to fetch comments:', error);
-        setComments([]);
-      }
-    }
     fetchComments();
   }, [contentId]);
 
-
-  const handleShowMoreComments = () => {
-    setVisibleComments(prevVisibleComments => prevVisibleComments + 5); 
-  };
+  // const handleShowMoreComments = () => {
+  //   setVisibleComments(prevVisibleComments => prevVisibleComments + 5); 
+  // };
 
   const postNewComment = async () => {
     try {
-      const res = await axios.post(`http://localhost:3001/api/comments/newComment/`, {
+      const response = await axios.post(`http://localhost:3001/api/comments/newComment/`, {
         content_id: contentId,
         table_name: 'podcast',
-        comment: newComment,
-      },
-      { withCredentials: true });
-      console.log(res.data);
-      setNewComment(''); // Reset the input field after posting
-    }
-    catch(err) {
-      console.error(err + ': Error posting new comment');
+        comment: newComment, 
+      }, { withCredentials: true });
+
+      if (response.status === 200) {
+        console.log('Comment posted successfully.');
+        setNewComment(''); 
+        fetchComments();
+      } else {
+        console.error('Failed to post new comment:', response.data);
+      }
+    } catch (err) {
+      console.error('Error posting new comment:', err);
     }
   };
 
+
+
   const postReply = async (parentCommentId) => {
     try {
-      const res = await axios.post(`http://localhost:3001/api/comments/newReply`, {
+      const response = await axios.post(`http://localhost:3001/api/comments/newReply`, {
         parent_comment_id: parseInt(parentCommentId),
-        comment: newComment,
-        table: 'podcast', 
+        comment: newReply, // Use newReply here
+        table: 'podcast',
         parent_content_id: parseInt(contentId),
-      },
-      { withCredentials: true });
-      console.log(res.data);
-      setNewComment(''); 
-      setReplyToCommentId(null); 
-      fetchComments(); 
-    }
-    catch(err) {
-      console.error(err + ': Error posting new reply');
+      }, { withCredentials: true });
+  
+      console.log(response.data);
+      setNewReply(''); // Reset the newReply field correctly
+      setReplyToCommentId(null); // Reset any reply-to-comment state as necessary
+  
+      fetchComments(); // Refetch comments to update the UI with the new reply
+    } catch (err) {
+      console.error('Error posting new reply:', err);
     }
   };
 
@@ -71,7 +78,9 @@ const PodcastCommentsSection = ({ contentId }) => {
   const formatDate = (date) => {
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
-
+  const handleShowMoreComments = () => {
+    setVisibleComments(prevVisibleComments => prevVisibleComments + 5); 
+  };
   const handleRating = async (commentId, voteType) => {
     const ratingType = voteType === '+' ? 'up' : 'down'; 
     try {
@@ -176,9 +185,14 @@ const PodcastCommentsSection = ({ contentId }) => {
                       </div>
                       <p className={styles.commentContent}>{reply.podcast_comments_content}</p>
                       <div className={styles.commentFooter}>
-                        <span className={styles.replyButton} onClick={() => handleReplyClick(reply.podcast_comments_id)}>
-                          <FontAwesomeIcon icon={faReply} /> Reply
-                        </span>
+                      <button
+  className={styles.replyButton}
+  onClick={() => {
+    console.log(`Replying to comment ID: ${reply.podcast_comments_id}`);
+    setReplyToCommentId(reply.podcast_comments_id);
+  }}>
+  <FontAwesomeIcon icon={faReply} /> Reply
+</button>
                       </div>
                     </div>
                   </div>
@@ -190,11 +204,11 @@ const PodcastCommentsSection = ({ contentId }) => {
           {replyToCommentId === comment.podcast_comments_id && (
             <div className={`${styles.replyInputContainer} ${styles.replyToComment}`}>
               <input
-                className={styles.newCommentTextarea}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a reply..."
-              />
+  className={styles.newCommentTextarea}
+  value={newReply}
+  onChange={(e) => setNewReply(e.target.value)}
+  placeholder="Write a reply..."
+/>
               <button className={styles.newCommentButton} onClick={() => postReply(comment.podcast_comments_id)}>
                 Send
               </button>
@@ -205,13 +219,13 @@ const PodcastCommentsSection = ({ contentId }) => {
     ) : (
       <p className={styles.noComments}>No comments yet.</p>
       )}
-        {comments.length > visibleComments && (
-      <button 
-        className={styles.loadMoreButton} 
-        onClick={() => setVisibleComments(visibleComments + 5)}>
-        Load More Comments
-      </button>
-    )}
+      {comments.length > visibleComments && (
+        <button 
+          className={styles.loadMoreButton} 
+          onClick={() => setVisibleComments(visibleComments + 5)}>
+          Load More Comments
+        </button>
+      )}
     </div>
     
   );

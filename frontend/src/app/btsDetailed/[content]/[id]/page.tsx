@@ -46,7 +46,7 @@ useEffect(() => {
   async function fetchPodcastDetails() {
     try {
       const response = await axios.get('http://localhost:3001/api/podcast/podcastSummary/');
-      const podcast = response.data.find(p => p.podcast_id === parseInt(id, 10));
+      const podcast = response.data.find((p: any) => p.podcast_id === parseInt(String(id), 10));
       if (podcast) {
         setPodcastDetails(podcast);
       } else {
@@ -75,14 +75,14 @@ useEffect(() => {
 
 
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
+  const handleTabChange = (tab: string | number) => {
+    setActiveTab(String(tab)); 
+};
 
     return (
       <>  
             {isUserSignedIn ? <NavBarSignedIn /> : <NavBarNotSignedIn />}
-        <HeroSpecificPodcast podcastId={parseInt(id, 10)} onTabChange={handleTabChange} activeTab={activeTab} />
+        <HeroSpecificPodcast podcastId={id} onTabChange={handleTabChange} activeTab={activeTab} />
         <div >
           <div className={`${styles.tabContent} ${activeTab === 'episodes' ? styles.active : ''}`}>
             <PodcastCarousel items={contentData} title="" />

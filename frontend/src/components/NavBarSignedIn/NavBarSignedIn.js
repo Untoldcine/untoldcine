@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Account from '@/components/account/account';
 import styles from './NavBarSignedIn.module.css';
 import UntoldLogo from "../../assets/UntoldLogoHeader.svg";
-import { faBars, faSearch, faUser } from '@fortawesome/free-solid-svg-icons'; // Ensure you have imported faSearch and faUser
+import { faBars, faSearch, faUser } from '@fortawesome/free-solid-svg-icons'; 
 import Link from 'next/link';
 
 export const NavBarSignedIn = () => {
@@ -31,7 +31,9 @@ export const NavBarSignedIn = () => {
         <Link href='/podcasts'> 
           <li>Podcasts</li>
         </Link>
-        <li>Watchlists</li> 
+        <Link href='/watchlist'> 
+        <li>Watchlists</li>
+        </Link> 
         <li>News Feed</li>
       </ul>
       <div className={styles.searchAndProfile}>

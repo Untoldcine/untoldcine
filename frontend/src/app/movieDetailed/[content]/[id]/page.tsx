@@ -26,7 +26,6 @@ const MovieDetailed = ({ params }: { params: { content: string, id: number, imag
   const [movieDetails, setMovieDetails] = useState(null);
 
 
-  //TO DO: add logic for looking for token from cookies. 
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -46,7 +45,7 @@ useEffect(() => {
   async function fetchMovieDetails() {
     try {
       const response = await axios.get('http://localhost:3001/api/movies/movieSummary/');
-      const movie = response.data.find(p => p.movie_id === parseInt(id, 10));
+      const movie = response.data.find((p:any) => p.movie_id === parseInt(String(id), 10));
       if (movie) {
         setMovieDetails(movie);
       } else {
@@ -68,22 +67,22 @@ useEffect(() => {
       setContentData(res.data);
       console.log(res.data)
     }
-    // const token = localStorage.getItem('token'); 
-    // setIsUserSignedIn(!!token);
+    const token = localStorage.getItem('token'); 
+    setIsUserSignedIn(!!token);
     fetchData();
     
   }, []);
 
 
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
+ 
+  const handleTabChange = (tab: string | number) => {
+    setActiveTab(String(tab)); 
+};
 
     return (
       <>  
             {isUserSignedIn ? <NavBarSignedIn /> : <NavBarNotSignedIn />}
-        <HeroSpecificMovie movieId={parseInt(id, 10)} onTabChange={handleTabChange} activeTab={activeTab} />
+        <HeroSpecificMovie movieId={id} onTabChange={handleTabChange} activeTab={activeTab} />
         <div >
           <div className={`${styles.tabContent} ${activeTab === 'episodes' ? styles.active : ''}`}>
             <MovieCarousel items={contentData} title="" />

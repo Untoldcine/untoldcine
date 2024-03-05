@@ -15,7 +15,7 @@ import { faReply, faUser } from '@fortawesome/free-solid-svg-icons';
 import Comments from "@/components/comments/comments";
 
 const Detailed = ({ params }: { params: { content: string, id: number, imageurl: string } }) => {
-  const { id } = params;
+  const { id } = params; 
   const [contentData, setContentData] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -41,7 +41,7 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
     async function fetchSeriesDetails() {
       try {
         const response = await axios.get('http://localhost:3001/api/series/seriesSummary/');
-        const series = response.data.find(s => s.series_id === parseInt(id, 10)); // Assuming your series objects have a series_id field
+        const series = response.data.find((s: any) => s.series_id === parseInt(String(id), 10));
         if (series) {
           setSeriesDetails(series);
         } else {
@@ -57,14 +57,14 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
     fetchSeriesDetails();
   }, [id]);
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
+  const handleTabChange = (tab: string | number) => {
+    setActiveTab(String(tab)); 
+};
 
   return (
     <>  
       {isUserSignedIn ? <NavBarSignedIn /> : <NavBarNotSignedIn />}
-      <HeroSpecificSection seriesId={parseInt(id, 10)} onTabChange={handleTabChange} activeTab={activeTab} />
+      <HeroSpecificSection seriesId={id} onTabChange={handleTabChange} activeTab={activeTab} />
       <div>
         <div className={`${styles.tabContent} ${activeTab === 'episodes' ? styles.active : ''}`}>
           <Carousel items={contentData} title="" />

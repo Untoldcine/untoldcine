@@ -221,7 +221,9 @@
 .summaryContainer {
   width: 40%;
 }
-
+.leftControls {
+  display: flex;
+}
 .seasonButton {
   margin-top: 1rem;
 }

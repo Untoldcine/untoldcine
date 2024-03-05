@@ -13,7 +13,7 @@ const BtsSpecificCarousel = ({ data }) => {
   const getThumbnailUrl = (item) => item.series_thumbnail || item.movie_thumbnail;
   const getTitle = (item) => item.series_name || item.movie_name;
   const getId = (item) => item.series_id || item.movie_id;
-  const getContentType = (item) => item.series_id ? 'series' : 'movie'; // Determine content type based on presence of series_id or movie_id
+  const getContentType = (item) => item.series_id ? 'series' : 'movie'; 
 
   const renderCarousel = (items, title, startIndex, setStartIndex) => (
     <div className={styles.carouselContainer}>
@@ -32,7 +32,7 @@ const BtsSpecificCarousel = ({ data }) => {
             imageUrl={getThumbnailUrl(item)}
             title={getTitle(item)}
             btsId={getId(item)}
-            contentType={getContentType(item)} // Pass the contentType prop based on the item
+            contentType={getContentType(item)}
           />
         ))}
         {startIndex < items.length - itemsToShow && (

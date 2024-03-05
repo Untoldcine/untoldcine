@@ -119,7 +119,9 @@
 .userRating {
   margin-left: 0.25rem;
 }
-
+.leftControls {
+  display: flex;
+}
 .rating {
   margin-left: 0.25rem;
 }
@@ -242,4 +244,13 @@
 .underlineTab {
   border-bottom: 2.5px solid white;
   padding-bottom: 5px;
+}
+
+.info-modal {
+  position: absolute;
+}
+
+.yourOverlayClass {
+  position: absolute;
+  top: 0;
 }

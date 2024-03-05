@@ -433,3 +433,14 @@
     font-size: 0.875rem;
   }
 }
+.votedUp {
+  color: green;
+}
+
+.votedDown {
+  color: red;
+}
+.activeVote {
+  color: blue; /* or any color that indicates an active vote */
+  font-weight: bold; /* optional, for emphasis */
+}

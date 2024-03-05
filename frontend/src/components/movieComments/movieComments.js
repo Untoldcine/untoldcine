@@ -13,7 +13,7 @@ const MovieCommentsSection = ({ contentId }) => {
   const [visibleComments, setVisibleComments] = useState(5); 
 
   useEffect(() => {
-    async function fetchComments() {
+    async function fetchComments() { 
       try {
         const response = await axios.get(`http://localhost:3001/api/movies/comments/${contentId}`);
         setComments(response.data);

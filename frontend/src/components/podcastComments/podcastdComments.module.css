@@ -435,3 +435,6 @@
     font-size: 0.875rem;
   }
 }
+.active {
+  color: blue;
+}

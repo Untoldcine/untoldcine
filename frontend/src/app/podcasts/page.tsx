@@ -31,7 +31,7 @@ export default function Test() {
     useEffect(() => {
   async function fetchPodcast() {
             const podcastRes = await axios.get('http://localhost:3001/api/podcast/podcastSummary/');
-            const transformedPodcastData = podcastRes.data.map(item => ({
+            const transformedPodcastData = podcastRes.data.map((item:any) => ({
                 ...item,
                 type: 'podcast',
                 id: item.podcast_id,

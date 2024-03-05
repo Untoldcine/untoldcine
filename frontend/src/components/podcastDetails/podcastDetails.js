@@ -23,7 +23,7 @@ const PodcastDetails = ({ details }) => {
       <p className={styles.detail}><span className={styles.label}>Upvotes:</span> <span className={styles.detailValue}>{details.podcast_upvotes}</span></p>
       <p className={styles.detail}><span className={styles.label}>Downvotes:</span> <span className={styles.detailValue}>{details.podcast_downvotes}</span></p>
     </div>
-  );
+  ); 
 };
 
 export default PodcastDetails;
