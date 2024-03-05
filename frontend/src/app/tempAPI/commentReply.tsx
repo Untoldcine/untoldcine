@@ -24,7 +24,7 @@ const CommentReply:React.FC<CommentReplyProps> = ({comment_id, table, parent_id}
       )
     }
     catch(err) {
-      console.error(err);
+      console.error(err); 
       
     }
   }

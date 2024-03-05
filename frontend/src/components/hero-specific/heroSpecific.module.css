@@ -113,6 +113,18 @@
   background-color: rgb(255, 255, 255, 0.1);
 }
 
+.totalVotes {
+  margin-left: 0.5rem;
+}
+.userRating {
+  margin-left: 0.25rem;
+}
+.leftControls {
+  display: flex;
+}
+.rating {
+  margin-left: 0.25rem;
+}
 .sliderBarContainer {
   display: flex;
   flex-direction: row;
@@ -232,4 +244,13 @@
 .underlineTab {
   border-bottom: 2.5px solid white;
   padding-bottom: 5px;
+}
+
+.info-modal {
+  position: absolute;
+}
+
+.yourOverlayClass {
+  position: absolute;
+  top: 0;
 }

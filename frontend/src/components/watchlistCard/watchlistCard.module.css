@@ -1,0 +1,34 @@
+.card {
+  display: flex;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.thumbnail {
+  width: 100px;
+  height: auto;
+  margin-right: 1rem;
+}
+
+.info {
+  flex-grow: 1;
+}
+
+.title {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.removeButton {
+  background-color: red;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+}

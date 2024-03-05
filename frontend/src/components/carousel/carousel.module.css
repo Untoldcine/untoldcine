@@ -13,6 +13,7 @@
   display: flex;
   position: relative;
   overflow: hidden;
+  margin-bottom: 1rem;
 }
 
 .card {
@@ -47,4 +48,10 @@
 
 .carouselButtonRight {
   right: 0;
+}
+
+@media (max-width: 492px) {
+  .carouselContainer {
+    margin-bottom: 1rem;
+  }
 }

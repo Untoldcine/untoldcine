@@ -4,11 +4,14 @@ import styles from './heroSpecificPodcast.module.css';
 import PlayNowButton from '../PlayNow/PlayNow';
 import videojs from 'video.js';
 import VideoPlayer from '../videoPlayer/videoPlayer'; 
+import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn.js';
+import Modal from 'react-modal';
+import PodcastDetails from '../podcastDetails/podcastDetails';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
  import {
     faThumbsUp as farThumbsUp,
     faThumbsDown as farThumbsDown,
-    faPlus,
+    faPlus, 
     faInfo,
     faPlay,
     faPause,
@@ -37,11 +40,36 @@ const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab }) => {
   const [remainingTime, setRemainingTime] = useState(0);
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(true);
   const [showControls, setShowControls] = useState(true);
+  const [volume, setVolume] = useState(1); 
+  const [modalIsOpen, setIsOpen] = useState(false);
 
 
 
   const videoRef = useRef(null);
   const previewTimeoutRef = useRef(null); 
+
+  const handleAddToWatchlist = async (contentId, contentType) => {
+    try {
+      const response = await axios.post('http://localhost:3001/api/watchlist/add', {
+        content_id: contentId,
+        content: contentType,
+      }, { withCredentials: true });
+  
+      if (response.status === 200) {
+        console.log("Content added to watchlist");
+      }
+    } catch (error) {
+      console.error('Error adding to watchlist:', error);
+    }
+  };
+   
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -88,8 +116,32 @@ const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab }) => {
       player.play();
     } else {
       player.pause();
+    } 
+  };
+
+  const handleVolumeChange = (newVolume) => {
+    const player = videojs(videoRef.current);
+    
+    if (newVolume !== undefined && !isNaN(newVolume)) {
+      player.volume(newVolume);
+      setIsMuted(newVolume === 0);
+      setVolume(newVolume);
+    } else {
+      const isCurrentlyMuted = player.muted();
+      if (isCurrentlyMuted) {
+        player.muted(false);
+        player.volume(volume); 
+        setIsMuted(false);
+      } else {
+        setVolume(player.volume()); 
+        player.muted(true);
+        setIsMuted(true);
+        setVolume(0); 
+      }
     }
   };
+  
+  
 
   const handleSeek = (event) => {
     const player = videojs(videoRef.current);
@@ -145,7 +197,7 @@ const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab }) => {
         } else {
           console.log('Podcast not found');
         }
-      } catch (error) {
+      } catch (error) { 
         console.error('Fetching data failed', error);
       }
     }
@@ -197,16 +249,61 @@ const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab }) => {
           </div>
           <div className={styles.actions}>
             <PlayNowButton title="Play Now" onClick={handlePlayNowClick} className={styles.playButton} />
-            <FontAwesomeIcon className={`${styles.iconCircle} ${styles.plusSign}`} icon={faPlus} />
-            <FontAwesomeIcon className={`${styles.iconCircle} ${styles.infoButton}`} icon={faInfo} />
-          </div>
+            <FontAwesomeIcon
+            className={`${styles.iconCircle} ${styles.plusSign}`}
+            icon={faPlus}
+            onClick={() => handleAddToWatchlist(podcastId, "podcast")} 
+          />          
+        <FontAwesomeIcon
+          icon={faInfo}
+          className={`${styles.iconCircle} ${styles.infoButton}`}
+          onClick={openModal}
+        />          
+        </div>
+        <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={{
+          overlay: {
+            // backgroundColor: 'rgba(0, 0, 0, 0.75)'
+          },
+          content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            width: '50%'
+
+            
+            // Add more styling here
+          }
+        }}        overlayClassName="yourOverlayClass" 
+        contentLabel="Series Details"
+      >
+        <div className={styles.modalContent}>
+        <h2>{podcastData?.podcast_name}</h2>
+        <p>Type: {podcastData?.podcast_type}</p>
+        <p>Starring: {podcastData?.podcast_starring}</p>
+        <p>Director: {podcastData?.podcast_directors}</p>
+        <p>Producer: {podcastData?.podcast_producers}</p>
+
+        <h2>{podcastData?.genres}</h2>
+
+        {/* <PodcastDetails podcastId={podcastId} /> */}
+
+          <button onClick={closeModal} className={styles.closeButton}>Close</button>
+        </div>
+      </Modal>
         </div>
       </div>
       <div className={styles.sliderBarContainer}>
         <p className={`${styles.sliderBar} ${activeTab === 'episodes' ? styles.underlineTab : ''}`} onClick={() => onTabChange('episodes')}>Episodes</p>
         <p className={`${styles.sliderBar} ${activeTab === 'related' ? styles.underlineTab : ''}`} onClick={() => onTabChange('related')}>Related</p>
         <p className={`${styles.sliderBar} ${activeTab === 'discussions' ? styles.underlineTab : ''}`} onClick={() => onTabChange('discussions')}>Discussions</p>
-        <p className={`${styles.sliderBar} ${activeTab === 'behindTheScenes' ? styles.underlineTab : ''}`} onClick={() => onTabChange('behindTheScenes')}>Behind the Scenes</p>
+        <p className={`${styles.sliderBar} ${activeTab === 'behindTheScenes' ? styles.underlineTab : ''}`} data-tab-name="BTS" onClick={() => onTabChange('behindTheScenes')}>Behind the Scenes</p>
         <p className={`${styles.sliderBar} ${activeTab === 'details' ? styles.underlineTab : ''}`} onClick={() => onTabChange('details')}>Details</p>
       </div>
       {isVideoModalOpen && (
@@ -250,9 +347,20 @@ const HeroSpecificPodcast = ({ podcastId, onTabChange, activeTab }) => {
           <button className={styles.customButton} onClick={skipForward}>
             <FontAwesomeIcon icon={faArrowRotateRight} />
           </button>
-          <button className={styles.customButton}>
+          <button className={styles.customButton} onClick={() => handleVolumeChange()}>
             <FontAwesomeIcon icon={isMuted ? faVolumeMute : faVolumeUp} />
           </button>
+
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+          className={styles.volumeSlider}
+        />
+
         </div>
         <div className={styles.rightControls}>
           <button className={styles.customButton}>

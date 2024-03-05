@@ -34,9 +34,9 @@ export default function Home() {
                 <li>No Dolby Atmos</li>
             </ul>
             <div className={styles.saveContainer}> 
-            <PlayNowButton title="Save 16%" onClick = {console.log('hello')}/>
+            <PlayNowButton title="Save 16%" onClick={console.log("hello")}/>
             </div>
-            <PlayNowButton title="Get Free Trial" onClick = {console.log('hello')}/>
+            <PlayNowButton title="Get Free Trial" onClick={console.log("hello")}/>
         </div>
       </div>
       <div className={styles.popup}>
@@ -50,9 +50,9 @@ export default function Home() {
                 <li>No Dolby Atmos</li>
             </ul>
             <div className={styles.saveContainer}> 
-            <PlayNowButton title="Save 16%" onClick = {console.log('hello')}/>
+            <PlayNowButton title="Save 16%" onClick={console.log("hello")}/>
             </div>
-            <PlayNowButton title="Get Free Trial" onClick = {console.log('hello')}/>
+            <PlayNowButton title="Get Free Trial" onClick={console.log("hello")}/>
 
         </div>
       </div>
@@ -67,9 +67,9 @@ export default function Home() {
                 <li>Dolby Atmos Support</li>
             </ul>
             <div className={styles.saveContainer}> 
-            <PlayNowButton title="Save 16%" onClick = {console.log('hello')}/>
+            <PlayNowButton title="Save 16%" onClick={console.log("hello")}/>
             </div>
-            <PlayNowButton title="Get Free Trial" onClick = {console.log('hello')}/>
+            <PlayNowButton title="Get Free Trial" onClick={console.log("hello")}/>
 
         </div>
       </div>

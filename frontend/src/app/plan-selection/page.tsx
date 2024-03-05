@@ -61,8 +61,8 @@ export default function Home() {
                   <li key={featureIndex}>{feature}</li>
                 ))}
               </ul>
-              {isAnnual && <div className={styles.saveContainer}><PlayNowButton title="Save 16%" onClick = {console.log('hello')}/></div>}
-              <PlayNowButton title="Get Free Trial" onClick = {console.log('hello')} />
+              {isAnnual && <div className={styles.saveContainer}><PlayNowButton title="Save 16%" onClick={console.log("hello")}/></div>}
+              <PlayNowButton title="Get Free Trial" onClick={console.log("hello")}/>
             </div>
           </div>
         ))}

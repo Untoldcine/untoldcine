@@ -23,13 +23,16 @@ export const NavBarNotSignedIn = () => {
         <FontAwesomeIcon icon={faBars} size="2x" />
       </button>
       <ul className={`${styles.navList} ${isNavExpanded ? styles.show : ''}`}>
-        <Link href='/test'>
+        <Link href='/home'>
           <li>Home</li>
         </Link>
-        <li>Behind-the-scenes</li>
+        <Link href='/bts'>
+          <li>Behind The Scenes</li>
+        </Link>     
+        <Link href='/podcasts'> 
         <li>Podcasts</li>
+        </Link>
         <li>Watchlists</li> 
-        <li>Live Events</li>
         <li>News Feed</li>
       </ul>
       <div className={`${styles.navButtons} ${isNavExpanded ? styles.showButtons : ''}`}>
@@ -41,5 +44,5 @@ export const NavBarNotSignedIn = () => {
         </Link>
       </div>
     </nav>
-  ); 
+  );  
 };

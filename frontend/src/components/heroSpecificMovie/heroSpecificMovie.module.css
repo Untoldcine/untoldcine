@@ -1,0 +1,237 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.titleContainer {
+  transform: translateY(-30%);
+  margin-left: 1rem;
+}
+
+.titleImage {
+  max-width: 100%;
+}
+
+.title {
+  margin: 0rem !important;
+}
+
+/* .metaContainer {
+    } */
+
+.ratings {
+  margin-bottom: 1rem;
+}
+
+.rating {
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+}
+
+.userRating {
+  margin-bottom: 1rem;
+}
+
+.info {
+  margin-bottom: 1.5rem;
+}
+
+.separator {
+  margin: 0 10px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  width: 25%;
+}
+
+.playButton {
+  margin-right: 1rem;
+}
+
+/* .addButton {
+    } */
+
+.iconCircle {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.infoButton {
+  border: 2px solid white;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  padding: 0.75rem;
+  margin-right: 0.5rem;
+  background-color: rgb(255, 255, 255, 0.1);
+}
+
+.plusSign {
+  border: 2px solid white;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  padding: 0.75rem;
+  margin-right: 0.5rem;
+  margin-left: 1rem;
+  background-color: rgb(255, 255, 255, 0.1);
+}
+
+.sliderBarContainer {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  justify-content: space-around;
+  margin-bottom: -1rem;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: 300px;
+  }
+
+  .sliderBarContainer {
+    width: 70%;
+  }
+
+  /* .heroImage {
+      } */
+
+  .overlay {
+    padding: 10px;
+  }
+
+  .titleContainer {
+    transform: translateY(-10%);
+  }
+
+  .titleImage {
+    width: auto;
+    height: auto;
+    max-height: 85px;
+  }
+
+  .ratings,
+  .info {
+    font-size: 0.8rem;
+  }
+
+  .iconCircle {
+    width: 20px;
+    height: 20px;
+    line-height: 30px;
+    font-size: 1rem;
+  }
+
+  .plusSign {
+    width: 20px;
+    height: 20px;
+  }
+  .hamburger {
+    display: block;
+  }
+  .navList,
+  .navButtons {
+    display: block;
+  }
+  /* .navList {
+      } */
+  .navButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 568px) {
+  .sliderBarContainer {
+    width: 100%;
+    margin-top: 2rem;
+  }
+  .titleContainer {
+    margin-bottom: 2rem;
+  }
+  .summaryContainer {
+    display: none;
+  }
+}
+
+@media (max-width: 492px) {
+  .actions {
+    width: auto;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .titleContainer {
+    text-align: center;
+    transform: translateY(0%);
+    margin-left: 0rem;
+  }
+
+  .infoButton {
+    margin-right: -0.5rem;
+  }
+  .summaryContainer {
+    display: none;
+  }
+
+  .sliderBarContainer {
+    display: none;
+  }
+}
+
+.summaryContainer {
+  width: 40%;
+}
+.leftControls {
+  display: flex;
+}
+.seasonButton {
+  margin-top: 1rem;
+}
+
+.sliderBar:hover {
+  cursor: pointer;
+}
+.underlineTab {
+  border-bottom: 2.5px solid white;
+  padding-bottom: 5px;
+}
