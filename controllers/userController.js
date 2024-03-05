@@ -96,45 +96,52 @@ exports.submitCommentRating = async (req, res) => {
 
     let insertionTable
     let insertionID
-    let ratingColumn
+    let ratingColumnUp
+    let ratingColumnDown
 
     switch(table) {
         case 'series':
             insertionTable = 'Series_Comments'
             insertionID = 'series_comments_id'
-            ratingColumn = choice === 'up' ? 'series_comments_upvotes' : 'series_comments_downvotes'
+            ratingColumnUp = 'series_comments_upvotes'
+            ratingColumnDown = 'series_comments_downvotes'
             break;
         case 'movie':
             insertionTable = 'Movie_Comments'
             insertionID = 'movie_comments_id'
-            ratingColumn = choice === 'up' ? 'movie_comments_upvotes' : 'movie_comments_downvotes'
+            ratingColumnUp = 'movie_comments_upvotes'
+            ratingColumnDown = 'movie_comments_downvotes'
             break;
         case 'podcast':
             insertionTable = 'Podcast_Comments'
             insertionID = 'podcast_comments_id'
-            ratingColumn = choice === 'up' ? 'podcast_comments_upvotes' : 'podcast_comments_downvotes'
+            ratingColumnUp = 'podcast_comments_upvotes'
+            ratingColumnDown = 'podcast_comments_downvotes'
             break;
     }
     try {
         const feedbackExists = await findFeedback(decoded.user_id, comment_id, insertionTable);
 
-        //TO DO: RESET THE FEEDBACK IF IT IS AT 0 AS IT DOESN'T ALLOW DUPLICATIONS, PERMA STUCK AT 0 OR WHATEVER - AUSTIN BUG
-        // If feedback exists, check if the rating choice has changed
-        if (feedbackExists) {
-            if (feedbackExists.feedback_rating !== choice) {
+        if (feedbackExists && feedbackExists.feedback_rating === choice) {
+            res.status(200).json({ 'Message': 'No change in rating' });
+            return
+        } 
+        if (feedbackExists && feedbackExists.feedback_rating !== choice) {
                 // Update the feedback entry and the content rating
-                await updateFeedbackEntry(feedbackExists, choice);
-                await updateContentRating(insertionTable, insertionID, comment_id, ratingColumn);
-            }
-            // If the choice hasn't changed, do nothing to avoid duplicate voting
+                await deleteFeedbackEntry(feedbackExists);
+                await updateOldContentRating(insertionTable, insertionID, comment_id, ratingColumnUp, ratingColumnDown, choice, feedbackExists.feedback_rating);
+                res.status(200).json({"message": "Feedback updated accordingly"});
+                return
         } else {
             // If feedback doesn't exist, add new feedback and update the content rating
             const insertNew = await newFeedback(decoded.user_id, insertionTable, comment_id, choice);
             if (insertNew) {
-                await updateContentRating(insertionTable, insertionID, comment_id, ratingColumn);
+                await updateNewContentRating(insertionTable, insertionID, comment_id, ratingColumnUp, ratingColumnDown, choice);
+                res.status(200).json({"message": "New Feedback and rating added"})
+                return 
+
             }
         }
-        res.status(200).json({ 'Message': 'Rating submitted successfully' });
     } catch (err) {
         console.error(err + ': Unable to process rating submission');
         return res.status(500).json({ 'Message': 'Unable to check if user submitted rating already exists' });
@@ -191,7 +198,7 @@ exports.submitMediaRating = async (req, res) => {
     }
 }
 
-//these 4 async functions are all for submitRating
+//these async functions are all for submitRating
 async function findFeedback(user_id, comment_id, insertionTable) {
     const existingFeedback = await prisma.Feedback.findFirst({
         where: {
@@ -203,27 +210,14 @@ async function findFeedback(user_id, comment_id, insertionTable) {
     return existingFeedback
 }
 
-async function updateFeedbackEntry(feedbackObj, choice) {
-    const {feedback_id, feedback_rating} = feedbackObj
-
-    let newRating
-    if (choice === 'up' && feedback_rating !== 'up') {
-        newRating = 'up'
-    }
-    else if (choice === 'down' && feedback_rating !== 'down') {
-        newRating = 'down'
-    }
-    else {
-        newRating = feedback_rating
-    }
-    return prisma.Feedback.update({
+//since the choice is different, delete your existing entry if you voted differently and therefore removing history of your choice
+async function deleteFeedbackEntry(feedbackObj) {
+    const {feedback_id} = feedbackObj
+    await prisma.Feedback.delete({
         where: {
-            feedback_id: feedback_id,
-        },
-        data: {
-            feedback_rating: newRating
-        },
-    });
+            feedback_id
+        }
+    })
 }
 
 async function newFeedback(user_id, insertionTable, content_id, choice) {
@@ -238,19 +232,58 @@ async function newFeedback(user_id, insertionTable, content_id, choice) {
     return insertFeedback;
 }
 
-async function updateContentRating(insertionTable, insertionID, content_id, ratingColumn) {
-    return prisma[insertionTable].update({
-        where:{
-            [insertionID]: content_id
-        },
-        data: {
-            [ratingColumn]: {
-                increment: 1
+async function updateOldContentRating(insertionTable, insertionID, content_id, ratingColumnUp, ratingColumnDown, choice, previous) {
+    if (choice === 'up' && previous === 'down') {
+        return prisma[insertionTable].update({
+            where:{
+                [insertionID]: content_id
+            },
+            data: {
+                [ratingColumnDown]: {
+                    decrement: 1
+                }
             }
-        }
-    })
+        })
+    }
+    if (choice === 'down' && previous.feedback_rating === 'up') {
+        return prisma[insertionTable].update({
+            where:{
+                [insertionID]: content_id
+            },
+            data: {
+                [ratingColumnUp]: {
+                    decrement: 1
+                }
+            }
+        })
+    }
 }
-    
+async function updateNewContentRating(insertionTable, insertionID, content_id, ratingColumnUp, ratingColumnDown, choice) {
+    if (choice === 'up') {
+        return prisma[insertionTable].update({
+            where:{
+                [insertionID]: content_id
+            },
+            data: {
+                [ratingColumnUp]: {
+                    increment: 1
+                }
+            }
+        })
+    }
+    if (choice === 'down') {
+        return prisma[insertionTable].update({
+            where:{
+                [insertionID]: content_id
+            },
+            data: {
+                [ratingColumnDown]: {
+                    increment: 1
+                }
+            }
+        })
+    }
+} 
 
 exports.removeUser = async (req, res) => {
     const { userID } = req.params;
