@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Active from "./Active"
 import AddPanel from "./AddPanel"
+import EditHero from "./EditHero"
 
 const Master = ({ content }) => {
   // console.log(content);
@@ -14,8 +15,13 @@ const Master = ({ content }) => {
 
   const [activePanel, setActivePanel] = useState({});
   const [activePanelOn, setActivePanelOn] = useState(false)
+
+  const [heroPanel, setHeroPanel] = useState({});
+  const [heroPanelOn, setHeroPanelOn] = useState(false)
+
   const [addPanel, setAddPanel] = useState(false)
   const [inputValue, setInputValue] = useState("");
+
   const [selectedContentType, setSelectedContentType] = useState("none");
   const [filteredContent, setFilteredContent] = useState([]);
 
@@ -45,6 +51,13 @@ const Master = ({ content }) => {
   //invoked when adding content, toggles the edited panel off
   const handleToggleAdd = () => {
     setAddPanel(true)
+    setHeroPanelOn(false)
+    setActivePanelOn(false)
+  }
+
+  const handleToggleHero = () => {
+    setHeroPanelOn(true)
+    setAddPanel(false)
     setActivePanelOn(false)
   }
 
@@ -52,6 +65,7 @@ const Master = ({ content }) => {
     <div className="admin-wrapper">
       <div className="admin-choices">
         <button className="search-button" onClick = {() => handleToggleAdd()}>Add New Content</button>
+        <button className="search-button" onClick = {() => handleToggleHero()}>Edit Hero</button>
         <div className="admin-choices-right">
           <label style={{ color: "white" }}>Search for Content</label>
           <select
@@ -93,6 +107,7 @@ const Master = ({ content }) => {
       {/* <button onClick = {() => logOut()}>Log Out</button> */}
       {activePanelOn ? <Active type = {selectedContentType} details = {activePanel} countries = {content.countries} toggle = {setSelectedContentType}/> : null}
       {addPanel ? <AddPanel allContent = {content}/> : null }
+      {heroPanelOn ? <EditHero/> : null}
     </div>
   );
 };

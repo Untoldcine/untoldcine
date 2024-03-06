@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react'
+import axios from "axios"
 
 
 const ActiveSeries = ({details, convertDate, upload, deleteContent}) => {
@@ -31,6 +32,11 @@ const ActiveSeries = ({details, convertDate, upload, deleteContent}) => {
             setAssetChange({...assetChange, [field]:true})
             setAssetValue({...assetValue, [field]: file})
         }
+
+        const setAsHeroBanner = async (e) => {
+            e.preventDefault()
+            const res = await axios.get('http://localhost:3001/api/user/admin/getHero')
+        }   
 
    return (
             <form className='active-wrapper' onSubmit = {(e) => upload(e, type, details, inputValues, assetChange, assetValue, setUploadProgress)}>
@@ -229,6 +235,7 @@ const ActiveSeries = ({details, convertDate, upload, deleteContent}) => {
                     )}</p>
                     <div className='active-bottom'>
                     <button className='active-finish' type = "submit">Save Changes</button>
+                    <button className='active-makehero' type = 'button' onClick = {(e) => setAsHeroBanner(e)}>Make Hero Banner</button>
                     {toggleDelete ? <div>
                     <p>Are you sure?</p>
                     <button type = "button" onClick = {() => setToggleDelete(false)} className='active-finish'>Go Back</button>

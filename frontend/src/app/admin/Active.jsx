@@ -72,24 +72,23 @@ const handleDeleteData = async (e, type, id) => {
 //In this case, the type of content that ADMIN is editing (i.e. Series, Videos, Movies, Podcasts, BTS)
 
 const Active = ({type, details}) => {
-    // console.log(details);
     if (type === 'series') {
-        <ActiveSeries details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/>
+        return<ActiveSeries details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/>
     }
     if (type === 'video') {
-        <ActiveVideo details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/>
+        return<ActiveVideo details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/>
     }
     if (type === 'movie') {
-        <ActiveMovie details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
+        return<ActiveMovie details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
     }
     if (type === 'podcast') {
-        <ActivePodcast details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
+       return <ActivePodcast details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
     }
     if (type === 'bts_series') {
-        <ActiveBTSSeries details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
+       return <ActiveBTSSeries details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
     }
     if (type === 'bts_movies') {
-        <ActiveBTSMovies details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
+       return <ActiveBTSMovies details = {details} convertDate={convertDate} upload = {handleChangedData} deleteContent = {handleDeleteData}/> 
     }
 }
 

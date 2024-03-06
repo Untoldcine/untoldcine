@@ -9,6 +9,8 @@ router.route('/rating/:choice').post(userController.submitCommentRating)
 router.route('/mediaRating/:choice').post(userController.submitMediaRating)
 router.route('/delete/:userID').post(userController.removeUser)
 
+router.route('/admin/getHero').get(adminController.adminGetHero)
+
 router.route('/adminLogin').post(adminController.adminLogIn)
 router.route('/adminGetAll').get(adminController.adminGetAll)
 router.route('/adminUpdate/:table').post(adminController.adminUpdate)

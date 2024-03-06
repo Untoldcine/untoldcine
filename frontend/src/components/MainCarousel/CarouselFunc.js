@@ -27,7 +27,6 @@ export const getPodcastData = async () => {
 
 export const getBTSData = async () => {
     const res = await axios.get('http://localhost:3001/api/bts/summaryBTSAllArray')
-    console.log(res.data);
     return res.data
 }
 

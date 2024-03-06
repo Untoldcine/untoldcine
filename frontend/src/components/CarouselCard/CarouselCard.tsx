@@ -33,7 +33,7 @@ const Card:React.FC<CardProps> = ({ type, content }) => {
         const { series_id, series_name, series_thumbnail, genres, series_length, reviewed } = content        
     
         return (
-          <Link href = ''>
+          <Link href = {`/detailed/series/${series_id}`}>
           <div className={styles.cardLink}>
             <div className={styles.card}>
                 <div className={styles.card}>
@@ -49,7 +49,7 @@ const Card:React.FC<CardProps> = ({ type, content }) => {
         const {movie_id, movie_name, movie_thumbnail, genres, movie_length, reviewed} = content
     
         return (
-            <Link href = ''>
+            <Link href = {`/detailed/movies/${movie_id}`}>
             <div className={styles.cardLink}>
               <div className={styles.card}>
                   <div className={styles.card}>
@@ -65,7 +65,7 @@ const Card:React.FC<CardProps> = ({ type, content }) => {
         const {podcast_id, podcast_name, podcast_thumbnail, podcast_status, reviewed} = content
     
         return (
-            <Link href = ''>
+            <Link href = {`/detailed/podcasts/${podcast_id}`}>
             <div className={styles.cardLink}>
               <div className={styles.card}>
                   <div className={styles.card}>

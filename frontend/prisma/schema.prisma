@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("RDS_DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -81,6 +81,7 @@ model Series {
   completed           Boolean @default(false)
   series_main         String?
   series_directors    String?
+  series_starring     String?
   series_producers    String?
   series_thumbnail    String?
   genres              Series_Genres[]
@@ -373,4 +374,18 @@ model Watchlist {
   user                  User @relation(fields:[user_id], references:[user_id])
 
   @@map("watchlist")
+}
+
+enum HeroTypes {
+  series
+  movies
+  podcasts
+}
+
+model Current_Hero {
+  main_id             Int @id
+  content_id          Int
+  table_name          HeroTypes
+
+  @@map("current_hero")
 }

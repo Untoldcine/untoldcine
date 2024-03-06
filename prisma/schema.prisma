@@ -375,3 +375,17 @@ model Watchlist {
 
   @@map("watchlist")
 }
+
+enum HeroTypes {
+  series
+  movies
+  podcasts
+}
+
+model Current_Hero {
+  main_id             Int @id
+  content_id          Int
+  table_name          HeroTypes
+
+  @@map("current_hero")
+}

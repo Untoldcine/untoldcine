@@ -6,8 +6,7 @@ import styles from './page.module.css';
 import Carousel from "@/components/carousel/carousel";
 import HeroSpecificSection from "@/components/hero-specific/heroSpecific";
 import { Footer } from "@/components/Footer/Footer";
-import { NavBarNotSignedIn } from "@/components/NavBarNotSignedIn/NavBarNotSignedIn";
-import { NavBarSignedIn } from '@/components/NavBarSignedIn/NavBarSignedIn.js';
+import { NavBar } from "@/components/NavBar/NavBar";
 import SeriesDetails from "@/components/seriesDetails/seriesDeatils"
 import { formatDistanceToNow } from 'date-fns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -62,7 +61,7 @@ const Detailed = ({ params }: { params: { content: string, id: number, imageurl:
 ;
     return (
       <>  
-        <NavBarNotSignedIn />
+        <NavBar />
         <HeroSpecificSection seriesId={id} onTabChange={handleTabChange} activeTab={activeTab} />
         <div >
           <div className={`${styles.tabContent} ${activeTab === 'episodes' ? styles.active : ''}`}>

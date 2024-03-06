@@ -6,6 +6,27 @@ const cfsign = require('aws-cloudfront-sign');
 
 const prisma = new PrismaClient();
 
+exports.adminGetHero = async (req, res) => {
+    try {
+        const heroEntries = await prisma.current_Hero.findMany();
+        if (heroEntries && heroEntries.length > 0) {
+            const heroID = heroEntries[0]; 
+            if (heroID.table_name === 'series') {
+                const getSeriesHero = await prisma.series.findFirst({
+                    where: {
+                        series_id: heroID.content_id
+                    }
+                })
+            }
+        } else {
+            console.log("No entries found in '.");
+            res.status(404).send("No hero entry found.");
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("An error occurred while fetching the hero entry.");
+    }
+}
 
 exports.adminLogIn = async(req, res) => {
     const {email, password} = req.body

@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { TextField } from '@/components/TextField/TextField'
+import Logo from "@/assets/UntoldLogoHeader.svg"
 import "./styles.css";
-import { PrimaryButton } from "@/components/PrimaryButton/PrimaryButton.js";
+import Link from "next/link";
+
 
 import axios from 'axios';
 import Master from './Master';
@@ -42,7 +44,7 @@ const Admin = () => {
 
   const retrieveAll = async () => {
     const data = await axios.get('http://localhost:3001/api/user/adminGetAll')
-    setAllContentData(data.data)
+    setAllContentData(data.data)    
     
   }
 
@@ -60,6 +62,8 @@ const Admin = () => {
 
   else {
     return (
+      <>
+      <Link href = "/home" className='top_logo'><img src = {Logo.src}></img></Link>
       <main className="main">
         <form className="popup" onSubmit={(e) => handleSignIn(e)}>
           <h4 className="title">Admin Sign In</h4>
@@ -70,11 +74,11 @@ const Admin = () => {
           <div>
           </div>
           <div className="buttonContainer">
-            <PrimaryButton className="primary">Sign In</PrimaryButton>
+            <button className='primaryButton' type = "submit">Log In</button>
           </div>
         </form>
-        {/* <button onClick = {() => testGet()}>Click</button> */}
       </main>
+      </>
     )
   }
 }
