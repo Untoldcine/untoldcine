@@ -3,8 +3,8 @@ import React, { useState } from "react"
 import styles from "./page.module.css";
 import Link from "next/link";
 import { TextField } from "@/components/TextField/TextField.js";
-import { PrimaryButton } from "@/components/PrimaryButton/PrimaryButton.js";
 import axios from "axios";
+import Logo from "@/assets/UntoldLogoHeader.svg"
 
 type InputFields = {
   nickname: string
@@ -46,24 +46,23 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
+      <Link href = "/home" className={styles.top_logo}><img src = {Logo.src} ></img></Link>
       <form className={styles.popup} onSubmit={(e) => handleSignUp(e)}>
-        <h4 className={styles.title}>Sign up</h4>
+        <h4 className={styles.title}>Sign Up</h4>
         <TextField update = {setInputFields} value = {inputFields.nickname} text="User Name" icon="fa fa-user icon" field = "username"/>
         <TextField update = {setInputFields} value = {inputFields.email} text="Email" icon="fa fa-envelope icon" field = "email"/>
         <TextField update = {setInputFields} value = {inputFields.password} text="Password" icon="fa fa-lock icon" field = "password"/>
         <div className="box">
-          <input value = {confirmPasswordValue} placeholder = "Confirm Password" onChange = {(e) => setConfirmPasswordValue(e.target.value)}/>
-          <i className ="fa fa-lock icon" ></i>
+        <i className ="fa fa-lock icon" ></i>
+          <input value = {confirmPasswordValue} type = 'password' placeholder = "Confirm Password" onChange = {(e) => setConfirmPasswordValue(e.target.value)} className="input"/>
         </div>
-        <div>
-          <div className={styles.container}>
+        {/* <div className={styles.remember_container}>
             <span className={styles.checkmark}></span>
             <input type="checkbox" className={styles.checkbox} />
             <p>Remember Me</p>
-          </div>
-        </div>
+        </div> */}
         <div className={styles.buttonContainer}> 
-        <PrimaryButton className={styles.primaryButton}>Create an Account</PrimaryButton>
+        <button className={styles.primaryButton} type = "submit">Create an Account</button>
         </div>
         <p className={styles.remember}>
           Already have an account with us? <Link className={styles.signInLink} href="/sign-in">Sign in</Link>

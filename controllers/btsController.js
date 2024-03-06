@@ -167,6 +167,80 @@ async function getMovies () {
         return moviesData;
 }
 
+exports.getSummaryBTSAllArray= async (_req, res) => {
+    try {
+        const series = await getSeries()
+        const movies = await getMovies()
+        const allMedia = [...series, ...movies]
+        allMedia.sort((a, b) => new Date(b.date_created) - new Date(a.date_created))  ;
+        res.status(200).json(allMedia);
+    }
+    catch(err) {
+        console.error(err + 'Problem querying DB to retrieve summary of all BTS Content Summaries');
+        return res.status(500).json({"message" : "Internal server error"});
+     }
+}
+
+async function getSeries () {
+        const uniqueSeriesIDs = await prisma.BTS_Series.findMany({
+            select: {
+                bts_series_id: true,
+                parent_series_id: true,
+                date_created: true
+            },
+            distinct: ['parent_series_id'] //only allows unique values
+        })
+        const seriesData = await Promise.all(uniqueSeriesIDs.map(async (bts) => {
+            const seriesDetail = await prisma.series.findUnique({
+                where: {
+                    series_id: bts.parent_series_id
+                },
+                select: {
+                    series_id: true,
+                    series_name: true,
+                    series_status: true,
+                    series_thumbnail: true
+                }
+            })
+            return {
+                ...seriesDetail,
+                date_created: bts.date_created,
+                bts_series_id: bts.bts_series_id
+            }
+        }))
+        return seriesData;
+}
+
+async function getMovies () {
+        const uniqueMovieIDs = await prisma.BTS_Movies.findMany({
+            select: {
+                bts_movies_id: true,
+                parent_movie_id: true,
+                date_created: true
+            },
+            distinct: ['parent_movie_id']
+        })
+        const moviesData = await Promise.all(uniqueMovieIDs.map(async (bts) => {
+        const moviesDetail = await prisma.movies.findUnique({
+                where: {
+                    movie_id: bts.parent_movie_id
+                },
+                select: {
+                    movie_id: true,
+                    movie_name: true,
+                    movie_status: true,
+                    movie_thumbnail: true
+                }
+            })
+            return {
+                ...moviesDetail,
+                date_created: bts.date_created,
+                bts_movies_id: bts.bts_movies_id
+            }
+        }))
+        return moviesData;
+}
+
 exports.getSpecificSeriesBTS = async (req, res) => {
     const { series_id } = req.params
     const id = Number(series_id)

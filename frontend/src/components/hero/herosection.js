@@ -1,3 +1,4 @@
+  'use client'
   import React, { useState, useRef, useEffect } from 'react';
   import styles from './hero.module.css';
   import videojs from 'video.js';

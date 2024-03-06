@@ -3,16 +3,16 @@ import { useState } from "react"
 import styles from "./page.module.css";
 import Link from "next/link";
 import { TextField } from "@/components/TextField/TextField.js";
-import { PrimaryButton } from "@/components/PrimaryButton/PrimaryButton.js";
-import { SocialBar } from "@/components/SocialIconBar/SocialIconBar"; 
-import { FooterLogo } from "@/components/FooterLogo/FooterLogo"; 
-import { Footer } from "@/components/Footer/Footer";
 import axios from "axios";
+import Logo from "@/assets/UntoldLogoHeader.svg"
+import { useRouter } from 'next/navigation';
+
+
 
 export default function Home() {
-
   const [inputFields, setInputFields] = useState({ email: '', password: '' })
-
+  const router = useRouter();
+  
   //NEED TO ADD: 'Remember Me' functionality which uses Persistent Cookies to keep users logged in for longer periods of time
   //If user is already logged in, retrieve their info once again
   const handleSignIn = async (e: React.FormEvent) => {
@@ -27,8 +27,9 @@ export default function Home() {
       }, { withCredentials: true })
       if (res.status === 200) {
         //Browser will receive cookie for authorization, handles submission automatically on subsequent API calls
-       console.log('works!');
-       
+
+        setItemWithExpiry('untoldcine-loggedin', 'true', 24 * 60 * 60 * 1000); // TTL is 24 hours
+        router.push('/home');
       }
     }
     catch (err:any) {
@@ -38,16 +39,27 @@ export default function Home() {
       console.error(err + ': Error attempting to log in');
     }
   }
+
+  const setItemWithExpiry = (key: string, value: string, ttl: number) => {
+    const now = new Date();
+
+    const item = {
+        value: value,
+        expiry: now.getTime() + ttl,
+    };
+    localStorage.setItem(key, JSON.stringify(item));
+};
  
   return (
     <main className={styles.main}>
+      <Link href = "/home" className={styles.top_logo}><img src = {Logo.src} ></img></Link>
       <form className={styles.popup} onSubmit={(e) => handleSignIn(e)}>
         <h4 className={styles.title}>Sign In</h4>
         <div className={styles.textfieldContainer}> 
         <TextField text="Email" value={inputFields.email} update={setInputFields} icon="fa fa-user icon" field='email' />
         <TextField text="Password" value={inputFields.password} update={setInputFields} icon="fa fa-lock icon" field='password' />
         </div>
-        <div>
+        {/* <div>
           <div className={styles.container}>
             <span className={styles.checkmark}></span>
             <div className={styles.checkboxContainer}> 
@@ -59,12 +71,12 @@ export default function Home() {
             </p>
           </div>
 
-        </div>
+        </div> */}
         <div className={styles.buttonContainer}>
-          <PrimaryButton className={styles.primary}>Sign In</PrimaryButton>
+        <button className={styles.primaryButton} type = "submit">Create an Account</button>
         </div>
         <p className={styles.remember}>
-          Don&apos;t have any account? <Link href="/">Sign up</Link>
+        Already have an account with us? <Link className={styles.signInLink} href="/sign-up">Sign in</Link>
         </p>
       </form>
     </main>

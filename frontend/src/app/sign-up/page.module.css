@@ -7,11 +7,15 @@
 
 .popup {
   width: 90%;
-  max-width: 500px;
-  height: 619px;
+  max-width: 400px;
+  padding: 1rem 5rem;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   border-radius: 16px;
   background: var(--white-trans, rgba(255, 255, 255, 0.1));
+  margin-top: 15rem;
 }
 .main {
   display: flex;
@@ -21,7 +25,7 @@
   padding-bottom: 2rem;
 }
 .title {
-  margin: 32px 86px;
+  margin: 1.5rem 0;
   text-align: center;
 }
 
@@ -85,16 +89,6 @@
   transform: rotate(45deg);
 }
 
-.remember {
-  margin: auto 81px;
-}
-
-.primaryButton {
-  border: none;
-  margin: auto;
-  margin-bottom: 3rem;
-}
-
 .signInLink {
   text-decoration: underline;
 }
@@ -102,4 +96,40 @@
 .buttonContainer {
   display: flex;
   justify-content: center;
+}
+.remember {
+  text-align: center;
+}
+.remember_container{
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  margin: 25px auto;
+
+}
+
+.primaryButton {
+  display: flex;
+  width: 100%;
+  color: white;
+  height: 53px;
+  padding: 0.5rem 1rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 0.625rem;
+  background: var(--accent, #1e40d8);
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  font-size: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.top_logo {
+  position: absolute;
+  top: 2rem;
+  left: 4rem;
 }

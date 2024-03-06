@@ -12,9 +12,9 @@ export const NavBarSignedIn = () => {
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.logoContainer}>
+      <Link className={styles.logoContainer} href = "/home"> 
         <Image src={UntoldLogo} alt="Logo" width={140} height={82} />
-      </div>
+      </Link>
       <button
         className={styles.hamburgerButton}
         onClick={() => setIsNavExpanded(!isNavExpanded)}

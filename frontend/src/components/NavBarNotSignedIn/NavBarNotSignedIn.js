@@ -13,9 +13,9 @@ export const NavBarNotSignedIn = () => {
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.logoContainer}>
+      <Link className={styles.logoContainer} href = '/home'>
         <Image src={UntoldLogo} alt="Logo" width={140} height={82} />
-      </div>
+      </Link>
       <button
         className={styles.hamburgerButton}
         onClick={() => setIsNavExpanded(!isNavExpanded)}
@@ -33,7 +33,6 @@ export const NavBarNotSignedIn = () => {
         <li>Podcasts</li>
         </Link>
         <li>Watchlists</li> 
-        <li>News Feed</li>
       </ul>
       <div className={`${styles.navButtons} ${isNavExpanded ? styles.showButtons : ''}`}>
         <Link href="/sign-up" passHref>

@@ -1,0 +1,26 @@
+.card {
+    display: inline-block;
+    min-width: 230px;
+    border-radius: 15px;
+    max-width: 230px;
+    max-height: 150px;
+    margin-right: 10px;
+  }
+  
+  .cardImage {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    max-height: 150px;
+    object-fit: cover;
+  }
+  
+  .cardImage {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .card:hover .cardImage {
+    transform: scale(1.05);
+    cursor: pointer;
+  }
+  
